@@ -13,7 +13,7 @@ def main():
         'https://www.pcpartpicker.com',
         'https://packaging.python.org/',
         'imgur.com',
-        '151.101.250.167'
+        '8.8.8.8'
     ]
     for url in urls:
         whois.whois(url)
