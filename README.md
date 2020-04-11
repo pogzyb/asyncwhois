@@ -43,3 +43,19 @@ if __name__ == '__main__':
     print(f'Done! [{round(time.time() - start, 4)}] seconds.')
 ```
 
+#### aiohttp
+```python
+from aiohttp import web
+import asyncwhois
+
+
+async def whois(request):
+    domain = request.match_info.get('domain', 'google.com')
+    result = await asyncwhois.lookup(domain)
+    return web.Response(text=f'WhoIs parsed:\n{result}')
+
+
+app = web.Application()
+app.add_routes([web.get('/whois/{domain}', whois)])
+web.run_app(app)
+```
