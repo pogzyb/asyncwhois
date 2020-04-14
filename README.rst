@@ -16,6 +16,7 @@ asyncio
 =========
 
 .. code-block:: python
+
     import asyncio
     import time
 
@@ -47,9 +48,11 @@ asyncio
         print(f'Done! [{round(time.time() - start, 4)}] seconds.')
 
 
+
 aiohttp
 =========
 .. code-block:: python
+
     from aiohttp import web
     import asyncwhois
 
