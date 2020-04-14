@@ -17,7 +17,7 @@ try:
 except ImportError:
     DATEUTIL = False
 
-from .errors import PywhoisError
+from .errors import WhoIsParserError
 
 
 EMAIL_REGEX = r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
@@ -106,7 +106,7 @@ class WhoisEntry(dict):
 
     def __init__(self, domain, text, regex=None):
         if 'This TLD has no whois server, but you can access the whois database at' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             super().__init__()
             self.domain = domain
@@ -172,7 +172,7 @@ class WhoisEntry(dict):
         that represents its parsed contents.
         """
         if 'This query returned 0 objects' in text:
-            raise PywhoisError(text)
+            raise Dom(text)
 
         if domain.endswith('.com'):
             return WhoisCom(domain, text)
@@ -356,7 +356,7 @@ class WhoisCl(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'No match for "' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -378,7 +378,7 @@ class WhoisPe(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'No match for "' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -389,7 +389,7 @@ class WhoisSpace(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'No match for "' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text)
 
@@ -400,7 +400,7 @@ class WhoisCom(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'No match for "' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text)
 
@@ -411,7 +411,7 @@ class WhoisNet(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'No match for "' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text)
 
@@ -434,7 +434,7 @@ class WhoisOrg(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'NOT FOUND':
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text)
 
@@ -458,7 +458,7 @@ class WhoisRo(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'NOT FOUND':
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -480,7 +480,7 @@ class WhoisRu(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'No entries found' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -505,7 +505,7 @@ class WhoisNl(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.endswith('is free'):
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -540,7 +540,7 @@ class WhoisName(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'No match for ' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -612,7 +612,7 @@ class WhoisUs(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'Not found:' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -634,7 +634,7 @@ class WhoisPl(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'No information available about domain name' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -662,7 +662,7 @@ class WhoisCa(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'Domain status:         available' in text or 'Not found:' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -728,7 +728,7 @@ class WhoisMe(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'NOT FOUND' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -759,7 +759,7 @@ class WhoisUk(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'No match for ' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -780,7 +780,7 @@ class WhoisFr(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'No entries found' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -808,7 +808,7 @@ class WhoisFi(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'Domain not ' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -827,7 +827,7 @@ class WhoisJp(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'No match!!' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -847,7 +847,7 @@ class WhoisAU(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'No Data Found':
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -868,7 +868,7 @@ class WhoisEu(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'Status: AVAILABLE':
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -888,7 +888,7 @@ class WhoisEe(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'Domain not found':
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -921,7 +921,7 @@ class WhoisBr(WhoisEntry):
     def __init__(self, domain, text):
 
         if 'Not found:' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -957,7 +957,7 @@ class WhoisKr(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.endswith(' no match'):
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -987,7 +987,7 @@ class WhoisPt(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'No entries found':
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1004,7 +1004,7 @@ class WhoisBg(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'does not exist in database!' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1031,7 +1031,7 @@ class WhoisDe(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'Status: free' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1056,7 +1056,7 @@ class WhoisAt(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'Status: free' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1074,7 +1074,7 @@ class WhoisBe(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'Status: AVAILABLE' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1104,7 +1104,7 @@ class WhoisInfo(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'NOT FOUND':
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1199,7 +1199,7 @@ class WhoisUS(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'Not found:' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1225,7 +1225,7 @@ class WhoisIo(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'is available for purchase' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1280,7 +1280,7 @@ class WhoisBiz(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'No Data Found' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1314,7 +1314,7 @@ class WhoisKg(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'Data not found. This domain is available for registration' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1335,7 +1335,7 @@ class WhoisChLi(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'We do not have an entry in our database matching your query.' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1378,7 +1378,7 @@ class WhoisID(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'NOT FOUND' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1401,7 +1401,7 @@ class WhoisSe(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'not found.' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1477,7 +1477,7 @@ class WhoisJobs(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'not found.' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1511,7 +1511,7 @@ class WhoisIt(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'not found.' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1537,7 +1537,7 @@ class WhoisSa(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'not found.' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1581,7 +1581,7 @@ class WhoisSK(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'not found.' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1623,7 +1623,7 @@ class WhoisMx(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'not found.' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1664,7 +1664,7 @@ class WhoisTw(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'not found.' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1703,7 +1703,7 @@ class WhoisTr(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'not found.' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1725,7 +1725,7 @@ class WhoisIs(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'No entries found' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1750,7 +1750,7 @@ class WhoisDk(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'No match for ' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1781,7 +1781,7 @@ class WhoisAi(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'not registered' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1806,7 +1806,7 @@ class WhoisIl(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'No data was found' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1838,7 +1838,7 @@ class WhoisIn(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'NOT FOUND' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1859,7 +1859,7 @@ class WhoisCat(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'no matching objects' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             # Merge base class regex with specifics
             self._regex.copy().update(self.regex)
@@ -1887,7 +1887,7 @@ class WhoisIe(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'no matching objects' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1913,7 +1913,7 @@ class WhoisNz(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'no matching objects' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1948,7 +1948,7 @@ class WhoisLu(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'No such domain' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1968,7 +1968,7 @@ class WhoisCz(WhoisEntry):
 
     def __init__(self, domain, text):
         if '% No entries found.' in text or 'Your connection limit exceeded' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -1997,7 +1997,7 @@ class WhoisOnline(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'Not found:' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -2019,7 +2019,7 @@ class WhoisHr(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'ERROR: No entries found' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -2070,7 +2070,7 @@ class WhoisHk(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'ERROR: No entries found' in text or 'The domain has not been registered' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -2118,7 +2118,7 @@ class WhoisUA(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'ERROR: No entries found' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -2191,7 +2191,7 @@ class WhoisHn(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'No matching record.':
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -2254,7 +2254,7 @@ class WhoisLat(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'No matching record.':
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -2276,7 +2276,7 @@ class WhoisCn(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'No matching record.':
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -2308,7 +2308,7 @@ class WhoisApp(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'Domain not found.':
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -2340,7 +2340,7 @@ class WhoisMoney(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'Domain not found.':
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -2363,7 +2363,7 @@ class WhoisAr(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'El dominio no se encuentra registrado en NIC Argentina':
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -2388,7 +2388,7 @@ class WhoisBy(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'El dominio no se encuentra registrado en NIC Argentina':
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -2414,7 +2414,7 @@ class WhoisCr(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'El dominio no existe.':
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -2473,7 +2473,7 @@ class WhoisVe(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'El dominio no existe.':
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -2538,7 +2538,7 @@ class WhoisDo(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'Extensión de dominio no válido.':
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -2555,7 +2555,7 @@ class WhoisAe(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'No Data Found':
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -2574,7 +2574,7 @@ class WhoisSi(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'No entries found for the selected source(s).' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -2590,7 +2590,7 @@ class WhoisNo(WhoisEntry):
 
     def __init__(self, domain, text):
         if 'No match' in text:
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -2612,7 +2612,7 @@ class WhoisKz(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'No entries found':
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -2627,7 +2627,7 @@ class WhoisTop(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'The queried object does not exist':
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -2642,7 +2642,7 @@ class WhoisIr(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'No match':
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)\
 
@@ -2658,7 +2658,7 @@ class WhoisXyz(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'No match':
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -2674,7 +2674,7 @@ class WhoisIcu(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'No match':
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -2690,7 +2690,7 @@ class WhoisTk(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'No match':
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -2706,7 +2706,7 @@ class WhoisCo(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'No match':
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
 
@@ -2722,6 +2722,6 @@ class WhoisComAu(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'No match':
-            raise PywhoisError(text)
+            raise WhoIsParserError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
