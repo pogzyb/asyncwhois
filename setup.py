@@ -25,7 +25,7 @@ setuptools.setup(
         "Framework :: AsyncIO"
     ],
     url="https://github.com/pogzyb/asyncwhois",
-    packages="asyncwhois",
-    packages_dir={"asyncwhois": "asyncwhois"},
+    packages=["asyncwhois"],
+    package_dir={"asyncwhois": "asyncwhois"},
     python_requires=">=3.6",
 )
