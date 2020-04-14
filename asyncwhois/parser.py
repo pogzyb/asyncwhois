@@ -175,7 +175,7 @@ class WhoisEntry(dict):
         """Given whois output in ``text``, return an instance of ``WhoisEntry``
         that represents its parsed contents.
         """
-        if text.strip() == 'No whois server is known for this kind of object.':
+        if 'This query returned 0 objects' in text:
             raise PywhoisError(text)
 
         if domain.endswith('.com'):
