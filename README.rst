@@ -8,7 +8,7 @@ Installation
 -------
 .. code-block:: bash
 
-pip install asyncwhois
+    pip install asyncwhois
 
 
 Examples
