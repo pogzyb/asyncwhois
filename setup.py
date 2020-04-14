@@ -1,6 +1,6 @@
 import setuptools
 
-with open("README.md", "r") as fh:
+with open("README.rst", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
@@ -12,20 +12,20 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     install_requires=[
-        'aiodns',
+        "aiodns",
     ],
     classifiers=[
-        'Environment :: Web Environment',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python',
-        'Topic :: Internet :: WWW/HTTP',
-        'Programming Language :: Python :: 3',
-        'Framework :: AsyncIO'
+        "Environment :: Web Environment",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
+        "Topic :: Internet :: WWW/HTTP",
+        "Programming Language :: Python :: 3",
+        "Framework :: AsyncIO"
     ],
     url="https://github.com/pogzyb/asyncwhois",
-    packages='asyncwhois',
-    packages_dir={'asyncwhois': 'asyncwhois'},
-    python_requires='>=3.6',
+    packages="asyncwhois",
+    packages_dir={"asyncwhois": "asyncwhois"},
+    python_requires=">=3.6",
 )
