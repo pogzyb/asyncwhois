@@ -5,12 +5,13 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name="asyncwhois",
-    version="0.1.0",
+    version="0.1.1",
     author="Joseph Obarzanek",
     author_email="pogzyb@umich.edu",
     description="Async-compatible Python module for retrieving WHOIS information for domains.",
     long_description=long_description,
     long_description_content_type="text/markdown",
+    license="MIT",
     install_requires=[
         "aiodns",
     ],
@@ -28,4 +29,5 @@ setuptools.setup(
     packages=["asyncwhois"],
     package_dir={"asyncwhois": "asyncwhois"},
     python_requires=">=3.6",
+    include_package_data=True
 )
