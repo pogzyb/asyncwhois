@@ -13,7 +13,10 @@ def main():
         'https://www.pcpartpicker.com',
         'https://packaging.python.org/',
         'imgur.com',
-        '8.8.8.8'
+        'https://www.amazon.co.jp',
+        'github.com/explore',
+        'http://нарояци.com/',
+        '172.217.3.110'
     ]
     for url in urls:
         whois.whois(url)
