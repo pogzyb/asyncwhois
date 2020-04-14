@@ -49,11 +49,6 @@ KNOWN_FORMATS = [
     '%d.%m.%Y %H:%M:%S',  # 08.03.2014 10:28:24
 ]
 
-
-class PywhoisError(Exception):
-    pass
-
-
 def datetime_parse(s):
     for known_format in KNOWN_FORMATS:
         try:
@@ -113,6 +108,7 @@ class WhoisEntry(dict):
         if 'This TLD has no whois server, but you can access the whois database at' in text:
             raise PywhoisError(text)
         else:
+            super().__init__()
             self.domain = domain
             self.text = text
             if regex is not None:
@@ -212,8 +208,6 @@ class WhoisEntry(dict):
             return WhoisHk(domain, text)
         elif domain.endswith('.jp'):
             return WhoisJp(domain, text)
-        elif domain.endswith('.pl'):
-            return WhoisPl(domain, text)
         elif domain.endswith('.br'):
             return WhoisBr(domain, text)
         elif domain.endswith('.eu'):
@@ -226,8 +220,6 @@ class WhoisEntry(dict):
             return WhoisPt(domain, text)
         elif domain.endswith('.bg'):
             return WhoisBg(domain, text)
-        elif domain.endswith('.de'):
-            return WhoisDe(domain, text)
         elif domain.endswith('.at'):
             return WhoisAt(domain, text)
         elif domain.endswith('.ca'):
@@ -327,7 +319,23 @@ class WhoisEntry(dict):
         elif domain.endswith('.ua'):
             return WhoisUA(domain, text)
         elif domain.endswith('.kz'):
-            return WhoisKZ(domain, text)
+            return WhoisKz(domain, text)
+        elif domain.endswith('.top'):
+            return WhoisTop(domain, text)
+        elif domain.endswith('.ir'):
+            return WhoisIr(domain, text)
+        elif domain.endswith('.xyz'):
+            return WhoisXyz(domain, text)
+        elif domain.endswith('.icu'):
+            return WhoisIcu(domain, text)
+        elif domain.endswith('.de'):
+            return WhoisDe(domain, text)
+        elif domain.endswith('.pl'):
+            return WhoisPl(domain, text)
+        elif domain.endswith('.co'):
+            return WhoisCo(domain, text)
+        elif domain.endswith('.com.au'):
+            return WhoisComAu(domain, text)
         else:
             return WhoisEntry(domain, text)
 
@@ -828,13 +836,13 @@ class WhoisAU(WhoisEntry):
     """Whois parser for .au domains
     """
     regex = {
-        'domain_name': 'Domain Name: *(.+)\n',
-        'updated_date': 'Last Modified: *(.+)\n',
-        'registrar': 'Registrar Name: *(.+)\n',
-        'status': 'Status: *(.+)',
-        'registrant_name': 'Registrant: *(.+)',
-        'registrant_contact_name': 'Registrant Contact Name: (.+)',
-        'name_servers': 'Name Server: *(.+)',
+        'domain_name': r'Domain Name: *(.+)\n',
+        'updated_date': r'Last Modified: *(.+)\n',
+        'registrar': r'Registrar Name: *(.+)\n',
+        'status': r'Status: *(.+)',
+        'registrant_name': r'Registrant: *(.+)',
+        'registrant_contact_name': r'Registrant Contact Name: (.+)',
+        'name_servers': r'Name Server: *(.+)',
     }
 
     def __init__(self, domain, text):
@@ -874,12 +882,6 @@ class WhoisEe(WhoisEntry):
         'creation_date': r'Domain: *[\n\r]+\s*name: *[^\n\r]+\sstatus: *[^\n\r]+\sregistered: *([^\n\r]+)',
         'updated_date': r'Domain: *[\n\r]+\s*name: *[^\n\r]+\sstatus: *[^\n\r]+\sregistered: *[^\n\r]+\schanged: *([^\n\r]+)',
         'expiration_date': r'Domain: *[\n\r]+\s*name: *[^\n\r]+\sstatus: *[^\n\r]+\sregistered: *[^\n\r]+\schanged: *[^\n\r]+\sexpire: *([^\n\r]+)',
-
-        # 'tech_name': r'Technical: *Name: *([^\n\r]+)',
-        # 'tech_org': r'Technical: *Name: *[^\n\r]+\s*Organisation: *([^\n\r]+)',
-        # 'tech_phone': r'Technical: *Name: *[^\n\r]+\s*Organisation: *[^\n\r]+\s*Language: *[^\n\r]+\s*Phone: *([^\n\r]+)',
-        # 'tech_fax': r'Technical: *Name: *[^\n\r]+\s*Organisation: *[^\n\r]+\s*Language: *[^\n\r]+\s*Phone: *[^\n\r]+\s*Fax: *([^\n\r]+)',
-        # 'tech_email': r'Technical: *Name: *[^\n\r]+\s*Organisation: *[^\n\r]+\s*Language: *[^\n\r]+\s*Phone: *[^\n\r]+\s*Fax: *[^\n\r]+\s*Email: *([^\n\r]+)',
         'registrar': r'Registrar: *[\n\r]+\s*name: *([^\n\r]+)',
         'name_servers': r'nserver: *(.*)',  # list of name servers
     }
@@ -1123,7 +1125,7 @@ class WhoisSu(WhoisRu):
         WhoisRu.__init__(self, domain, text)
 
 
-class WhoisClub(WhoisEntry):
+class WhoisUS(WhoisEntry):
     """Whois parser for .us domains
     """
     regex = {
@@ -2593,7 +2595,7 @@ class WhoisNo(WhoisEntry):
             WhoisEntry.__init__(self, domain, text, self.regex)
 
 
-class WhoisKZ(WhoisEntry):
+class WhoisKz(WhoisEntry):
     """Whois parser for .kz domains
     """
     regex = {
@@ -2601,7 +2603,7 @@ class WhoisKZ(WhoisEntry):
         'registar_created': 'Registar Created: *(.+)',
         'curent_registrar': 'Current Registar: *(.+)',
         'creation_date': 'Domain created: *(.+)',
-        'lats_modified': 'Last modified : *(.+)',
+        'last_modified': 'Last modified : *(.+)',
         'name_servers': 'server.*: *(.+)',  # list of name servers
         'status': ' (.+?) -',  # list of statuses
         'emails': EMAIL_REGEX,  # list of email addresses
@@ -2610,6 +2612,116 @@ class WhoisKZ(WhoisEntry):
 
     def __init__(self, domain, text):
         if text.strip() == 'No entries found':
+            raise PywhoisError(text)
+        else:
+            WhoisEntry.__init__(self, domain, text, self.regex)
+
+
+class WhoisTop(WhoisEntry):
+    """Whois parser for .top domains
+    """
+    regex = {
+        'creation_date': 'Creation Date: *(.+)',
+        'updated_date': 'Updated Date: *(.+)'
+    }
+
+    def __init__(self, domain, text):
+        if text.strip() == 'The queried object does not exist':
+            raise PywhoisError(text)
+        else:
+            WhoisEntry.__init__(self, domain, text, self.regex)
+
+
+class WhoisIr(WhoisEntry):
+    """Whois parser for .ir domains
+    """
+    regex = {
+        'updated_date': 'last-updated: *(.+)',
+        'expiration_date': 'expire-date: *(.+)'
+    }
+
+    def __init__(self, domain, text):
+        if text.strip() == 'No match':
+            raise PywhoisError(text)
+        else:
+            WhoisEntry.__init__(self, domain, text, self.regex)\
+
+
+class WhoisXyz(WhoisEntry):
+    """Whois parser for .xyz domains
+    """
+    regex = {
+        'creation_date': 'Creation Date: *(.+)',
+        'updated_date': 'Updated Date: *(.+)',
+        'expiration_date': 'Registry Expiry Date: *(.+)'
+    }
+
+    def __init__(self, domain, text):
+        if text.strip() == 'No match':
+            raise PywhoisError(text)
+        else:
+            WhoisEntry.__init__(self, domain, text, self.regex)
+
+
+class WhoisIcu(WhoisEntry):
+    """Whois parser for .icu domains
+    """
+    regex = {
+        'creation_date': 'Creation Date: *(.+)',
+        'updated_date': 'Updated Date: *(.+)',
+        'expiration_date': 'Registrar Registration Expiration Date: *(.+)'
+    }
+
+    def __init__(self, domain, text):
+        if text.strip() == 'No match':
+            raise PywhoisError(text)
+        else:
+            WhoisEntry.__init__(self, domain, text, self.regex)
+
+
+class WhoisTk(WhoisEntry):
+    """Whois parser for .tk domains
+    """
+    regex = {
+        'creation_date': 'Creation Date: *(.+)',
+        'updated_date': 'Updated Date: *(.+)',
+        'expiration_date': 'Registrar Registration Expiration Date: *(.+)'
+    }
+
+    def __init__(self, domain, text):
+        if text.strip() == 'No match':
+            raise PywhoisError(text)
+        else:
+            WhoisEntry.__init__(self, domain, text, self.regex)
+
+
+class WhoisCo(WhoisEntry):
+    """Whois parser for .pl domains
+    """
+    regex = {
+        'creation_date': 'Creation Date: *(.+)',
+        'updated_date': 'Updated Date: *(.+)',
+        'expiration_date': 'Registry Expiry Date: *(.+)'
+    }
+
+    def __init__(self, domain, text):
+        if text.strip() == 'No match':
+            raise PywhoisError(text)
+        else:
+            WhoisEntry.__init__(self, domain, text, self.regex)
+
+
+class WhoisComAu(WhoisEntry):
+    """Whois parser for .com.au domains
+    """
+    regex = {
+        'creation_date': 'Creation Date: *(.+)',
+        'updated_date': 'Last Modified: *(.+)',
+        'expiration_date': 'Registry Expiry Date: *(.+)'
+    }
+
+    def __init__(self, domain, text):
+        if text.strip() == 'No match':
             raise PywhoisError(text)
         else:
             WhoisEntry.__init__(self, domain, text, self.regex)
