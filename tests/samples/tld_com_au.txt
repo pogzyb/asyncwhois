@@ -1,0 +1,79 @@
+% IANA WHOIS server
+% for more information on IANA, visit http://www.iana.org
+% This query returned 1 object
+
+refer:        whois.auda.org.au
+
+domain:       AU
+
+organisation: .au Domain Administration (auDA)
+address:      Lv 17
+address:      1 Collins St
+address:      Melbourne VIC 3000
+address:      Australia
+
+contact:      administrative
+name:         Chief Operating Officer
+organisation: .au Domain Administration (auDA)
+address:      Lv 17, 1 Collins St
+address:      Melbourne VIC 3000
+address:      Australia
+phone:        + 61 03 8341 4111
+fax-no:       + 61 03 8341 4112
+e-mail:       coo@auda.org.au
+
+contact:      technical
+name:         Chief Technical Officer
+organisation: .au Domain Administration (auDA)
+address:      Lv 17 1 Collins St
+address:      Melbourne VIC 3000
+address:      Australia
+phone:        +61 (0)3 8341 4111
+fax-no:       +61 (0)3 8341 4112
+e-mail:       auda.iana@auda.org.au
+
+nserver:      A.AU 2407:6e00:254:306:0:0:0:73 58.65.254.73
+nserver:      C.AU 162.159.24.179 2400:cb00:2049:1:0:0:a29f:18b3
+nserver:      D.AU 162.159.25.38 2400:cb00:2049:1:0:0:a29f:1926
+nserver:      M.AU 156.154.100.24 2001:502:2eda:0:0:0:0:24
+nserver:      N.AU 156.154.101.24 2001:502:ad09:0:0:0:0:24
+nserver:      Q.AU 2a01:8840:be:0:0:0:0:1 65.22.196.1
+nserver:      R.AU 2a01:8840:bf:0:0:0:0:1 65.22.197.1
+nserver:      S.AU 2a01:8840:c0:0:0:0:0:1 65.22.198.1
+nserver:      T.AU 2a01:8840:c1:0:0:0:0:1 65.22.199.1
+ds-rdata:     18875 8 1 A6362D938429477C0F5E51E1F47A3516B39D281B
+ds-rdata:     18875 8 2 FE773B2F77BB6A6DD31BA27EB19E8F64257937622CAB98F3926EE77FEA2BE79F
+
+whois:        whois.auda.org.au
+
+status:       ACTIVE
+remarks:      Registration information:
+remarks:      https://www.auda.org.au/domains/au-domains/
+
+created:      1986-03-05
+changed:      2020-02-10
+source:       IANA
+
+Domain Name: PRINTANDMEDIA.COM.AU
+Registry Domain ID: D407400000000556431-AU
+Registrar WHOIS Server: whois.auda.org.au
+Registrar URL:
+Last Modified: 2019-10-16T02:53:17Z
+Registrar Name: Netregistry Pty Ltd
+Registrar Abuse Contact Email:
+Registrar Abuse Contact Phone:
+Reseller Name:
+Status: serverRenewProhibited https://afilias.com.au/get-au/whois-status-codes#serverRenewProhibited
+Registrant Contact ID: MUKI1024
+Registrant Contact Name: Kim Murnaghan
+Tech Contact ID: C1554-JUST
+Tech Contact Name: Kim Murnaghan
+Name Server: NS1.NETREGISTRY.NET
+Name Server: NS2.NETREGISTRY.NET
+Name Server: NS3.NETREGISTRY.NET
+DNSSEC: unsigned
+Registrant: Print & Media Services Pty Ltd
+Registrant ID: OTHER 059 473 906
+Eligibility Type: Other
+
+>>> Last update of WHOIS database: 2020-04-13T20:28:27Z <<<

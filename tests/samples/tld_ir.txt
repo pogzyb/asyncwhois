@@ -1,0 +1,25 @@
+domain:		masoudrahimi.ir
+ascii:		masoudrahimi.ir
+remarks:	(Domain Holder) Masoud Rahimi Jonossh Farahani
+remarks:	(Domain Holder Address) Pasdaran Cross , Hossein Abad sq , Javanshir Ave , Kani Mosque After , Kimia Bldg , 12 No , 3 Unit, tehran, tehran, IR
+holder-c:	mr4748-irnic
+admin-c:	mr4748-irnic
+tech-c:		mr4748-irnic
+bill-c:		er1229-irnic
+nserver:	ns1.tarahesite.net
+nserver:	ns2.tarahesite.net
+last-updated:	2018-07-08
+expire-date:	2022-07-23
+source:		IRNIC # Filtered
+
+nic-hdl:	mr4748-irnic
+person:		Masoud Rahimi Jonossh Farahani
+e-mail:		masoud.ra76@gmail.com
+address:	Pasdaran Cross , Hossein Abad sq , Javanshir Ave , Kani Mosque After , Kimia Bldg , 12 No , 3 Unit, tehran, tehran, IR
+phone:		+98 21 22939945
+source:		IRNIC # Filtered
+
+nic-hdl:	er1229-irnic
+org:		ertebatat netmihan
+e-mail:		lir@mihanwebhost.com
+source:		IRNIC # Filtered

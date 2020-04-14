@@ -1,0 +1,113 @@
+% IANA WHOIS server
+% for more information on IANA, visit http://www.iana.org
+% This query returned 1 object
+
+refer:        whois.registry.in
+
+domain:       IN
+
+organisation: National Internet Exchange of India
+address:      6C,6D,6E Hansalaya Building 15, Barakhamba Road
+address:      New Delhi 110 001
+address:      India
+
+contact:      administrative
+name:         Rajiv Kumar
+organisation: National Internet Exchange of India
+address:      6C,6D,6E Hansalaya Building 15, Barakhamba Road
+address:      New Delhi 110 001
+address:      India
+phone:        +91 11 48202011
+fax-no:       +91 11 48202013
+e-mail:       registry@nixi.in
+
+contact:      technical
+name:         Rajiv Kumar
+organisation: National Internet Exchange of India
+address:      6C,6D,6E Hansalaya Building 15, Barakhamba Road
+address:      New Delhi 110 001
+address:      India
+phone:        +91 11 48202011
+fax-no:       +91 11 48202013
+e-mail:       rajiv@nixi.in
+
+nserver:      NS1.REGISTRY.IN 2001:dcd:1:0:0:0:0:12 37.209.192.12
+nserver:      NS2.REGISTRY.IN 2001:dcd:2:0:0:0:0:12 37.209.194.12
+nserver:      NS3.REGISTRY.IN 2001:dcd:3:0:0:0:0:12 37.209.196.12
+nserver:      NS4.REGISTRY.IN 2001:dcd:4:0:0:0:0:12 37.209.198.12
+nserver:      NS5.REGISTRY.IN 156.154.100.20 2001:0502:2eda:0:0:0:0:20
+nserver:      NS6.REGISTRY.IN 156.154.101.20 2001:0502:ad09:0:0:0:0:20
+ds-rdata:     54739 8 2 9F122CFD6604AE6DEDA0FE09F27BE340A318F06AFAC11714A73409D43136472C
+ds-rdata:     54739 8 1 2B5CA455A0E65769FF9DF9E75EC40EE1EC1CDCA9
+
+whois:        whois.registry.in
+
+status:       ACTIVE
+remarks:      Registration information: http://www.registry.in
+
+created:      1989-05-08
+changed:      2020-04-09
+source:       IANA
+
+Domain Name: cyberstudio.in
+Registry Domain ID: D2701825-IN
+Registrar WHOIS Server:
+Registrar URL: https://publicdomainregistry.com/
+Updated Date: 2019-12-01T09:23:32Z
+Creation Date: 2007-12-01T13:48:20Z
+Registry Expiry Date: 2020-12-01T13:48:20Z
+Registrar: Endurance Domains Technology LLP
+Registrar IANA ID: 801217
+Registrar Abuse Contact Email:
+Registrar Abuse Contact Phone:
+Domain Status: ok http://www.icann.org/epp#OK
+Registry Registrant ID:
+Registrant Name:
+Registrant Organization: VertexPlus Technologies
+Registrant Street:
+Registrant Street:
+Registrant Street:
+Registrant City:
+Registrant State/Province: Rajasthan
+Registrant Postal Code:
+Registrant Country: IN
+Registrant Phone:
+Registrant Phone Ext:
+Registrant Fax:
+Registrant Fax Ext:
+Registrant Email: Please contact the Registrar listed above
+Registry Admin ID:
+Admin Name:
+Admin Organization:
+Admin Street:
+Admin Street:
+Admin Street:
+Admin City:
+Admin State/Province:
+Admin Postal Code:
+Admin Country:
+Admin Phone:
+Admin Phone Ext:
+Admin Fax:
+Admin Fax Ext:
+Admin Email: Please contact the Registrar listed above
+Registry Tech ID:
+Tech Name:
+Tech Organization:
+Tech Street:
+Tech Street:
+Tech Street:
+Tech City:
+Tech State/Province:
+Tech Postal Code:
+Tech Country:
+Tech Phone:
+Tech Phone Ext:
+Tech Fax:
+Tech Fax Ext:
+Tech Email: Please contact the Registrar listed above
+Name Server: ns1182.websitewelcome.com
+Name Server: ns1181.websitewelcome.com
+DNSSEC: unsigned
+URL of the ICANN Whois Inaccuracy Complaint Form: https://www.icann.org/wicf/
+>>> Last update of WHOIS database: 2020-04-13T20:25:55Z <<<

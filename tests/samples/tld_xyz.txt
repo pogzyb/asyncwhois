@@ -1,0 +1,137 @@
+% IANA WHOIS server
+% for more information on IANA, visit http://www.iana.org
+% This query returned 1 object
+
+refer:        whois.nic.xyz
+
+domain:       XYZ
+
+organisation: XYZ.COM LLC
+address:      2121 E Tropicana Ave
+address:      Las Vegas
+address:      NV 89119
+address:      United States
+
+contact:      administrative
+name:         General Counsel
+organisation: XYZ.COM LLC
+address:      2121 E Tropicana Ave., STE2
+address:      Las Vegas
+address:      NV 89119
+address:      United States
+phone:        +1.7027632191
+e-mail:       hello@xyz.com
+
+contact:      technical
+name:         CTO
+organisation: CentralNic
+address:      Saddlers House, 4th Floor
+address:      44 Gutter Lane
+address:      London EC2V 6BR
+address:      United Kingdom
+phone:        +44.2033880600
+fax-no:       +44.2033880601
+e-mail:       tld.ops@centralnic.com
+
+nserver:      GENERATIONXYZ.NIC.XYZ 212.18.249.42 2a04:2b00:13ff:0:0:0:0:42
+nserver:      X.NIC.XYZ 194.169.218.42 2001:67c:13cc:0:0:0:1:42
+nserver:      Y.NIC.XYZ 185.24.64.42 2a04:2b00:13cc:0:0:0:1:42
+nserver:      Z.NIC.XYZ 212.18.248.42 2a04:2b00:13ee:0:0:0:0:42
+ds-rdata:     3599 8 1 3FA3B264F45DB5F38BEDEAF1A88B76AA318C2C7F
+ds-rdata:     3599 8 2 B9733869BC84C86BB59D102BA5DA6B27B2088552332A39DCD54BC4E8D66B0499
+
+whois:        whois.nic.xyz
+
+status:       ACTIVE
+remarks:      Registration information: http://nic.xyz
+
+created:      2014-02-06
+changed:      2019-10-14
+source:       IANA
+
+Domain Name: REDEMTOIN.XYZ
+Registry Domain ID: D135656610-CNIC
+Registrar WHOIS Server: whois.namecheap.com
+Registrar URL: https://namecheap.com
+Updated Date: 2019-11-05T18:25:51.0Z
+Creation Date: 2019-10-15T09:09:55.0Z
+Registry Expiry Date: 2020-10-15T23:59:59.0Z
+Registrar: Namecheap
+Registrar IANA ID: 1068
+Domain Status: serverHold https://icann.org/epp#serverHold
+Domain Status: clientTransferProhibited https://icann.org/epp#clientTransferProhibited
+Registrant Organization: WhoisGuard, Inc.
+Registrant State/Province: Panama
+Registrant Country: PA
+Registrant Email: Please query the RDDS service of the Registrar of Record identified in this output for information on how to contact the Registrant, Admin, or Tech contact of the queried domain name.
+Admin Email: Please query the RDDS service of the Registrar of Record identified in this output for information on how to contact the Registrant, Admin, or Tech contact of the queried domain name.
+Tech Email: Please query the RDDS service of the Registrar of Record identified in this output for information on how to contact the Registrant, Admin, or Tech contact of the queried domain name.
+Name Server: NS1.YNAMESRV.XYZ
+Name Server: NS2.YNAMESRV.XYZ
+Name Server: NS3.YNAMESRV.XYZ
+DNSSEC: unsigned
+Billing Email: Please query the RDDS service of the Registrar of Record identified in this output for information on how to contact the Registrant, Admin, or Tech contact of the queried domain name.
+Registrar Abuse Contact Email: abuse@namecheap.com
+Registrar Abuse Contact Phone: +1.6613102107
+URL of the ICANN Whois Inaccuracy Complaint Form: https://www.icann.org/wicf/
+>>> Last update of WHOIS database: 2020-04-13T19:24:19.0Z <<<
+
+Domain name: redemtoin.xyz
+Registry Domain ID: D135656610-CNIC
+Registrar WHOIS Server: whois.namecheap.com
+Registrar URL: http://www.namecheap.com
+Updated Date: 0001-01-01T00:00:00.00Z
+Creation Date: 2019-10-15T09:09:55.00Z
+Registrar Registration Expiration Date: 2020-10-15T09:09:55.00Z
+Registrar: NAMECHEAP INC
+Registrar IANA ID: 1068
+Registrar Abuse Contact Email: abuse@namecheap.com
+Registrar Abuse Contact Phone: +1.6613102107
+Reseller: NAMECHEAP INC
+Domain Status: clientTransferProhibited https://icann.org/epp#clientTransferProhibited
+Domain Status: serverTransferProhibited https://icann.org/epp#serverTransferProhibited
+Registry Registrant ID:
+Registrant Name: WhoisGuard Protected
+Registrant Organization: WhoisGuard, Inc.
+Registrant Street: P.O. Box 0823-03411
+Registrant City: Panama
+Registrant State/Province: Panama
+Registrant Postal Code:
+Registrant Country: PA
+Registrant Phone: +507.8365503
+Registrant Phone Ext:
+Registrant Fax: +51.17057182
+Registrant Fax Ext:
+Registrant Email: fbe39313009542c698d6693dae6c3c29.protect@whoisguard.com
+Registry Admin ID:
+Admin Name: WhoisGuard Protected
+Admin Organization: WhoisGuard, Inc.
+Admin Street: P.O. Box 0823-03411
+Admin City: Panama
+Admin State/Province: Panama
+Admin Postal Code:
+Admin Country: PA
+Admin Phone: +507.8365503
+Admin Phone Ext:
+Admin Fax: +51.17057182
+Admin Fax Ext:
+Admin Email: fbe39313009542c698d6693dae6c3c29.protect@whoisguard.com
+Registry Tech ID:
+Tech Name: WhoisGuard Protected
+Tech Organization: WhoisGuard, Inc.
+Tech Street: P.O. Box 0823-03411
+Tech City: Panama
+Tech State/Province: Panama
+Tech Postal Code:
+Tech Country: PA
+Tech Phone: +507.8365503
+Tech Phone Ext:
+Tech Fax: +51.17057182
+Tech Fax Ext:
+Tech Email: fbe39313009542c698d6693dae6c3c29.protect@whoisguard.com
+Name Server: ns1.ynamesrv.xyz
+Name Server: ns2.ynamesrv.xyz
+Name Server: ns3.ynamesrv.xyz
+DNSSEC: unsigned
+URL of the ICANN WHOIS Data Problem Reporting System: http://wdprs.internic.net/
+>>> Last update of WHOIS database: 2020-04-13T01:24:20.01Z <<<
