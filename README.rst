@@ -6,8 +6,10 @@ Async-compatible Python module for retrieving WHOIS information of domains. Base
 
 Installation
 -------
+.. code-block:: bash
 
-`pip install asyncwhois`
+pip install asyncwhois
+
 
 Examples
 -------
