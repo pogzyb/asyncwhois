@@ -69,3 +69,39 @@ Less friendly and "query-able" TLD registrars:
 - .ml (http://www.dot.ml)
 - .es (www.dominios.es.)|(https://sede.red.gob.es/sede/whois)
 
+
+TLDs needed
+-------
+- .ir
+- .in
+- .club
+- .buzz
+- .ga
+- .cf
+- .ma
+- .online
+- .site
+- .fun
+- .es
+- .de
+- .top
+- .eu
+- .icu
+- .tk
+- .ml
+- .co
+- .gq
+- .jp
+- .vn
+- .nl
+- .xyz
+- .host
+- .hu
+- .live
+- .website
+- .tech
+- .biz
+- .ch
+- .us
+- .me
+
