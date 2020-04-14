@@ -1,10 +1,12 @@
 asyncwhois
 ==========
+
 Async-compatible Python module for retrieving WHOIS information of domains. Based on `richardpenman/pywhois`_
 
 
 Installation
 ------------
+
 .. code-block:: bash
 
     pip install asyncwhois
@@ -51,6 +53,7 @@ Examples
 
 **aiohttp**
 
+
 .. code-block:: python
 
     from aiohttp import web
@@ -68,8 +71,5 @@ Examples
     web.run_app(app)
 
 
-References:
-----------
-.. target-notes::
 
-.. _`richardpenman/pywhois`: https://github.com/richardpenman/pywhois
+.. _richardpenman/pywhois: https://github.com/richardpenman/pywhois
