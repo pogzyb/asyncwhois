@@ -48,7 +48,6 @@ asyncio
         print(f'Done! [{round(time.time() - start, 4)}] seconds.')
 
 
-
 aiohttp
 =========
 .. code-block:: python
@@ -66,20 +65,6 @@ aiohttp
     app = web.Application()
     app.add_routes([web.get('/whois/{domain}', whois)])
     web.run_app(app)
-
-
-Notes:
--------
-Less "query-able" TLDs:
-
-+------------+------------+
-| TLD        | References |
-+============+============+
-| .eu        | (https://whois.eurid.eu/en/search/?domain=secure-connection.eu)   |
-| .tk        | (http://www.dot.tk/en/index.html?lang=en)   |
-| .de        | (http://www.denic.de/en/domains/whois-service/web-whois.html)   |
-| .ml        | (http://www.dot.ml)   |
-| .es        | (www.dominios.es.) (https://sede.red.gob.es/sede/whois)   |
 
 
 References:
