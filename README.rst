@@ -3,9 +3,6 @@ asyncwhois
 ##################
 Async-compatible Python module for retrieving WHOIS information of domains. Based on `richardpenman/pywhois`_
 
-.. target-notes::
-
-.. _`richardpenman/pywhois`: https://github.com/richardpenman/pywhois
 
 Installation
 -------
@@ -73,46 +70,20 @@ aiohttp
 
 Notes:
 -------
-Less friendly and "query-able" TLD registrars:
-- .eu (https://whois.eurid.eu/en/search/?domain=secure-connection.eu)
-- .tk (http://www.dot.tk/en/index.html?lang=en)
-- .de (http://www.denic.de/en/domains/whois-service/web-whois.html)
-- .ml (http://www.dot.ml)
-- .es (www.dominios.es.)|(https://sede.red.gob.es/sede/whois)
+Less "query-able" TLDs:
+
++------------+------------+
+| TLD        | References |
++============+============+
+| .eu        | (https://whois.eurid.eu/en/search/?domain=secure-connection.eu)   |
+| .tk        | (http://www.dot.tk/en/index.html?lang=en)   |
+| .de        | (http://www.denic.de/en/domains/whois-service/web-whois.html)   |
+| .ml        | (http://www.dot.ml)   |
+| .es        | (www.dominios.es.) (https://sede.red.gob.es/sede/whois)   |
 
 
-TLDs needed
+References:
 -------
-- .ir
-- .in
-- .club
-- .buzz
-- .ga
-- .cf
-- .ma
-- .online
-- .site
-- .fun
-- .es
-- .de
-- .top
-- .eu
-- .icu
-- .tk
-- .ml
-- .co
-- .gq
-- .jp
-- .vn
-- .nl
-- .xyz
-- .host
-- .hu
-- .live
-- .website
-- .tech
-- .biz
-- .ch
-- .us
-- .me
+.. target-notes::
 
+.. _`richardpenman/pywhois`: https://github.com/richardpenman/pywhois
