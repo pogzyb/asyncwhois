@@ -1,11 +1,7 @@
 
-class PywhoisError(Exception):
+class WhoIsParserError(Exception):
     pass
 
 
 class DomainValidationError(Exception):
-    pass
-
-
-class WhoIsCommandFailure(Exception):
     pass

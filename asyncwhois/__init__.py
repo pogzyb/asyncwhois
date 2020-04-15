@@ -5,7 +5,7 @@ from .query import do_async_whois_query
 from .utils import extract_domain
 from .tlds import fully_supported_tlds
 
-logger = logging.getLogger("asyncwhois")
+logger = logging.getLogger(__name__)
 
 
 async def lookup(url: str) -> WhoisEntry:
