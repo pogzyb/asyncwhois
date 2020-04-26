@@ -252,7 +252,7 @@ class WhoisEntry(dict):
             return WhoisSK(domain, text)
         elif domain.endswith('.se'):
             return WhoisSe(domain, text)
-        elif domain.endswith('no'):
+        elif domain.endswith('.no'):
             return WhoisNo(domain, text)
         elif domain.endswith('.nu'):
             return WhoisSe(domain, text)
