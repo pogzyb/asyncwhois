@@ -27,7 +27,7 @@ def has_support_for(tld: str) -> bool:
     not support parsing WhoIs output for any TLD. The parser
     will attempt to extract information regardless.
 
-    :param tld: top level domain (.com, .net, .online, etc..)
+    :param tld: top level domain (com, net, online, etc..)
     :return: True if explicit parser support else False
     """
     return tld in fully_supported_tlds
