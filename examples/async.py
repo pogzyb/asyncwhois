@@ -14,7 +14,10 @@ async def main():
         'https://www.pcpartpicker.com',
         'https://packaging.python.org/',
         'imgur.com',
-        '151.101.250.167'
+        'https://www.amazon.co.jp',
+        'github.com/explore',
+        'http://нарояци.com/',
+        '172.217.3.110'
     ]
     tasks = []
     for url in urls:
