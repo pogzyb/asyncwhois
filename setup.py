@@ -1,16 +1,15 @@
 import setuptools
 
-with open("README.rst", "r") as fh:
+with open("README.rst", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="asyncwhois",
-    version="0.1.1",
+    version="0.1.2",
     author="Joseph Obarzanek",
     author_email="pogzyb@umich.edu",
     description="Async-compatible Python module for retrieving WHOIS information for domains.",
     long_description=long_description,
-    long_description_content_type="text/markdown",
     license="MIT",
     install_requires=[
         "aiodns",
