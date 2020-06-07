@@ -1,33 +1,38 @@
-import logging
-
-from .parser import WhoisEntry
-from .query import do_async_whois_query
-from .utils import extract_domain
+from .pywhois import _PyWhoIs
 from .tlds import fully_supported_tlds
 
-logger = logging.getLogger(__name__)
+__all__ = ['lookup', 'aio_lookup', 'has_parser_support']
+__version__ = '0.2.0'
 
 
-async def lookup(url: str) -> WhoisEntry:
+def lookup(url: str) -> _PyWhoIs:
     """
-    Entrypoint for asyncwhois queries
+    Module entry point for whois lookups.
 
-    :param url: the url to do the WhoIs lookup on
-    :return: instance of dict-like WhoisEntry
+    :param url: Any correctly formatted URL (e.g. https://en.wikipedia.org/wiki/WHOIS)
+    :return: instance of _PyWhoIs with "query_output" and "parser_output" attributes
     """
-    domain = await extract_domain(url)
-    query_result = await do_async_whois_query(domain)
-    return WhoisEntry.load(domain, query_result)
+    whois = _PyWhoIs._from_url(url)
+    return whois
 
 
-def has_support_for(tld: str) -> bool:
+async def aio_lookup(url: str) -> _PyWhoIs:
     """
-    Check if asyncwhois explicitly supports the given TLD
-    **Note: by default, an error is NOT raised if the module does
-    not support parsing WhoIs output for any TLD. The parser
-    will attempt to extract information regardless.
+    Async module entry point for whois lookups.
 
-    :param tld: top level domain (com, net, online, etc..)
-    :return: True if explicit parser support else False
+   :param url: Any correctly formatted URL (e.g. https://en.wikipedia.org/wiki/WHOIS)
+    :return: instance of _PyWhoIs with "query_output" and "parser_output" attributes
     """
+    whois = await _PyWhoIs._aio_from_url(url)
+    return whois
+
+
+def has_parser_support(tld: str) -> bool:
+    """
+    Check if the module has explicit parser support for a given top level domain.
+
+    :param tld: Top level domain (e.g. "com")
+    :return: True if tld parser exists else False
+    """
+    tld = tld.lstrip(".")
     return tld in fully_supported_tlds
