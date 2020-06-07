@@ -21,7 +21,7 @@ async def main():
     ]
     tasks = []
     for url in urls:
-        awaitable = asyncwhois.lookup(url)
+        awaitable = asyncwhois.aio_lookup(url)
         tasks.append(awaitable)
 
     await asyncio.gather(*tasks)

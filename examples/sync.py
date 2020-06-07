@@ -1,6 +1,6 @@
 import time
 
-import whois # https://github.com/richardpenman/pywhois
+import asyncwhois
 
 
 def main():
@@ -19,7 +19,7 @@ def main():
         '172.217.3.110'
     ]
     for url in urls:
-        whois.whois(url)
+        asyncwhois.lookup(url)
 
 
 if __name__ == '__main__':

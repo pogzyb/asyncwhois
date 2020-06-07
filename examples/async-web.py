@@ -4,14 +4,16 @@ from aiohttp import web
 import asyncwhois
 
 
-async def whois(request):
+async def whois_handler(request):
     domain = request.match_info.get('domain', 'google.com')
-    result = await asyncwhois.lookup(domain)
-    return web.Response(text=f'WhoIs result:\n{result}')
+    result = await asyncwhois.aio_lookup(domain)
+    return web.Response(
+        text=f'WhoIs Query Parsed:\n{result.parser_output} Query Output:\n{result.query_output}'
+    )
 
 
 app = web.Application()
-app.add_routes([web.get('/whois/{domain}', whois)])
+app.add_routes([web.get('/whois/{domain}', whois_handler)])
 web.run_app(app)
 
 #
