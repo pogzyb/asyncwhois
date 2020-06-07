@@ -1,8 +1,36 @@
-from typing import Dict, Any, Union
+from typing import Dict, Any, Union, List
 import datetime
 import re
 
 from .errors import WhoIsQueryError
+
+
+KNOWN_DATE_FORMATS = [
+    '%d-%b-%Y',                 # 02-jan-2000
+    '%d-%B-%Y',                 # 11-February-2000
+    '%d-%m-%Y',                 # 20-10-2000
+    '%Y-%m-%d',                 # 2000-01-02
+    '%d.%m.%Y',                 # 2.1.2000
+    '%Y.%m.%d',                 # 2000.01.02
+    '%Y/%m/%d',                 # 2000/01/02
+    '%Y%m%d',                   # 20170209
+    '%d/%m/%Y',                 # 02/01/2013
+    '%Y. %m. %d.',              # 2000. 01. 02.
+    '%Y.%m.%d %H:%M:%S',        # 2014.03.08 10:28:24
+    '%d-%b-%Y %H:%M:%S %Z',     # 24-Jul-2009 13:20:03 UTC
+    '%a %b %d %H:%M:%S %Z %Y',  # Tue Jun 21 23:59:59 GMT 2011
+    '%Y-%m-%dT%H:%M:%SZ',       # 2007-01-26T19:10:31Z
+    '%Y-%m-%dT%H:%M:%S.%fZ',    # 2018-12-01T16:17:30.568Z
+    '%Y-%m-%dT%H:%M:%S%z',      # 2013-12-06T08:17:22-0800
+    '%Y-%m-%d %H:%M:%SZ',       # 2000-08-22 18:55:20Z
+    '%Y-%m-%d %H:%M:%S',        # 2000-08-22 18:55:20
+    '%d %b %Y %H:%M:%S',        # 08 Apr 2013 05:44:00
+    '%d/%m/%Y %H:%M:%S',        # 23/04/2015 12:00:07 EEST
+    '%d/%m/%Y %H:%M:%S %Z',     # 23/04/2015 12:00:07 EEST
+    '%d/%m/%Y %H:%M:%S.%f %Z',  # 23/04/2015 12:00:07.619546 EEST
+    '%B %d %Y',                 # August 14 2017
+    '%d.%m.%Y %H:%M:%S',        # 08.03.2014 10:28:24
+]
 
 
 class BaseParser:
@@ -29,27 +57,42 @@ class BaseParser:
         self.server = None
         self.reg_expressions = {}
 
-    def parse(self, blob: str) -> Dict[str, Any]:
-        parsed = {}
-        keys_can_be_lists = ['status', 'name_servers']
-        for key, regex in self.reg_expressions.items():
-            if not regex:
-                parsed[key] = None
-            else:
-                many = key in keys_can_be_lists
-                parsed[key] = self.find_match(regex, blob, many)
-        return parsed
-
     def update_reg_expressions(self, expressions_update: Dict[str, Any]) -> None:
         expressions = self.base_expressions.copy()
         expressions.update(expressions_update)
         self.reg_expressions = expressions
 
-    def find_match(self, regex: str, blob: str, many: bool = False) -> Union[str, None]:
-        match = re.search(regex, blob, flags=re.IGNORECASE)
-        if match:
-            return match.group(1).rstrip('\r').lstrip('\t')
+    def parse(self, blob: str) -> Dict[str, Any]:
+        parsed = {}
+        list_keys = ['status', 'name_servers']
+        date_keys = ['created', 'updated', 'expires']
+        for key, regex in self.reg_expressions.items():
+            if not regex:
+                parsed[key] = None
+            else:
+                many = key in list_keys
+                parsed[key] = self._find_match(regex, blob, many)
+                if key in date_keys:
+                    parsed[key] = self._parse_date(parsed.get(key))
+        return parsed
+
+    def _parse_date(self, date_string: str) -> Union[datetime.date, str]:
+        for date_format in KNOWN_DATE_FORMATS:
+            try:
+                date = datetime.datetime.strptime(date_string, date_format)
+                return date
+            except ValueError:
+                continue
+        return date_string
+
+    def _find_match(self, regex: str, blob: str, many: bool = False) -> Union[str, List[str], None]:
+        if many:
+            matches = re.findall(regex, blob, flags=re.IGNORECASE)
+            return matches
         else:
+            match = re.search(regex, blob, flags=re.IGNORECASE)
+            if match:
+                return match.group(1).rstrip('\r').lstrip('\t')
             return None
 
 
@@ -64,13 +107,6 @@ class WhoIsParser:
         if any([n in blob.lower() for n in no_match_checks]):
             raise WhoIsQueryError(f'Domain not found: {blob}')
         self.parser_output = self._parser.parse(blob)
-        # self._parse_dates()
-
-    # def _parse_dates(self):
-    #     for date_key in ['created', 'updated', 'expires']:
-    #         date_string = self.parser_output.get(date_key)
-    #         if date_string:
-    #             date_converted = datetime.date()
 
     def _init_parser(self, tld: str) -> BaseParser:
         if tld == 'ae':
@@ -183,7 +219,7 @@ class WhoIsParser:
             return RegexNZ()
         elif tld == 'online':
             return RegexONLINE()
-        elif tld == 'registrant_organization':
+        elif tld == 'org':
             return RegexORG()
         elif tld == 'pe':
             return RegexPE()
@@ -223,7 +259,9 @@ class WhoIsParser:
 
 class RegexCOM(BaseParser):
 
-    _com_expressions = {}
+    _com_expressions = {
+        'expires': 'Registrar Registration Expiration Date: *(.+)'
+    }
 
     def __init__(self):
         super().__init__()
