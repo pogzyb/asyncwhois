@@ -1,7 +1,7 @@
 
-class WhoIsParserError(Exception):
+class WhoIsQueryError(Exception):
     pass
 
 
-class DomainValidationError(Exception):
+class WhoIsParserError(Exception):
     pass
