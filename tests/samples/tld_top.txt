@@ -2,7 +2,7 @@ Domain Name: com-wu.top
 Registry Domain ID: 20200225g10001g-34136323
 Registrar WHOIS Server: whois.namesilo.com
 Registrar URL: https://www.namesilo.com/
-Updated Date: 2020-04-07T07:00:00Z
+Updated Date: 2020-05-22T07:00:00Z
 Creation Date: 2020-02-25T07:00:00Z
 Registrar Registration Expiration Date: 2021-02-25T07:00:00Z
 Registrar: NameSilo, LLC
@@ -22,7 +22,7 @@ Registrant Phone: +1.3478717726
 Registrant Phone Ext:
 Registrant Fax:
 Registrant Fax Ext:
-Registrant Email: pw-d561886170fe2aedf93fde9f874f32e5@privacyguardian.org
+Registrant Email: pw-83121a44462bec7a64e5e87d30e04647@privacyguardian.org
 Registry Admin ID:
 Admin Name: Domain Administrator
 Admin Organization: See PrivacyGuardian.org
@@ -35,7 +35,7 @@ Admin Phone: +1.3478717726
 Admin Phone Ext:
 Admin Fax:
 Admin Fax Ext:
-Admin Email: pw-d561886170fe2aedf93fde9f874f32e5@privacyguardian.org
+Admin Email: pw-83121a44462bec7a64e5e87d30e04647@privacyguardian.org
 Registry Tech ID:
 Tech Name: Domain Administrator
 Tech Organization: See PrivacyGuardian.org
@@ -48,10 +48,8 @@ Tech Phone: +1.3478717726
 Tech Phone Ext:
 Tech Fax:
 Tech Fax Ext:
-Tech Email: pw-d561886170fe2aedf93fde9f874f32e5@privacyguardian.org
+Tech Email: pw-83121a44462bec7a64e5e87d30e04647@privacyguardian.org
 Name Server: NS1.DNSOWL.COM
 Name Server: NS2.DNSOWL.COM
 Name Server: NS3.DNSOWL.COM
 DNSSEC: unsigned
-URL of the ICANN WHOIS Data Problem Reporting System: http://wdprs.internic.net/
->>> Last update of WHOIS database: 2020-04-13T07:00:00Z <<<
