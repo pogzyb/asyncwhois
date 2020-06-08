@@ -1,0 +1,28 @@
+Domain:	google.be
+Status:	NOT AVAILABLE
+Registered:	Tue Dec 12 2000
+
+Registrant:
+	Not shown, please visit www.dnsbelgium.be for webbased whois.
+
+Registrar Technical Contacts:
+	Organisation:	MarkMonitor Inc.
+	Language:	en
+	Phone:	+1.2083895740
+	Fax:	+1.2083895771
+
+
+Registrar:
+	Name:	 MarkMonitor Inc.
+	Website: http://www.markmonitor.com
+
+Nameservers:
+	ns2.google.com
+	ns1.google.com
+	ns4.google.com
+	ns3.google.com
+
+Keys:
+
+Flags:
+	clientTransferProhibited

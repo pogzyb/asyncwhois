@@ -12,7 +12,7 @@ Domain Status: clientUpdateProhibited https://icann.org/epp#clientUpdateProhibit
 Domain Status: clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited
 Domain Status: clientHold https://icann.org/epp#clientHold
 Registry Registrant ID: Not Available From Registry
-Registrant Name: ajaz aslam
+Registrant Name:
 Registrant Organization:
 Registrant Street: Manzoor Colony
 Registrant City: karachi
