@@ -1,5 +1,5 @@
 from .pywhois import _PyWhoIs
-from .tlds import fully_supported_tlds
+from .tlds import parser_supported_tlds
 
 __all__ = ['lookup', 'aio_lookup', 'has_parser_support']
 __version__ = '0.2.0'
@@ -37,4 +37,4 @@ def has_parser_support(tld: str) -> bool:
     :return: True if tld parser exists else False
     """
     tld = tld.lstrip(".")
-    return tld in fully_supported_tlds
+    return tld in parser_supported_tlds

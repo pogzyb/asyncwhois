@@ -1,4 +1,4 @@
-fully_supported_tlds = [
+parser_supported_tlds = [
     'ae',
     'ai',
     'app',
@@ -17,7 +17,6 @@ fully_supported_tlds = [
     'cn',
     'co',
     'com',
-    'com.au',
     'cr',
     'cz',
     'de',
@@ -78,5 +77,4 @@ fully_supported_tlds = [
     'us',
     've',
     'xyz',
-    'рф'
 ]
