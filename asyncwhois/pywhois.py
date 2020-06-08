@@ -77,7 +77,7 @@ class _PyWhoIs:
         return self.__query.query_output
 
     @classmethod
-    def _from_url(cls, url: str):
+    def _from_url(cls, url: str, timeout: int):
         pywhois = cls()
         extract_result = tldextract.extract(url)
 
@@ -91,14 +91,14 @@ class _PyWhoIs:
 
         domain_and_tld = extract_result.domain + '.' + tld
         parser = WhoIsParser(tld)
-        query = WhoIsQuery(domain_and_tld, parser._parser.server)
+        query = WhoIsQuery(domain_and_tld, parser._parser.server, timeout)
         parser.parse(query.query_output)
         pywhois.__query = query
         pywhois.__parser = parser
         return pywhois
 
     @classmethod
-    async def _aio_from_url(cls, url: str):
+    async def _aio_from_url(cls, url: str, timeout: int):
         pywhois = cls()
         extract_result = tldextract.extract(url)
 
@@ -112,7 +112,7 @@ class _PyWhoIs:
 
         domain_and_tld = extract_result.domain + '.' + tld
         parser = WhoIsParser(tld)
-        query = await AsyncWhoIsQuery.create(domain_and_tld, parser._parser.server)
+        query = await AsyncWhoIsQuery.create(domain_and_tld, parser._parser.server, timeout)
         parser.parse(query.query_output)
         pywhois.__query = query
         pywhois.__parser = parser
