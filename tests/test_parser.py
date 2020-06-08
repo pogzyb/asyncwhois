@@ -156,7 +156,6 @@ class TestWhoIsParser(unittest.TestCase):
         self.assertEqual(parser.parser_output.get("registrant_organization"), "Google Inc.")
         self.assertEqual(parser.parser_output.get("registrant_name"), "(Domain Holder) Google Inc.")
 
-
     def test_parser_icu(self):
         with open(os.path.join(os.getcwd(), "samples/tld_icu.txt")) as txt_input:
             query_output = txt_input.read()
@@ -191,4 +190,90 @@ class TestWhoIsParser(unittest.TestCase):
         self.assertEqual(len(parser.parser_output.get("name_servers")), 2)
         self.assertEqual(len(parser.parser_output.get("status")), 4)
 
+    def test_parser_ie(self):
+        with open(os.path.join(os.getcwd(), "samples/tld_ie.txt")) as txt_input:
+            query_output = txt_input.read()
+        parser = WhoIsParser('ie')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        expires_date = parser.parser_output.get("expires")
+        self.assertEqual(created_date.year, 2002)
+        self.assertEqual(expires_date.year, 2021)
+        self.assertEqual(created_date.month, 3)
+        self.assertEqual(expires_date.month, 3)
+        self.assertEqual(created_date.day, 21)
+        self.assertEqual(expires_date.day, 21)
+        # registrar
+        self.assertEqual(parser.parser_output.get("registrar"), "Markmonitor Inc")
+        # registrant
+        self.assertEqual(parser.parser_output.get("registrant_organization"), None)
+        self.assertEqual(parser.parser_output.get("registrant_name"), "Google, Inc")
+        # misc
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 3)
+        self.assertEqual(len(parser.parser_output.get("status")), 1)
+
+    def test_parser_uk(self):
+        with open(os.path.join(os.getcwd(), "samples/tld_uk.txt")) as txt_input:
+            query_output = txt_input.read()
+        parser = WhoIsParser('uk')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        updated_date = parser.parser_output.get("updated")
+        expires_date = parser.parser_output.get("expires")
+        self.assertEqual(created_date.year, 2014)
+        self.assertEqual(updated_date.year, 2020)
+        self.assertEqual(expires_date.year, 2021)
+        self.assertEqual(created_date.month, 6)
+        self.assertEqual(updated_date.month, 5)
+        self.assertEqual(expires_date.month, 6)
+        self.assertEqual(created_date.day, 11)
+        self.assertEqual(updated_date.day, 10)
+        self.assertEqual(expires_date.day, 11)
+        # registrar
+        self.assertEqual(parser.parser_output.get("registrar"), "Markmonitor Inc. t/a MarkMonitor Inc. [Tag = MARKMONITOR]")
+        # registrant
+        self.assertEqual(parser.parser_output.get("registrant_organization"), None)
+        self.assertEqual(parser.parser_output.get("registrant_name"), None)
+        # misc
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 1)
+        self.assertEqual(len(parser.parser_output.get("status")), 0)
+
+    def test_parser_cl(self):
+        with open(os.path.join(os.getcwd(), "samples/tld_cl.txt")) as txt_input:
+            query_output = txt_input.read()
+        parser = WhoIsParser('cl')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        expires_date = parser.parser_output.get("expires")
+        self.assertEqual(created_date.year, 2002)
+        self.assertEqual(expires_date.year, 2020)
+        self.assertEqual(created_date.month, 10)
+        self.assertEqual(expires_date.month, 11)
+        self.assertEqual(created_date.day, 22)
+        self.assertEqual(expires_date.day, 20)
+        # registrar
+        self.assertEqual(parser.parser_output.get("registrar"), "MarkMonitor Inc.")
+        # registrant
+        self.assertEqual(parser.parser_output.get("registrant_organization"), "Google LLC")
+        self.assertEqual(parser.parser_output.get("registrant_name"), "Google LLC")
+        # misc
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 4)
+
+    def test_parser_be(self):
+        with open(os.path.join(os.getcwd(), "samples/tld_be.txt")) as txt_input:
+            query_output = txt_input.read()
+        parser = WhoIsParser('be')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        self.assertEqual(created_date.year, 2000)
+        self.assertEqual(created_date.month, 12)
+        self.assertEqual(created_date.day, 12)
+        self.assertEqual(parser.parser_output.get("registrar"), " MarkMonitor Inc.")
+        # registrant
+        self.assertEqual(parser.parser_output.get("registrant_organization"), None)
+        self.assertEqual(parser.parser_output.get("registrant_name"), None)
 

@@ -1,0 +1,25 @@
+    Domain name:
+        google.uk
+
+    Data validation:
+        Nominet was not able to match the registrant's name and/or address against a 3rd party source on 27-Feb-2018
+
+    Registrar:
+        Markmonitor Inc. t/a MarkMonitor Inc. [Tag = MARKMONITOR]
+        URL: http://www.markmonitor.com
+
+    Relevant dates:
+        Registered on: 11-Jun-2014
+        Expiry date:  11-Jun-2021
+        Last updated:  10-May-2020
+
+    Registration status:
+        Registered until expiry date.
+
+    Name servers:
+        ns1.googledomains.com
+        ns2.googledomains.com
+        ns3.googledomains.com
+        ns4.googledomains.com
+
+    WHOIS lookup made at 00:01:35 09-Jun-2020
