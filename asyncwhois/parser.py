@@ -322,7 +322,7 @@ class RegexCL(BaseParser):
         'registrant_name': r'Registrant name: *(.+)',
         'registrant_organization': r'Registrant organisation: *(.+)',
         'registrar': r'Registrar name: *(.+)',
-        'expires': r'Expiration date: *(.+)',
+        'expires': r'Expiration date: (\d{4}-\d{2}-\d{2})',
     }
 
     def __init__(self):
@@ -552,10 +552,11 @@ class RegexDE(BaseParser):
 class RegexUK(BaseParser):
 
     _uk_expressions = {
-        'created': r'Registered on: (\d{2}-\w{3}-\d{4})',
-        'updated': r'Last updated: (\d{2}-\w{3}-\d{4})',
-        'expires': r'Expiry date: (\d{2}-\w{3}-\d{4})',
-        'registrar': r'Registrar:\s *(.+)'
+        'created': r'Registered on:\s*(\d{2}-\w{3}-\d{4})',
+        'updated': r'Last updated:\s*(\d{2}-\w{3}-\d{4})',
+        'expires': r'Expiry date:\s*(\d{2}-\w{3}-\d{4})',
+        'registrar': r'Registrar:\s*(.+)',
+        'name_servers': r'Name servers:\s*(.+\s.+\s.+\s.+)',
     }
 
     def __init__(self):
@@ -618,7 +619,7 @@ class RegexBE(BaseParser):
     _be_expressions = {
         'created': r'Registered: *(.+)',
         'registrar': r'Registrar:\n\tName:*(.+)',
-        'name_servers': r''
+        'name_servers': r'Nameservers:\s*(.+\s.+\s.+\s.+)'
     }
 
     def __init__(self):
