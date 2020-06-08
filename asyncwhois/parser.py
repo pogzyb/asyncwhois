@@ -141,16 +141,16 @@ class WhoIsParser:
             return RegexCAT()
         elif tld == 'ch':
             return RegexCH()
-        elif tld == 'co':
-            return RegexCO()
-        elif tld == 'com':
-            return RegexCOM()
         elif tld == 'cl':
             return RegexCL()
         elif tld == 'club':
             return RegexClub()
         elif tld == 'cn':
             return RegexCN()
+        elif tld == 'co':
+            return RegexCO()
+        elif tld == 'com':
+            return RegexCOM()
         elif tld == 'cr':
             return RegexCR()
         elif tld == 'cz':
@@ -165,6 +165,8 @@ class WhoIsParser:
             return RegexEE()
         elif tld == 'eu':
             return RegexEU()
+        elif tld == 'fi':
+            return RegexFI()
         elif tld == 'fr':
             return RegexFR()
         elif tld == 'hk':
@@ -239,8 +241,18 @@ class WhoIsParser:
             return RegexRO()
         elif tld == 'ru':
             return RegexRU()
+        elif tld == 'sa':
+            return RegexSA()
+        elif tld == 'se':
+            return RegexSE()
+        elif tld == 'si':
+            return RegexSI()
+        elif tld == 'sk':
+            return RegexSK()
         elif tld == 'space':
             return RegexSPACE()
+        elif tld == 'su':
+            return RegexSU()
         elif tld == 'top':
             return RegexTOP()
         elif tld == 'tr':
@@ -986,6 +998,68 @@ class RegexIL(BaseParser):
         super().__init__()
         self.server = 'whois.isoc.org.il'
         self.update_reg_expressions(self._li_expressions)
+
+
+class RegexFI(BaseParser):
+
+    _fi_expressions = {
+        'domain_name': r'domain\.*: *([\S]+)',
+        'registrant_name': r'Holder\s*name\.*:([\S\ ]+)',
+        'registrant_address': r'[Holder\w\W]address\.*: ([\S\ ]+)',
+        'status': r'status\.*: *([\S]+)',
+        'created': r'created\.*: *([\S]+)',
+        'updated': r'modified\.*: *([\S]+)',
+        'expires': r'expires\.*: *([\S]+)',
+        'name_servers': r'nserver\.*: *([\S]+) \[\S+\]',
+        'dnssec': r'dnssec\.*: *([\S]+)',
+        'registrar': r'Registrar\s*registrar\.*: *([\S]+)',
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.server = 'whois.fi'
+        self.update_reg_expressions(self._fi_expressions)
+
+
+class RegexNU(BaseParser):
+
+    _nu_expression = {
+        'domain_name': 'domain\.*: *(.+)',
+        'registrant_name': 'holder\.*: *(.+)',
+        'created': 'created\.*: *(.+)',
+        'updated': 'modified\.*: *(.+)',
+        'expires': 'expires\.*: *(.+)',
+        'name_servers': 'nserver\.*: *(.+)',
+        'dnssec': 'dnssec\.*: *(.+)',
+        'status': 'status\.*: *(.+)',
+        'registrar': 'registrar: *(.+)',
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.server = 'whois.iis.nu'
+        self.update_reg_expressions(self._nu_expression)
+
+
+class RegexPT(BaseParser):
+
+    _pt_expression = {
+        'domain_name': r'Domain: *(.+)',
+        'created': r'Creation Date: *(.+)',
+        'expires': r'Expiration Date: *(.+)',
+        'registrant_name': r'Owner Name: *(.+)',
+        'registrant_street': r'Owner Address: *(.+)',
+        'registrant_city': r'Owner Locality: *(.+)',
+        'registrant_zipcode': r'Owner ZipCode: *(.+)',
+        'registrant_email': r'Owner Email: *(.+)',
+        'name_servers': r'Name Server: *(.+) \|',
+        'status': r'Domain Status: *(.+)',
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.server = 'whois.dns.pt'
+        self.update_reg_expressions(self._pt_expression)
 
 
 class RegexIN(BaseParser):
