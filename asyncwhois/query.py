@@ -21,7 +21,7 @@ class Query:
 
 class WhoIsQuery(Query):
 
-    def __init__(self, domain: str, server: str = None, timeout: int = 5):
+    def __init__(self, domain: str, server: str = None, timeout: int = 10):
         self.domain = domain
         self.server = server
         self.timeout = timeout
@@ -30,21 +30,24 @@ class WhoIsQuery(Query):
 
     def _run(self):
         data = self.domain + "\r\n"
+        try:
+            if not self.server:
+                with self._create_connection((self._iana_server, self._whois_port)) as conn:
+                    iana_result_blob = self._send_and_recv(conn, data)
+                    self.server = self._find_match(regex=r"refer: *(.+)", blob=iana_result_blob)
+                    if not self.server:
+                        raise WhoIsQueryError(f"Could not find a whois server for {self.domain}")
 
-        if not self.server:
-            with self._create_connection((self._iana_server, self._whois_port)) as conn:
-                iana_result_blob = self._send_and_recv(conn, data)
-                self.server = self._find_match(regex=r"refer: *(.+)", blob=iana_result_blob)
-                if not self.server:
-                    raise WhoIsQueryError(f"Could not find a whois server for {self.domain}")
-
-        with self._create_connection((self.server, self._whois_port)) as conn:
-            self.query_output = self._send_and_recv(conn, data)
-            whois_server = self._find_match(regex=r"WHOIS server: *(.+)", blob=self.query_output)
-            if whois_server:
-                self.server = whois_server
-                with self._create_connection((self.server, self._whois_port)) as conn:
-                    self.query_output = self._send_and_recv(conn, data)
+            with self._create_connection((self.server, self._whois_port)) as conn:
+                self.query_output = self._send_and_recv(conn, data)
+                whois_server = self._find_match(regex=r"WHOIS server: *(.+)", blob=self.query_output)
+                if whois_server:
+                    self.server = whois_server
+                    with self._create_connection((self.server, self._whois_port)) as conn:
+                        self.query_output = self._send_and_recv(conn, data)
+        except socket.timeout:
+            server = self.server or self._iana_server
+            raise WhoIsQueryError(f'Socket timed out when attempting to reach {server}:43')
 
     def _send_and_recv(self, conn: socket.socket, data: str) -> str:
         conn.sendall(data.encode())
@@ -73,34 +76,36 @@ class AsyncWhoIsQuery(Query):
         self.query_output = ""
 
     @classmethod
-    async def create(cls, domain: str, server: str = None, timeout: int = 5):
+    async def create(cls, domain: str, server: str = None, timeout: int = 10):
         query = cls(domain, server, timeout)
         await query._run()
         return query
 
     async def _run(self) -> None:
         data = self.domain + "\r\n"
-
-        if not self.server:
-            reader, writer = await self._create_connection(address=(self._iana_server, self._whois_port))
-            iana_query_output = await self._send_and_recv(reader, writer, data)
-
-            self.server = self._find_match(regex=r"refer: *(.+)", blob=iana_query_output)
-            writer.close()
-            await writer.wait_closed()
+        try:
             if not self.server:
-                raise WhoIsQueryError(f'Could not find a WHOIS server for {self.domain}')
+                reader, writer = await self._create_connection(address=(self._iana_server, self._whois_port))
+                iana_query_output = await self._send_and_recv(reader, writer, data)
+                self.server = self._find_match(regex=r"refer: *(.+)", blob=iana_query_output)
+                writer.close()
+                await writer.wait_closed()
+                if not self.server:
+                    raise WhoIsQueryError(f'Could not find a WHOIS server for {self.domain}')
 
-        reader, writer = await self._create_connection((self.server, self._whois_port))
-        self.query_output = await self._send_and_recv(reader, writer, data)
-        whois_server = self._find_match(regex=r"WHOIS server: *(.+)", blob=self.query_output)
-        if whois_server:
-            self.server = whois_server
             reader, writer = await self._create_connection((self.server, self._whois_port))
             self.query_output = await self._send_and_recv(reader, writer, data)
+            whois_server = self._find_match(regex=r"WHOIS server: *(.+)", blob=self.query_output)
+            if whois_server:
+                self.server = whois_server
+                reader, writer = await self._create_connection((self.server, self._whois_port))
+                self.query_output = await self._send_and_recv(reader, writer, data)
 
-        writer.close()
-        await writer.wait_closed()
+            writer.close()
+            await writer.wait_closed()
+        except asyncio.TimeoutError:
+            server = self.server or self._iana_server
+            raise WhoIsQueryError(f'Socket timed out when attempting to reach {server}:43')
 
     async def _send_and_recv(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter, data: str) -> str:
         writer.write(data.encode())
