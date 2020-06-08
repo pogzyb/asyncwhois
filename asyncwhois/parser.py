@@ -86,14 +86,18 @@ class BaseParser:
                 continue
         return date_string
 
+    @staticmethod
+    def _process(match: str) -> str:
+        return match.rstrip('\r').rstrip('\n').lstrip('\t')
+
     def _find_match(self, regex: str, blob: str, many: bool = False) -> Union[str, List[str], None]:
         if many:
             matches = re.findall(regex, blob, flags=re.IGNORECASE)
-            return [m.rstrip('\r').lstrip('\t') for m in matches]
+            return [self._process(m) for m in matches]
         else:
             match = re.search(regex, blob, flags=re.IGNORECASE)
             if match:
-                return match.group(1).rstrip('\r').lstrip('\t')
+                return self._process(match.group(1))
             return None
 
 
