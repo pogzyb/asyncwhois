@@ -30,6 +30,7 @@ KNOWN_DATE_FORMATS = [
     '%d/%m/%Y %H:%M:%S.%f %Z',  # 23/04/2015 12:00:07.619546 EEST
     '%B %d %Y',                 # August 14 2017
     '%d.%m.%Y %H:%M:%S',        # 08.03.2014 10:28:24
+    '%a %b %d %Y',              # Tue Dec 12 2000
 ]
 
 
@@ -615,9 +616,9 @@ class RegexAT(BaseParser):
 class RegexBE(BaseParser):
 
     _be_expressions = {
-        'registrant_name': r'Name: *(.+)',
         'created': r'Registered: *(.+)',
-        'registrar': r'Registrar:\nName: *(.+)'
+        'registrar': r'Registrar:\n\tName:*(.+)',
+        'name_servers': r''
     }
 
     def __init__(self):
@@ -985,16 +986,7 @@ class RegexIL(BaseParser):
 class RegexIN(BaseParser):
 
     _in_expression = {
-        'registrar': r'Registrar: *(.+)',
-        'updated': r'Updated Date: (\d{4}-\d{2}-\d{2})',
-        'created': r'Creation Date: (\d{4}-\d{2}-\d{2})',
         'expires': r'Registry Expiry Date: (\d{4}-\d{2}-\d{2})',
-        'name_servers': r'Name Server: *(.+)',
-        'registrant_organization': r'Registrant Organization: *(.+)',
-        'registrant_state': r'Registrant State/Province: *(.+)',
-        'status': r'Status: *(.+)',
-        'registrant_country': r'Registrant Country: *(.+)',
-        'dnssec': r'DNSSEC: *([\S]+)',
     }
 
     def __init__(self):
@@ -1539,7 +1531,11 @@ class RegexIR(BaseParser):
 
     _ir_expressions = {
         'updated': r'last-updated: *(.+)',
-        'expires': r'expire-date: *(.+)'
+        'expires': r'expire-date: *(.+)',
+        'registrant_address': r'address: *(.+)',
+        'registrant_organization': r'org: *(.+)',
+        'registrant_name': r'remarks: *(.+)',
+        'name_servers': r'nserver: *(.+)'
     }
 
     def __init__(self):
