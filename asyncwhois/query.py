@@ -115,7 +115,7 @@ class AsyncWhoIsQuery(Query):
             if received == b"":
                 break
             else:
-                result += received.decode()
+                result += received.decode('utf-8', errors='ignore')
         return result
 
     async def _create_connection(self, address: Tuple[str, int]) -> Tuple[asyncio.StreamReader, asyncio.StreamWriter]:
