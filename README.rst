@@ -18,10 +18,10 @@ Installation
     tldextract==2.2.2
     aiodns==2.0.0
 
-QuickStart
+Quickstart
 ----------
 
-**Extracting Outputs**
+**Basic usage**
 
 .. code-block:: python
 
@@ -115,7 +115,7 @@ More Examples
         domain = request.match_info.get('domain', 'google.com')
         result = await asyncwhois.aio_lookup(domain)
         return web.Response(
-            text=f'WhoIs Query Parsed:\n{result.parser_output} Query Output:\n{result.query_output}'
+            text=f'WhoIs Query Parsed:\n{result.parser_output}\nQuery Output:\n{result.query_output}'
         )
 
 
