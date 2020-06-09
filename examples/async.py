@@ -16,7 +16,6 @@ async def main():
         'imgur.com',
         'https://www.amazon.co.jp',
         'github.com/explore',
-        'http://нарояци.com/',
         '172.217.3.110'
     ]
     tasks = []
