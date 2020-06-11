@@ -1,7 +1,5 @@
 asyncwhois
 ==========
-.. image:: https://img.shields.io/pypi/v/asyncwhois   :alt: PyPI
-.. image:: https://img.shields.io/pypi/l/asyncwhois   :alt: PyPI - License
 
 Async-compatible Python module for retrieving WHOIS information of domains.
 
