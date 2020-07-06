@@ -1,3 +1,6 @@
+.. image:: https://travis-ci.com/pogzyb/asyncwhois.svg?branch=master
+    :target: https://travis-ci.com/pogzyb/asyncwhois
+
 asyncwhois
 ==========
 
