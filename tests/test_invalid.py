@@ -12,4 +12,4 @@ class TestInvalidLookup(asynctest.TestCase):
 
     def test_invalid(self):
         domain = 'some-non-exsistent-domain123.net'
-        self.assertRaises(WhoIsQueryError, asyncwhois.lookup(domain))
+        self.assertRaises(WhoIsQueryError, asyncwhois.lookup, domain)
