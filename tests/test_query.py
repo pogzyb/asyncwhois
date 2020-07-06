@@ -18,8 +18,8 @@ class TestWhoIsQuery(unittest.TestCase):
         self.assertIn("domain name: com-wu.top", query.query_output.lower())
 
     def test_query_info(self):
-        query = WhoIsQuery("business.info")
-        self.assertIn("domain name: business.info", query.query_output.lower())
+        query = WhoIsQuery("public.info")
+        self.assertIn("domain name: public.info", query.query_output.lower())
 
     def test_query_io(self):
         query = WhoIsQuery("phishery.io")
