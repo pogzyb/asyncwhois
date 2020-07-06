@@ -3,6 +3,9 @@ python:
   - "3.7"
 install:
   - pip install -e . 
-  - pip install asynctest 
+  - pip install asynctest pytest-cov codecov
 script:
-  - pytest
+  - pytest --cov=aysncwhois
+after_success:
+  - codecov
+  
