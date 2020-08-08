@@ -4,7 +4,7 @@
 asyncwhois
 ==========
 
-Async-compatible Python module for retrieving WHOIS information of domains.
+(asyncio compatible) Python package for querying the WHOIS information for any domain name.
 
 
 Installation
@@ -23,8 +23,6 @@ Installation
 
 Quickstart
 ----------
-
-**Basic usage**
 
 .. code-block:: python
 
@@ -49,17 +47,16 @@ More Examples
             'https://www.google.co.uk',
             'en.wikipedia.org/wiki/Pi',
             'https://www.urbandictionary.com/define.php?term=async',
-            'twitch.tv',
-            'reuters.com',
             'https://www.pcpartpicker.com',
             'https://packaging.python.org/',
-            'imgur.com',
             'https://www.amazon.co.jp',
             'github.com/explore',
+            'twitch.tv',
             '172.217.3.110'
         ]
         for url in urls:
             asyncwhois.lookup(url)
+            # or use asyncwhois.whois_cmd_shell(url)
 
 
     if __name__ == '__main__':
@@ -84,15 +81,17 @@ More Examples
             'https://www.google.co.uk',
             'en.wikipedia.org/wiki/Pi',
             'https://www.urbandictionary.com/define.php?term=async',
-            'twitch.tv',
-            'reuters.com',
             'https://www.pcpartpicker.com',
             'https://packaging.python.org/',
-            'imgur.com'
+            'https://www.amazon.co.jp',
+            'github.com/explore',
+            'twitch.tv',
+            '172.217.3.110'
         ]
         tasks = []
         for url in urls:
             awaitable = asyncwhois.aio_lookup(url)
+            # or use: asyncwhois.aio_whois_cmd_shell(url)
             tasks.append(awaitable)
 
         await asyncio.gather(*tasks)
@@ -113,14 +112,12 @@ More Examples
     import asyncwhois
 
 
-
     async def whois_handler(request):
         domain = request.match_info.get('domain', 'google.com')
         result = await asyncwhois.aio_lookup(domain)
         return web.Response(
             text=f'WhoIs Query Parsed:\n{result.parser_output}\nQuery Output:\n{result.query_output}'
         )
-
 
 
     app = web.Application()

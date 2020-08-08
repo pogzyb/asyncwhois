@@ -4,11 +4,16 @@ import os
 from asyncwhois.parser import WhoIsParser
 
 
-class TestWhoIsParser(unittest.TestCase):
+class TestWhoIsParsers(unittest.TestCase):
+
+    @staticmethod
+    def get_txt(tld: str):
+        with open(os.path.join(os.getcwd(), f"tests/samples/tld_{tld}.txt")) as txt_input:
+            query_output = txt_input.read()
+        return query_output
 
     def test_parser_com(self):
-        with open(os.path.join(os.getcwd(), "tests/samples/tld_com.txt")) as txt_input:
-            query_output = txt_input.read()
+        query_output = self.get_txt('com')
         parser = WhoIsParser('com')
         parser.parse(query_output)
         # confirm dates
@@ -37,8 +42,7 @@ class TestWhoIsParser(unittest.TestCase):
         self.assertEqual(len(parser.parser_output.get("status")), 6)
 
     def test_parser_in(self):
-        with open(os.path.join(os.getcwd(), "tests/samples/tld_in.txt")) as txt_input:
-            query_output = txt_input.read()
+        query_output = self.get_txt('in')
         parser = WhoIsParser('in')
         parser.parse(query_output)
         # confirm dates
@@ -65,8 +69,7 @@ class TestWhoIsParser(unittest.TestCase):
         self.assertEqual(len(parser.parser_output.get("status")), 1)
 
     def test_parser_top(self):
-        with open(os.path.join(os.getcwd(), "tests/samples/tld_top.txt")) as txt_input:
-            query_output = txt_input.read()
+        query_output = self.get_txt('top')
         parser = WhoIsParser('top')
         parser.parse(query_output)
         # confirm dates
@@ -97,8 +100,7 @@ class TestWhoIsParser(unittest.TestCase):
         self.assertEqual(len(parser.parser_output.get("status")), 1)
 
     def test_parser_xyz(self):
-        with open(os.path.join(os.getcwd(), "tests/samples/tld_xyz.txt")) as txt_input:
-            query_output = txt_input.read()
+        query_output = self.get_txt('xyz')
         parser = WhoIsParser('xyz')
         parser.parse(query_output)
         # confirm dates
@@ -130,8 +132,7 @@ class TestWhoIsParser(unittest.TestCase):
         self.assertEqual(len(parser.parser_output.get("status")), 2)
 
     def test_parser_ir(self):
-        with open(os.path.join(os.getcwd(), "tests/samples/tld_ir.txt")) as txt_input:
-            query_output = txt_input.read()
+        query_output = self.get_txt('ir')
         parser = WhoIsParser('ir')
         parser.parse(query_output)
         # confirm dates
@@ -157,8 +158,7 @@ class TestWhoIsParser(unittest.TestCase):
         self.assertEqual(parser.parser_output.get("registrant_name"), "(Domain Holder) Google Inc.")
 
     def test_parser_icu(self):
-        with open(os.path.join(os.getcwd(), "tests/samples/tld_icu.txt")) as txt_input:
-            query_output = txt_input.read()
+        query_output = self.get_txt('icu')
         parser = WhoIsParser('icu')
         parser.parse(query_output)
         # confirm dates
@@ -191,8 +191,7 @@ class TestWhoIsParser(unittest.TestCase):
         self.assertEqual(len(parser.parser_output.get("status")), 4)
 
     def test_parser_ie(self):
-        with open(os.path.join(os.getcwd(), "tests/samples/tld_ie.txt")) as txt_input:
-            query_output = txt_input.read()
+        query_output = self.get_txt('ie')
         parser = WhoIsParser('ie')
         parser.parse(query_output)
         # confirm dates
@@ -214,8 +213,7 @@ class TestWhoIsParser(unittest.TestCase):
         self.assertEqual(len(parser.parser_output.get("status")), 1)
 
     def test_parser_uk(self):
-        with open(os.path.join(os.getcwd(), "tests/samples/tld_uk.txt")) as txt_input:
-            query_output = txt_input.read()
+        query_output = self.get_txt('uk')
         parser = WhoIsParser('uk')
         parser.parse(query_output)
         # confirm dates
@@ -241,8 +239,7 @@ class TestWhoIsParser(unittest.TestCase):
         self.assertEqual(len(parser.parser_output.get("status")), 0)
 
     def test_parser_cl(self):
-        with open(os.path.join(os.getcwd(), "tests/samples/tld_cl.txt")) as txt_input:
-            query_output = txt_input.read()
+        query_output = self.get_txt('cl')
         parser = WhoIsParser('cl')
         parser.parse(query_output)
         # confirm dates
@@ -263,8 +260,7 @@ class TestWhoIsParser(unittest.TestCase):
         self.assertEqual(len(parser.parser_output.get("name_servers")), 4)
 
     def test_parser_be(self):
-        with open(os.path.join(os.getcwd(), "tests/samples/tld_be.txt")) as txt_input:
-            query_output = txt_input.read()
+        query_output = self.get_txt('be')
         parser = WhoIsParser('be')
         parser.parse(query_output)
         # confirm dates
@@ -276,4 +272,3 @@ class TestWhoIsParser(unittest.TestCase):
         # registrant
         self.assertEqual(parser.parser_output.get("registrant_organization"), None)
         self.assertEqual(parser.parser_output.get("registrant_name"), None)
-

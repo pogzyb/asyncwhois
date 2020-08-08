@@ -1,7 +1,7 @@
 
-class WhoIsQueryError(Exception):
+class WhoIsQueryConnectError(Exception):
     pass
 
 
-class WhoIsParserError(Exception):
+class WhoIsQueryParserError(Exception):
     pass
