@@ -2,7 +2,7 @@ from typing import Dict, Any, Union, List
 import datetime
 import re
 
-from .errors import WhoIsQueryError
+from .errors import WhoIsQueryParserError
 
 # Date formats from richardpenman/pywhois
 KNOWN_DATE_FORMATS = [
@@ -77,7 +77,8 @@ class BaseParser:
                     parsed[key] = self._parse_date(parsed.get(key))
         return parsed
 
-    def _parse_date(self, date_string: str) -> Union[datetime.date, str]:
+    @staticmethod
+    def _parse_date(date_string: str) -> Union[datetime.date, str]:
         for date_format in KNOWN_DATE_FORMATS:
             try:
                 date = datetime.datetime.strptime(date_string, date_format)
@@ -110,7 +111,7 @@ class WhoIsParser:
     def parse(self, blob: str) -> None:
         no_match_checks = ['no match', 'not found']
         if any([n in blob.lower() for n in no_match_checks]):
-            raise WhoIsQueryError(f'Domain not found!')
+            raise WhoIsQueryParserError(f'Domain not found!')
         self.parser_output = self._parser.parse(blob)
 
     @staticmethod

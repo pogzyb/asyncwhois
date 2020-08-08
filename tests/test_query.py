@@ -1,38 +1,28 @@
 import unittest
+import unittest.mock as mock
 
-from asyncwhois.query import WhoIsQuery
+import asyncwhois.query
 
 
 class TestWhoIsQuery(unittest.TestCase):
 
-    def test_query_com(self):
-        query = WhoIsQuery("google.com")
-        self.assertIn("domain name: google.com", query.query_output.lower())
+    @mock.patch('asyncwhois.query.socket')
+    def test_whois_query_create_connection(self, mock_socket_lib):
+        # test connect
+        test_address_tuple_param = ('0.0.0.0', 69)
+        test_timeout_param = 10
+        # call WhoIsQuery's "_create_connection" method
+        asyncwhois.query.WhoIsQuery._create_connection(test_address_tuple_param, test_timeout_param)
+        mock_socket_lib.create_connection.assert_called()
+        mock_socket_lib.create_connection.assert_called_with(address=test_address_tuple_param,
+                                                             timeout=test_timeout_param)
 
-    def test_query_net(self):
-        query = WhoIsQuery("comcast.net")
-        self.assertIn("domain name: comcast.net", query.query_output.lower())
-
-    def test_query_top(self):
-        query = WhoIsQuery("com-wu.top")
-        self.assertIn("domain name: com-wu.top", query.query_output.lower())
-
-    def test_query_info(self):
-        query = WhoIsQuery("public.info")
-        self.assertIn("domain name: public.info", query.query_output.lower())
-
-    def test_query_io(self):
-        query = WhoIsQuery("phishery.io")
-        self.assertIn("domain name: phishery.io", query.query_output.lower())
-
-    def test_query_co(self):
-        query = WhoIsQuery("elastic.co")
-        self.assertIn("domain name: elastic.co", query.query_output.lower())
-
-    def test_query_xyz(self):
-        query = WhoIsQuery("abc.xyz")
-        self.assertIn("domain name: abc.xyz", query.query_output.lower())
-
-    def test_query_org(self):
-        query = WhoIsQuery("vote.org")
-        self.assertIn("domain name: vote.org", query.query_output.lower())
+    @mock.patch('asyncwhois.query.socket.socket')
+    def test_whois_query_send_and_recv(self, mock_socket_instance):
+        test_data_send_string = "a-domain-to-send"
+        test_data_recv_bytes = b""  # empty so _send_and_recv does not infinite loop
+        mock_socket_instance.recv.return_value = test_data_recv_bytes
+        asyncwhois.query.WhoIsQuery._send_and_recv(mock_socket_instance, test_data_send_string)
+        mock_socket_instance.recv.assert_called()
+        mock_socket_instance.sendall.assert_called()
+        mock_socket_instance.sendall.assert_called_with(test_data_send_string.encode())
