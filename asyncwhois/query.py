@@ -82,6 +82,9 @@ class WhoIsQuery(Query):
                     with self._create_connection((self.server, self._whois_port), self.timeout) as conn:
                         # save output into "query_output"
                         self.query_output = self._send_and_recv(conn, data)
+        except ConnectionResetError:
+            server = self.server or self._iana_server
+            raise WhoIsQueryConnectError(f'"Connection reset by peer" when communicating with {server}:43')
 
         except socket.timeout:
             server = self.server or self._iana_server

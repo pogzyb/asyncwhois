@@ -1,5 +1,10 @@
 .. image:: https://travis-ci.com/pogzyb/asyncwhois.svg?branch=master
     :target: https://travis-ci.com/pogzyb/asyncwhois
+    
+.. image:: https://codecov.io/gh/pogzyb/asyncwhois/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/pogzyb/asyncwhois
+
+
 
 asyncwhois
 ==========
