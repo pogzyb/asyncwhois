@@ -141,6 +141,8 @@ class WhoIsParser:
             return RegexCA()
         elif tld == 'cat':
             return RegexCAT()
+        elif tld == 'cc':
+            return RegexCC()
         elif tld == 'ch':
             return RegexCH()
         elif tld == 'cl':
@@ -1667,3 +1669,15 @@ class RegexTK(BaseParser):
         super().__init__()
         self.server = 'whois.dot.tk'
         self.update_reg_expressions(self._tk_expressions)
+
+
+class RegexCC(BaseParser):
+    _cc_expressions = {
+        'expires': r'Registrar Registration Expiration Date: (\d{4}-\d{2}-\d{2})',
+        'status': r'Domain Status: *(.+)'
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.server = 'ccwhois.verisign-grs.com'
+        self.update_reg_expressions(self._cc_expressions)
