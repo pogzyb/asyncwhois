@@ -28,6 +28,7 @@ KNOWN_DATE_FORMATS = [
     '%d/%m/%Y %H:%M:%S',        # 23/04/2015 12:00:07 EEST
     '%d/%m/%Y %H:%M:%S %Z',     # 23/04/2015 12:00:07 EEST
     '%d/%m/%Y %H:%M:%S.%f %Z',  # 23/04/2015 12:00:07.619546 EEST
+    '%Y-%m-%d %H:%M:%S.%f',     # 23/04/2015 12:00:07.619546
     '%B %d %Y',                 # August 14 2017
     '%d.%m.%Y %H:%M:%S',        # 08.03.2014 10:28:24
     '%a %b %d %Y',              # Tue Dec 12 2000
@@ -557,7 +558,9 @@ class RegexDE(BaseParser):
     """
 
     _de_expressions = {
-        'updated': r'Changed: (\d{4}\.\s\d{2}\.\s\d{2}\.)'
+        'changed': r'Changed: (\d{4}\.\s\d{2}\.\s\d{2}\.)',
+        'name_servers': r'Nserver: *(.+)',
+        'domain_name': r'Domain: *(.+)'
     }
 
     def __init__(self):
@@ -1569,6 +1572,9 @@ class RegexNO(BaseParser):
     _no_expressions = {
         'created': r'Additional information:\nCreated:\s*(.+)',
         'updated': r'Additional information:\n(?:.*\n)Last updated:\s*(.+)',
+        'name_servers': r'Name Server Handle.........: *(.+)',
+        'registrar': r'Registrar Handle...........: *(.+)',
+        'domain_name': r'Domain Name................: *(.+)'
     }
 
     def __init__(self):
