@@ -1,3 +1,6 @@
+.. image:: https://badge.fury.io/py/asyncwhois.svg
+    :target: https://badge.fury.io/py/asyncwhois
+
 .. image:: https://travis-ci.com/pogzyb/asyncwhois.svg?branch=master
     :target: https://travis-ci.com/pogzyb/asyncwhois
     
@@ -9,7 +12,7 @@
 asyncwhois
 ==========
 
-Async-compatible Python module for retrieving WHOIS information of domains.
+asyncio-compatible Python module for performing WHOIS queries for any domain.
 
 
 Installation
@@ -29,16 +32,24 @@ Installation
 Quickstart
 ----------
 
-**Basic usage**
-
 .. code-block:: python
 
+    # Opens a socket connection to the appropriate WhoIs server, submits the query, and parses the output.
     result = asyncwhois.lookup('google.com')
-    result.query_output  # raw output from the whois server
+    # [for asyncio] result = await asyncwhois.aio_lookup('google.com')
+    result.query_output   # raw output from the whois server
     result.parser_output  # dictionary of key/values extracted from query_output
 
 
-More Examples
+.. code-block:: python
+
+    # Equivalent to running "whois <domain>" from the shell. Uses the "subprocess" package.
+    result = asyncwhois.whois_cmd_shell('google.com')
+    # [for asyncio] result = await asyncwhois.aio_whois_cmd_shell('google.com')
+    result.query_output   # raw output from the whois server
+    result.parser_output  # dictionary of key/values extracted from query_output
+
+Examples
 -------------
 **normal**
 
@@ -58,10 +69,7 @@ More Examples
             'reuters.com',
             'https://www.pcpartpicker.com',
             'https://packaging.python.org/',
-            'imgur.com',
-            'https://www.amazon.co.jp',
-            'github.com/explore',
-            '172.217.3.110'
+            'imgur.com'
         ]
         for url in urls:
             asyncwhois.lookup(url)
@@ -116,7 +124,6 @@ More Examples
 
     from aiohttp import web
     import asyncwhois
-
 
 
     async def whois_handler(request):
