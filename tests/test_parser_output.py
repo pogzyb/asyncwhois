@@ -419,3 +419,36 @@ class TestWhoIsParsers(unittest.TestCase):
         self.assertEqual(parser.parser_output.get("dnssec"), "unsigned")
         self.assertEqual(len(parser.parser_output.get("name_servers")), 4)
         self.assertEqual(len(parser.parser_output.get("status")), 6)
+
+    def test_parser_cc(self):
+        query_output = self.get_txt('cc')
+        parser = WhoIsParser('cc')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        updated_date = parser.parser_output.get("updated")
+        expires_date = parser.parser_output.get("expires")
+        self.assertEqual(created_date.year, 2002)
+        self.assertEqual(updated_date.year, 2016)
+        self.assertEqual(expires_date.year, 2024)
+        self.assertEqual(created_date.month, 8)
+        self.assertEqual(updated_date.month, 11)
+        self.assertEqual(expires_date.month, 8)
+        self.assertEqual(created_date.day, 4)
+        self.assertEqual(updated_date.day, 12)
+        self.assertEqual(expires_date.day, 4)
+        # geo
+        self.assertEqual(parser.parser_output.get("registrant_state"), "CA")
+        self.assertEqual(parser.parser_output.get("registrant_city"), "Cupertino")
+        self.assertEqual(parser.parser_output.get("registrant_country"), "US")
+        self.assertEqual(parser.parser_output.get("registrant_zipcode"), "95014")
+        self.assertEqual(parser.parser_output.get("registrant_address"), "1 Infinite Loop")
+        # registrar
+        self.assertEqual(parser.parser_output.get("registrar"), "CSC CORPORATE DOMAINS, INC.")
+        # registrant
+        self.assertEqual(parser.parser_output.get("registrant_organization"), "Apple Inc.")
+        self.assertEqual(parser.parser_output.get("registrant_name"), "Domain Administrator")
+        # misc
+        self.assertEqual(parser.parser_output.get("dnssec"), "unsigned")
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 4)
+        self.assertEqual(len(parser.parser_output.get("status")), 1)

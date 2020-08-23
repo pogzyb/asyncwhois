@@ -12,6 +12,7 @@ parser_supported_tlds = [
     'by',
     'ca',
     'cat',
+    'cc',
     'ch',
     'cl',
     'cn',
