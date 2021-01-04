@@ -1,3 +1,6 @@
+.. image:: https://badge.fury.io/py/asyncwhois.svg
+    :target: https://badge.fury.io/py/asyncwhois
+
 .. image:: https://travis-ci.com/pogzyb/asyncwhois.svg?branch=master
     :target: https://travis-ci.com/pogzyb/asyncwhois
     
@@ -9,7 +12,7 @@
 asyncwhois
 ==========
 
-(asyncio compatible) Python package for querying the WHOIS information for any domain name.
+asyncio-compatible Python module for performing WHOIS queries for any domain.
 
 
 Installation
@@ -31,12 +34,22 @@ Quickstart
 
 .. code-block:: python
 
+    # Opens a socket connection to the appropriate WhoIs server, submits the query, and parses the output.
     result = asyncwhois.lookup('google.com')
-    result.query_output  # raw output from the whois server
+    # [for asyncio] result = await asyncwhois.aio_lookup('google.com')
+    result.query_output   # raw output from the whois server
     result.parser_output  # dictionary of key/values extracted from query_output
 
 
-More Examples
+.. code-block:: python
+
+    # Equivalent to running "whois <domain>" from the shell. Uses the "subprocess" package.
+    result = asyncwhois.whois_cmd_shell('google.com')
+    # [for asyncio] result = await asyncwhois.aio_whois_cmd_shell('google.com')
+    result.query_output   # raw output from the whois server
+    result.parser_output  # dictionary of key/values extracted from query_output
+
+Examples
 -------------
 **normal**
 
@@ -52,16 +65,14 @@ More Examples
             'https://www.google.co.uk',
             'en.wikipedia.org/wiki/Pi',
             'https://www.urbandictionary.com/define.php?term=async',
+            'twitch.tv',
+            'reuters.com',
             'https://www.pcpartpicker.com',
             'https://packaging.python.org/',
-            'https://www.amazon.co.jp',
-            'github.com/explore',
-            'twitch.tv',
-            '172.217.3.110'
+            'imgur.com'
         ]
         for url in urls:
             asyncwhois.lookup(url)
-            # or use asyncwhois.whois_cmd_shell(url)
 
 
     if __name__ == '__main__':
@@ -86,17 +97,15 @@ More Examples
             'https://www.google.co.uk',
             'en.wikipedia.org/wiki/Pi',
             'https://www.urbandictionary.com/define.php?term=async',
+            'twitch.tv',
+            'reuters.com',
             'https://www.pcpartpicker.com',
             'https://packaging.python.org/',
-            'https://www.amazon.co.jp',
-            'github.com/explore',
-            'twitch.tv',
-            '172.217.3.110'
+            'imgur.com'
         ]
         tasks = []
         for url in urls:
             awaitable = asyncwhois.aio_lookup(url)
-            # or use: asyncwhois.aio_whois_cmd_shell(url)
             tasks.append(awaitable)
 
         await asyncio.gather(*tasks)
@@ -123,6 +132,7 @@ More Examples
         return web.Response(
             text=f'WhoIs Query Parsed:\n{result.parser_output}\nQuery Output:\n{result.query_output}'
         )
+
 
 
     app = web.Application()

@@ -8,7 +8,7 @@ setuptools.setup(
     version="0.2.0",
     author="Joseph Obarzanek",
     author_email="pogzyb@umich.edu",
-    description="Async-compatible Python module for retrieving WHOIS information.",
+    description="asyncio-compatible Python module for performing WHOIS queries for any domain.",
     long_description=long_description,
     license="MIT",
     install_requires=[
