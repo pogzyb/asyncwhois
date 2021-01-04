@@ -8,7 +8,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     @staticmethod
     def get_txt(tld: str):
-        with open(os.path.join(os.getcwd(), f"samples/tld_{tld}.txt")) as txt_input:
+        with open(os.path.join(os.getcwd(), f"tests/samples/tld_{tld}.txt")) as txt_input:
             query_output = txt_input.read()
         return query_output
 
