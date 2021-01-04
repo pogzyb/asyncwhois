@@ -88,14 +88,40 @@ class BaseParser:
                 continue
         return date_string
 
+    def _process_many(self, match: str) -> List[str]:
+        if '\n' in match:
+            match = match.split('\n')
+            return [self._process(m) for m in match]
+        else:
+            return [self._process(match)]
+
     @staticmethod
     def _process(match: str) -> str:
-        return match.rstrip('\r').rstrip('\n').lstrip('\t')
+        if match:
+            return match.rstrip('\r').rstrip('\n').lstrip('\t')
 
     def _find_match(self, regex: str, blob: str, many: bool = False) -> Union[str, List[str], None]:
-        if many:
+        if many:  # if there are multiple matches (e.g. the domain has multiple name servers)
             matches = re.findall(regex, blob, flags=re.IGNORECASE)
-            return [self._process(m) for m in matches]
+            if r'\n' in regex and matches:
+                # Assumption:
+                # if a "many" regex contains a newline, then the query output is formatted like so:
+                # Name Servers:
+                # 	NS2.SOMESERVER.COM
+                # 	NS1.SOMESERVER.COM
+                # 	NS3.SOMESERVER.COM
+                #
+                # ... not in the typical format like so:
+                # Name Server: ns-3.somedns.com.
+                # Name Server: ns-1.somedns.org.
+                # Name Server: ns-2.somedns.co.uk.
+                multiple_line_matches = []
+                for m in matches[0]:
+                    if m:
+                        multiple_line_matches.extend(self._process_many(m))
+                return multiple_line_matches
+            else:
+                return [self._process(m) for m in matches]
         else:
             match = re.search(regex, blob, flags=re.IGNORECASE)
             if match:
@@ -165,6 +191,8 @@ class WhoIsParser:
             return RegexDK()
         elif tld == 'do':
             return RegexDO()
+        elif tld == 'edu':
+            return RegexEDU()
         elif tld == 'ee':
             return RegexEE()
         elif tld == 'eu':
@@ -1681,3 +1709,25 @@ class RegexCC(BaseParser):
         super().__init__()
         self.server = 'ccwhois.verisign-grs.com'
         self.update_reg_expressions(self._cc_expressions)
+
+
+class RegexEDU(BaseParser):
+
+    _edu_expressions = {
+        'created': 'Domain record activated: *(.+)',
+        'updated': 'Domain record last updated: *(.+)',
+        'expires': 'Domain expires: *(.+)',
+        'registrant_name': r'Registrant:\n*(.+)',
+        'registrant_organization': r'Registrant:\n.+\n*(.+)',
+        'registrant_address': r'Registrant:\n.+\n.+\n(.+)',
+        'registrant_city': r'Registrant:\n.+\n.+\n.+\n(.+),',
+        'registrant_state': r'Registrant:\n.+\n.+\n.+\n.+,\s(\w{2})',
+        'registrant_zipcode': r'Registrant:\n.+\n.+\n.+\n.+,\s\w{2}\s(.+)',
+        'registrant_country': r'Registrant:\n.+\n.+\n.+\n.+\n(.+)',
+        'name_servers': r'Name Servers:\n((.?\n?)+)\n\n'
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.server = 'whois.educause.edu'
+        self.update_reg_expressions(self._edu_expressions)
