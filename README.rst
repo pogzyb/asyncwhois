@@ -26,15 +26,15 @@ Installation
 
 .. code-block:: python
 
-    tldextract==2.2.2
-    aiodns==2.0.0
+    tldextract>=2.2.2
+    aiodns>=2.0.0
 
 Quickstart
 ----------
 
 .. code-block:: python
 
-    # Opens a socket connection to the appropriate WhoIs server, submits the query, and parses the output.
+    # Opens a connection to the appropriate WhoIs server, submits the query, and parses the output.
     result = asyncwhois.lookup('google.com')
     # [for asyncio] result = await asyncwhois.aio_lookup('google.com')
     result.query_output   # raw output from the whois server
