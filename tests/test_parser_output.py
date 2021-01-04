@@ -452,3 +452,48 @@ class TestWhoIsParsers(unittest.TestCase):
         self.assertEqual(parser.parser_output.get("dnssec"), "unsigned")
         self.assertEqual(len(parser.parser_output.get("name_servers")), 4)
         self.assertEqual(len(parser.parser_output.get("status")), 1)
+
+    def test_parser_ru(self):
+        query_output = self.get_txt('ru')
+        parser = WhoIsParser('ru')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        expires_date = parser.parser_output.get("expires")
+        self.assertEqual(created_date.year, 2004)
+        self.assertEqual(expires_date.year, 2021)
+        self.assertEqual(created_date.month, 3)
+        self.assertEqual(expires_date.month, 3)
+        self.assertEqual(created_date.day, 3)
+        self.assertEqual(expires_date.day, 4)
+        # registrant
+        self.assertEqual(parser.parser_output.get("registrant_organization"), "Google LLC")
+
+    def test_parser_edu(self):
+        query_output = self.get_txt('edu')
+        parser = WhoIsParser('edu')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        updated_date = parser.parser_output.get("updated")
+        expires_date = parser.parser_output.get("expires")
+        self.assertEqual(created_date.year, 1985)
+        self.assertEqual(updated_date.year, 2020)
+        self.assertEqual(expires_date.year, 2021)
+        self.assertEqual(created_date.month, 10)
+        self.assertEqual(updated_date.month, 12)
+        self.assertEqual(expires_date.month, 7)
+        self.assertEqual(created_date.day, 7)
+        self.assertEqual(updated_date.day, 26)
+        self.assertEqual(expires_date.day, 31)
+        # geo
+        self.assertEqual(parser.parser_output.get("registrant_state"), "MI")
+        self.assertEqual(parser.parser_output.get("registrant_city"), "Ann Arbor")
+        self.assertEqual(parser.parser_output.get("registrant_country"), "US")
+        self.assertEqual(parser.parser_output.get("registrant_zipcode"), "48105-2785")
+        self.assertEqual(parser.parser_output.get("registrant_address"), "4251 Plymouth Road")
+        # registrant
+        self.assertEqual(parser.parser_output.get("registrant_organization"), "ITCS, Arbor Lakes")
+        self.assertEqual(parser.parser_output.get("registrant_name"), "University of Michigan -- ITD")
+        # misc
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 3)
