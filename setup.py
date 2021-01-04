@@ -12,8 +12,8 @@ setuptools.setup(
     long_description=long_description,
     license="MIT",
     install_requires=[
-        "aiodns",
-        "tldextract"
+        "aiodns>=2.0.0",
+        "tldextract>=2.2.2"
     ],
     classifiers=[
         "Environment :: Web Environment",
@@ -28,6 +28,6 @@ setuptools.setup(
     url="https://github.com/pogzyb/asyncwhois",
     packages=["asyncwhois"],
     package_dir={"asyncwhois": "asyncwhois"},
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     include_package_data=True
 )
