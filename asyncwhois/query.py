@@ -155,6 +155,9 @@ class AsyncWhoIsQuery(Query):
         except asyncio.TimeoutError:
             server = self.server or self._iana_server
             raise WhoIsQueryConnectError(f'Socket timed out when attempting to reach {server}:43')
+        except ConnectionResetError:
+            server = self.server or self._iana_server
+            raise WhoIsQueryConnectError(f'"Connection reset by peer" when communicating with {server}:43')
 
     @staticmethod
     async def _send_and_recv(reader: asyncio.StreamReader, writer: asyncio.StreamWriter, data: str) -> str:

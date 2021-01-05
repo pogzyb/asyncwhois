@@ -57,7 +57,7 @@ class PyWhoIs:
         try:
             host, _, _ = socket.gethostbyaddr(ip_address)
             return host
-        except socket.gaierror:
+        except socket.herror:
             raise WhoIsQueryConnectError(f'Could not resolve {ip_address}')
 
     @staticmethod
