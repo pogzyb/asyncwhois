@@ -22,7 +22,7 @@ class TestPyWhoIs(asynctest.TestCase):
     def test_get_hostname_from_ip(self):
         pyw = PyWhoIs()
         assert pyw._get_hostname_from_ip(self.test_ip) == 'dns.google'
-        self.assertRaises(WhoIsQueryConnectError, pyw._get_hostname_from_ip('0.0.0.0'))
+        self.assertRaises(WhoIsQueryConnectError, pyw._get_hostname_from_ip, '0.0.0.0')
 
     async def test_aio_get_hostname_from_ip(self):
         pyw = PyWhoIs()
