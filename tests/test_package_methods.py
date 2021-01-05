@@ -1,12 +1,13 @@
 import asynctest
 import unittest.mock as mock
+import asynctest.mock as aio_mock
 
 import asyncwhois
 
 
 class TestAsyncWhoIsQuery(asynctest.TestCase):
 
-    @mock.patch('asyncwhois.pywhois.PyWhoIs._aio_from_url')
+    @aio_mock.patch('asyncwhois.pywhois.PyWhoIs._aio_from_url')
     async def test_aio_lookup(self, mock_whois_call):
         mock_query_data = {'parser_output': {'domain_name': 'amazon.com'}, 'query_output': 'Domain Name: amazon.com'}
         mock_whois_call.return_value = mock.Mock(query_output=mock_query_data.get('query_output'),
@@ -28,7 +29,7 @@ class TestAsyncWhoIsQuery(asynctest.TestCase):
         self.assertIn(f"domain name: {test_domain}", w.query_output.lower())
         self.assertEqual(w.parser_output.get('domain_name').lower(), test_domain)
 
-    @mock.patch('asyncwhois.pywhois.PyWhoIs._aio_from_whois_cmd')
+    @aio_mock.patch('asyncwhois.pywhois.PyWhoIs._aio_from_whois_cmd')
     async def test_aio_whois_cmd_shell(self, mock_whois_call):
         mock_query_data = {'parser_output': {'domain_name': 'yahoo.com'}, 'query_output': 'Domain Name: yahoo.com'}
         mock_whois_call.return_value = mock.Mock(query_output=mock_query_data.get('query_output'),
