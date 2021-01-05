@@ -38,21 +38,58 @@ KNOWN_DATE_FORMATS = [
 class BaseParser:
 
     base_expressions = {
-        'domain_name': 'Domain Name: *(.+)',
-        'created': r'Creation Date: (\d{4}-\d{2}-\d{2})',
-        'updated': r'Updated Date: (\d{4}-\d{2}-\d{2})',
-        'expires': r'Registry Expiry Date: (\d{4}-\d{2}-\d{2})',
-        'registrar': r'Registrar: *(.+)',
-        'registrant_name': r'Registrant Name: *(.+)',
-        'registrant_organization': r'Registrant Organization: *(.+)',
-        'registrant_country': r'Registrant Country: *(.+)',
-        'registrant_zipcode': r'Registrant Postal Code: *(.+)',
-        'registrant_address': r'Registrant Street: *(.+)',
-        'registrant_city': r'Registrant City: *(.+)',
-        'registrant_state': r'Registrant State/Province: *(.+)',
-        'dnssec': r'DNSSEC: *([\S]+)',
-        'status': r'Status: *(.+)',
-        'name_servers': r'Name server: *(.+)'
+        'domain_name':                  r'Domain Name: *(.+)',
+        'created':                      r'Creation Date: *(.+)',
+        'updated':                      r'Updated Date: *(.+)',
+        'expires':                      r'Expir\w+\sDate: *(.+)',
+        'registrar':                    r'Registrar: *(.+)',
+        'registrant_name':              r'Registrant Name: *(.+)',
+        'registrant_organization':      r'Registrant Organization: *(.+)',
+        'registrant_country':           r'Registrant Country: *(.+)',
+        'registrant_zipcode':           r'Registrant Postal Code: *(.+)',
+        'registrant_address':           r'Registrant Street: *(.+)',
+        'registrant_city':              r'Registrant City: *(.+)',
+        'registrant_state':             r'Registrant State/Province: *(.+)',
+        'dnssec':                       r'DNSSEC: *([\S]+)',
+        'status':                       r'Status: *(.+)',
+        'name_servers':                 r'Name server: *(.+)'
+
+        # todo: A future PR will include information beyond "Registrant"
+        # 'admin_name':                     'Admin Name: (.+)',
+        # 'admin_id':                       'Admin ID: (.+)',
+        # 'admin_organization':             'Admin Organization: (.+)',
+        # 'admin_city':                     'Admin City: (.*)',
+        # 'admin_street':                   'Admin Street: (.*)',
+        # 'admin_state_province':           'Admin State/Province: (.*)',
+        # 'admin_postal_code':              'Admin Postal Code: (.*)',
+        # 'admin_country':                  'Admin Country: (.+)',
+        # 'admin_phone':                    'Admin Phone: (.+)',
+        # 'admin_fax':                      'Admin Fax: (.+)',
+        # 'admin_email':                    'Admin Email: (.+)',
+        #
+        # 'billing_name':                   'Billing Name: (.+)',
+        # 'billing_id':                     'Billing ID: (.+)',
+        # 'billing_organization':           'Billing Organization: (.+)',
+        # 'billing_city':                   'Billing City: (.*)',
+        # 'billing_street':                 'Billing Street: (.*)',
+        # 'billing_state_province':         'Billing State/Province: (.*)',
+        # 'billing_postal_code':            'Billing Postal Code: (.*)',
+        # 'billing_country':                'Billing Country: (.+)',
+        # 'billing_phone':                  'Billing Phone: (.+)',
+        # 'billing_fax':                    'Billing Fax: (.+)',
+        # 'billing_email':                  'Billing Email: (.+)',
+        #
+        # 'tech_name':                      'Tech Name: (.+)',
+        # 'tech_id':                        'Tech ID: (.+)',
+        # 'tech_organization':              'Tech Organization: (.+)',
+        # 'tech_city':                      'Tech City: (.*)',
+        # 'tech_street':                    'Tech Street: (.*)',
+        # 'tech_state_province':            'Tech State/Province: (.*)',
+        # 'tech_postal_code':               'Tech Postal Code: (.*)',
+        # 'tech_country':                   'Tech Country: (.+)',
+        # 'tech_phone':                     'Tech Phone: (.+)',
+        # 'tech_fax':                       'Tech Fax: (.+)',
+        # 'tech_email':                     'Tech Email: (.+)',
     }
 
     def __init__(self):
@@ -91,14 +128,14 @@ class BaseParser:
     def _process_many(self, match: str) -> List[str]:
         if '\n' in match:
             match = match.split('\n')
-            return [self._process(m) for m in match]
+            return [self._process(m) for m in match if m]
         else:
             return [self._process(match)]
 
     @staticmethod
     def _process(match: str) -> str:
         if match:
-            return match.rstrip('\r').rstrip('\n').lstrip('\t')
+            return match.rstrip('\r').rstrip('\n').lstrip('\t').lstrip().rstrip()
 
     def _find_match(self, regex: str, blob: str, many: bool = False) -> Union[str, List[str], None]:
         if many:  # if there are multiple matches (e.g. the domain has multiple name servers)
@@ -116,7 +153,12 @@ class BaseParser:
                 # Name Server: ns-1.somedns.org.
                 # Name Server: ns-2.somedns.co.uk.
                 multiple_line_matches = []
-                for m in matches[0]:
+                if isinstance(matches[0], tuple):
+                    line_matches = matches[0]
+                else:
+                    line_matches = matches
+
+                for m in line_matches:
                     if m:
                         multiple_line_matches.extend(self._process_many(m))
                 return multiple_line_matches
@@ -136,7 +178,7 @@ class WhoIsParser:
         self._parser = self._init_parser(top_level_domain)
 
     def parse(self, blob: str) -> None:
-        no_match_checks = ['no match', 'not found']
+        no_match_checks = ['no match', 'not found', 'no entries found']
         if any([n in blob.lower() for n in no_match_checks]):
             raise WhoIsQueryParserError(f'Domain not found!')
         self.parser_output = self._parser.parse(blob)
@@ -299,7 +341,7 @@ class WhoIsParser:
             return RegexUS()
         elif tld == 've':
             return RegexVE()
-        elif tld =='xyz':
+        elif tld == 'xyz':
             return RegexXYZ()
 
         else:
@@ -371,6 +413,7 @@ class RegexCL(BaseParser):
         'registrant_organization': r'Registrant organisation: *(.+)',
         'registrar': r'Registrar name: *(.+)',
         'expires': r'Expiration date: (\d{4}-\d{2}-\d{2})',
+        'created': r'Creation date: (\d{4}-\d{2}-\d{2})',
     }
 
     def __init__(self):
@@ -381,9 +424,7 @@ class RegexCL(BaseParser):
 
 class RegexCO(BaseParser):
 
-    _co_expressions = {
-        'expires': r'Registrar Registration Expiration Date: *(.+)'
-    }
+    _co_expressions = {}
 
     def __init__(self):
         super().__init__()
@@ -397,8 +438,8 @@ class RegexPL(BaseParser):
         'domain_name': r'DOMAIN NAME: *(.+)\n',
         'name_servers': r'nameservers:((?:\s+.+\n+)*)',
         'registrar': r'REGISTRAR:\s*(.+)',
-        'created': r'(?<! )created: *(.+)\n',
-        'expires': r'renewal date: *(.+)',
+        'created': r'created: *(.+)',
+        'expires': r'option expiration date: *(.+)',
         'updated': r'last modified: *(.+)\n',
         'dnssec': r'dnssec: *(.+)'
     }
@@ -668,7 +709,7 @@ class RegexBE(BaseParser):
 
     _be_expressions = {
         'created': r'Registered: *(.+)',
-        'registrar': r'Registrar:\n\tName:*(.+)',
+        'registrar': r'Registrar:\n.+Name:\t\s*(.+)',
         'name_servers': r'Nameservers:\s*(.+\s.+\s.+\s.+)'
     }
 
@@ -1038,15 +1079,18 @@ class RegexFI(BaseParser):
 
     _fi_expressions = {
         'domain_name': r'domain\.*: *([\S]+)',
-        'registrant_name': r'Holder\s*name\.*:([\S\ ]+)',
+        'registrant_name': r'Holder\s*name\.*:\s(.+)',
         'registrant_address': r'[Holder\w\W]address\.*: ([\S\ ]+)',
+        'registrant_zipcode': r'[Holder\w\W]address\.*:.+\naddress\.*:\s(.+)',
+        'registrant_city': r'[Holder\w\W]address\.*:.+\naddress\.*:.+\naddress\.*:\s(.+)',
+        'registrant_country': r'country\.*:\s(.+)',
         'status': r'status\.*: *([\S]+)',
         'created': r'created\.*: *([\S]+)',
         'updated': r'modified\.*: *([\S]+)',
         'expires': r'expires\.*: *([\S]+)',
         'name_servers': r'nserver\.*: *([\S]+) \[\S+\]',
         'dnssec': r'dnssec\.*: *([\S]+)',
-        'registrar': r'Registrar\s*registrar\.*: *([\S]+)',
+        'registrar': r'registrar\.*:\s(.+)',
     }
 
     def __init__(self):
@@ -1058,15 +1102,15 @@ class RegexFI(BaseParser):
 class RegexNU(BaseParser):
 
     _nu_expression = {
-        'domain_name': 'domain\.*: *(.+)',
-        'registrant_name': 'holder\.*: *(.+)',
-        'created': 'created\.*: *(.+)',
-        'updated': 'modified\.*: *(.+)',
-        'expires': 'expires\.*: *(.+)',
-        'name_servers': 'nserver\.*: *(.+)',
-        'dnssec': 'dnssec\.*: *(.+)',
-        'status': 'status\.*: *(.+)',
-        'registrar': 'registrar: *(.+)',
+        'domain_name': r'domain\.*: *(.+)',
+        'registrant_name': r'holder\.*: *(.+)',
+        'created': r'created\.*: *(.+)',
+        'updated': r'modified\.*: *(.+)',
+        'expires': r'expires\.*: *(.+)',
+        'name_servers': r'nserver\.*: *(.+)',
+        'dnssec': r'dnssec\.*: *(.+)',
+        'status': r'status\.*: *(.+)',
+        'registrar': r'registrar: *(.+)',
     }
 
     def __init__(self):
@@ -1333,41 +1377,6 @@ class RegexHN(BaseParser):
         'created':                  r'Creation Date: *(.+)',
         'expires':                  r'Registry Expiry Date: *(.+)',
         'name_servers':             r'Name Server: *(.+)'
-        # 'admin_name':                     'Admin Name: (.+)',
-        # 'admin_id':                       'Admin ID: (.+)',
-        # 'admin_organization':             'Admin Organization: (.+)',
-        # 'admin_city':                     'Admin City: (.*)',
-        # 'admin_street':                   'Admin Street: (.*)',
-        # 'admin_state_province':           'Admin State/Province: (.*)',
-        # 'admin_postal_code':              'Admin Postal Code: (.*)',
-        # 'admin_country':                  'Admin Country: (.+)',
-        # 'admin_phone':                    'Admin Phone: (.+)',
-        # 'admin_fax':                      'Admin Fax: (.+)',
-        # 'admin_email':                    'Admin Email: (.+)',
-        #
-        # 'billing_name':                   'Billing Name: (.+)',
-        # 'billing_id':                     'Billing ID: (.+)',
-        # 'billing_organization':           'Billing Organization: (.+)',
-        # 'billing_city':                   'Billing City: (.*)',
-        # 'billing_street':                 'Billing Street: (.*)',
-        # 'billing_state_province':         'Billing State/Province: (.*)',
-        # 'billing_postal_code':            'Billing Postal Code: (.*)',
-        # 'billing_country':                'Billing Country: (.+)',
-        # 'billing_phone':                  'Billing Phone: (.+)',
-        # 'billing_fax':                    'Billing Fax: (.+)',
-        # 'billing_email':                  'Billing Email: (.+)',
-        #
-        # 'tech_name':                      'Tech Name: (.+)',
-        # 'tech_id':                        'Tech ID: (.+)',
-        # 'tech_organization':              'Tech Organization: (.+)',
-        # 'tech_city':                      'Tech City: (.*)',
-        # 'tech_street':                    'Tech Street: (.*)',
-        # 'tech_state_province':            'Tech State/Province: (.*)',
-        # 'tech_postal_code':               'Tech Postal Code: (.*)',
-        # 'tech_country':                   'Tech Country: (.+)',
-        # 'tech_phone':                     'Tech Phone: (.+)',
-        # 'tech_fax':                       'Tech Fax: (.+)',
-        # 'tech_email':                     'Tech Email: (.+)',
     }
 
     def __init__(self):
@@ -1403,12 +1412,12 @@ class RegexLAT(BaseParser):
 class RegexCN(BaseParser):
 
     _cn_expressions = {
-        'registrar': r'Registrar: *(.+)',
+        'registrar': r'Sponsoring Registrar: *(.+)',
         'created': r'Registration Time: *(.+)',
         'expires': r'Expiration Time: *(.+)',
         'name_servers': r'Name Server: *(.+)',
-        'status': r'Status: *(.+)',
-        'dnssec': r'dnssec: *([\S]+)',
+        'status': r'Domain Status: *(.+)',
+        'dnssec': r'DNSSEC: *([\S]+)',
         'registrant_name': r'Registrant: *(.+)',
     }
 
@@ -1535,20 +1544,19 @@ class RegexCR(BaseParser):
 class RegexVE(BaseParser):
 
     _ve_expressions = {
-        'domain_name': r'Nombre de Dominio: *(.+)',
-        'status': r'Estatus del dominio: *(.+)',
+        'domain_name': r'domain: *(.+)',
+        'created': 'registered: *(.+)',
+        'expires': 'expire: *(.+)',
+        'updated': 'changed: *(.+)',
         'registrar': r'registrar: *(.+)',
-        'updated': r'Ultima Actualización: *(.+)',
-        'created': r'Fecha de Creación: *(.+)',
-        'expires': r'Fecha de Vencimiento: *(.+)',
-        'name_servers': r'Nombres de Dominio:((?:\s+- .*)*)',
-        'registrant_name': r'Titular:\s*(?:.*\n){1}\s+(.*)',
-        'registrant_city': r'Titular:\s*(?:.*\n){3}\s+([\s\w]*)',
-        'registrant_address': r'Titular:\s*(?:.*\n){2}\s+(.*)',
-        'registrant_state': r'Titular:\s*(?:.*\n){3}\s+.*?,(.*),',
-        'registrant_country': r'Titular:\s*(?:.*\n){3}\s+.*, .+  (.*)',
-        'registrant_phone': r'Titular:\s*(?:.*\n){4}\s+(\+*\d.+)',
-        'registrant_email': r'Titular:\s*.*\t(.*)',
+        'name_servers': r'nserver: *(.+)',
+        'registrant_name': r'registrant: *(.+)',
+        'registrant_address': r'address: *(.+)',
+        'registrant_city': r'address:.+\naddress: *(.+)',
+        'registrant_zipcode': r'(?:address:.+\n){2}address: *(.+)',
+        'registrant_state': r'(?:address:.+\n){3}address: *(.+)',
+        'registrant_country': r'(?:address:.+\n){4}address: *(.+)',
+        'registrant_organization': r'org: *(.+)',
     }
 
     def __init__(self):
@@ -1572,7 +1580,8 @@ class RegexAE(BaseParser):
     _ae_expressions = {
         'status': r'Status: *(.+)',
         'registrant_name': r'Registrant Contact Name: *(.+)',
-        'tech_name': r'Tech Contact Name: *(.+)',
+        'registrant_organization': r'Registrant Contact Organisation: *(.+)',
+        'registrar': r'Registrar Name: *(.+)'
     }
 
     def __init__(self):
@@ -1589,6 +1598,8 @@ class RegexSI(BaseParser):
         'registrant_name': r'registrant: *(.+)',
         'created': r'created: *(.+)',
         'expires': r'expire: *(.+)',
+        'domain_name': 'domain: *(.+)',
+        'status': 'status: *(.+)'
     }
 
     def __init__(self):
@@ -1598,13 +1609,22 @@ class RegexSI(BaseParser):
 
 
 class RegexNO(BaseParser):
+    """
+    % The whois service at port 43 is intended to contribute to resolving
+    % technical problems where individual domains threaten the
+    % functionality, security and stability of other domains or the
+    % internet as an infrastructure. It does not give any information
+    % about who the holder of a domain is. To find information about a
+    % domain holder, please visit our website:
+    % https://www.norid.no/en/domeneoppslag/
+    """
 
     _no_expressions = {
-        'created': r'Additional information:\nCreated:\s*(.+)',
-        'updated': r'Additional information:\n(?:.*\n)Last updated:\s*(.+)',
-        'name_servers': r'Name Server Handle.........: *(.+)',
-        'registrar': r'Registrar Handle...........: *(.+)',
-        'domain_name': r'Domain Name................: *(.+)'
+        'created': r'Created:\s*(.+)',
+        'updated': r'Last updated:\s*(.+)',
+        'name_servers': r'Name Server Handle\.*: *(.+)',
+        'registrar': r'Registrar Handle\.*: *(.+)',
+        'domain_name': r'Domain Name\.*: *(.+)'
     }
 
     def __init__(self):
@@ -1616,13 +1636,17 @@ class RegexNO(BaseParser):
 class RegexKZ(BaseParser):
 
     _kz_expressions = {
-        'registar_created': r'Registar Created: *(.+)',  # TYPOS are on the whois server
-        'registrar': r'Current Registar: *(.+)',  # TYPOS are on the whois server
-        'created': r'Domain created: *(.+)',
-        'updated': r'Last modified : *(.+)',
-        'name_servers': r'server.*: *(.+)',
-        'status': r' (.+?) -',
-        'registrant_organization': r'Organization Name.*: *(.+)'
+        'registrar': r'Current Registar:\s*(.+)',  # TYPOS are on the whois server
+        'created': r'Domain created:\s*(.+)\s\(',
+        'updated': r'Last modified\s:\s*(.+)\s\(',
+        'name_servers': r'.+\sserver\.*:\s*(.+)',
+        'status': r'Domain status\s:\s(.+)',
+        'registrant_name': r'Organization Using Domain Name\nName\.*:\s(.+)',
+        'registrant_address': r'Street Address\.*:\s*(.+)',
+        'registrant_city': r'City\.*:\s*(.+)',
+        'registrant_zipcode': r'Postal Code\.*:\s*(.+)',
+        'registrant_country': r'Country\.*:\s*(.+)',
+        'registrant_organization': r'Organization Name\.*:\s*(.+)'
     }
 
     def __init__(self):
@@ -1700,6 +1724,7 @@ class RegexTK(BaseParser):
 
 
 class RegexCC(BaseParser):
+
     _cc_expressions = {
         'expires': r'Registrar Registration Expiration Date: (\d{4}-\d{2}-\d{2})',
         'status': r'Domain Status: *(.+)'
