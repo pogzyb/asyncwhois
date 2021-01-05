@@ -1,0 +1,45 @@
+%  Servidor whois del Centro de Información de Red de Venezuela (NIC.VE)
+%  Este servidor contiene información autoritativa exclusivamente de dominios .ve
+%
+% Whoisd Server Version: 3.12.1
+% Timestamp: Mon Jan 04 18:51:10 2021
+
+domain:       google.com.ve
+registrant:   CON000020360
+admin-c:      CON000020108
+nsset:        DNS000085559
+registrar:    NIC-VE
+registered:   05.06.2002 20:00:00
+expire:       06.05.2021
+
+contact:      CON000020360
+org:          Google Llc
+address:      1600 Amphitheatre Parkway
+address:      Mountain View
+address:      94043
+address:      Ca
+address:      US
+registrar:    NIC-VE
+created:      04.08.2019 15:14:51
+changed:      24.04.2020 12:52:39
+
+contact:      CON000020108
+org:          Markmonitor Inc.
+address:      3540 East Longwing Lane Suite 300
+address:      Meridian
+address:      83646
+address:      Id
+address:      US
+registrar:    NIC-VE
+created:      04.08.2019 15:12:24
+changed:      16.03.2020 13:45:30
+
+nsset:        DNS000085559
+nserver:      ns1.google.com
+nserver:      ns2.google.com
+nserver:      ns3.google.com
+nserver:      ns4.google.com
+tech-c:       CON000020108
+registrar:    NIC-VE
+created:      08.08.2019 06:48:22
+
