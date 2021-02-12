@@ -3,7 +3,7 @@ import asynctest.mock as mock
 
 import asyncwhois
 from asyncwhois.pywhois import PyWhoIs
-from asyncwhois.errors import WhoIsQueryConnectError
+from asyncwhois.errors import QueryError
 
 
 class TestPyWhoIs(asynctest.TestCase):
@@ -22,12 +22,12 @@ class TestPyWhoIs(asynctest.TestCase):
     def test_get_hostname_from_ip(self):
         pyw = PyWhoIs()
         assert pyw._get_hostname_from_ip(self.test_ip) == 'dns.google'
-        self.assertRaises(WhoIsQueryConnectError, pyw._get_hostname_from_ip, '0.0.0.0')
+        self.assertRaises(QueryError, pyw._get_hostname_from_ip, '0.0.0.0')
 
     async def test_aio_get_hostname_from_ip(self):
         pyw = PyWhoIs()
         assert await pyw._aio_get_hostname_from_ip(self.test_ip) == 'dns.google'
-        self.assertAsyncRaises(WhoIsQueryConnectError, pyw._aio_get_hostname_from_ip('0.0.0.0'))
+        self.assertAsyncRaises(QueryError, pyw._aio_get_hostname_from_ip('0.0.0.0'))
 
     @mock.patch('asyncwhois.query.WhoIsQuery._run')
     def test_from_url(self, mock_run):
