@@ -22,16 +22,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
-import socket
-import re
 import asyncio
+import re
+import socket
 from typing import Tuple
 
-from .errors import WhoIsQueryConnectError
+from .errors import QueryError
 
 
 class Query:
-
     _iana_server = "whois.iana.org"
     _whois_port = 43
 
@@ -68,7 +67,7 @@ class WhoIsQuery(Query):
                     iana_result_blob = self._send_and_recv(conn, data)
                     self.server = self._find_match(regex=r"refer: *(.+)", blob=iana_result_blob)
                     if not self.server:
-                        raise WhoIsQueryConnectError(f"Could not find a whois server for {self.domain}")
+                        raise QueryError(f"Could not find a whois server for {self.domain}")
 
             # connect to <server>:43
             with self._create_connection((self.server, self._whois_port), self.timeout) as conn:
@@ -84,10 +83,10 @@ class WhoIsQuery(Query):
                         self.query_output = self._send_and_recv(conn, data)
         except ConnectionResetError:
             server = self.server or self._iana_server
-            raise WhoIsQueryConnectError(f'"Connection reset by peer" when communicating with {server}:43')
+            raise QueryError(f'"Connection reset by peer" when communicating with {server}:43')
         except socket.timeout:
             server = self.server or self._iana_server
-            raise WhoIsQueryConnectError(f'Socket timed out when attempting to reach {server}:43')
+            raise QueryError(f'Socket timed out when attempting to reach {server}:43')
 
     @staticmethod
     def _send_and_recv(conn: socket.socket, data: str) -> str:
@@ -106,7 +105,7 @@ class WhoIsQuery(Query):
         try:
             return socket.create_connection(address=address, timeout=timeout)
         except socket.timeout:
-            raise WhoIsQueryConnectError(f'Could not reach WHOIS server at {address[0]}:{address[1]}')
+            raise QueryError(f'Could not reach WHOIS server at {address[0]}:{address[1]}')
         except:
             raise
 
@@ -140,7 +139,7 @@ class AsyncWhoIsQuery(Query):
                 writer.close()
                 await writer.wait_closed()
                 if not self.server:
-                    raise WhoIsQueryConnectError(f'Could not find a WHOIS server for {self.domain}')
+                    raise QueryError(f'Could not find a WHOIS server for {self.domain}')
 
             reader, writer = await self._create_connection((self.server, self._whois_port), self.timeout)
             self.query_output = await self._send_and_recv(reader, writer, data)
@@ -154,10 +153,10 @@ class AsyncWhoIsQuery(Query):
             await writer.wait_closed()
         except asyncio.TimeoutError:
             server = self.server or self._iana_server
-            raise WhoIsQueryConnectError(f'Socket timed out when attempting to reach {server}:43')
+            raise QueryError(f'Socket timed out when attempting to reach {server}:43')
         except ConnectionResetError:
             server = self.server or self._iana_server
-            raise WhoIsQueryConnectError(f'"Connection reset by peer" when communicating with {server}:43')
+            raise QueryError(f'"Connection reset by peer" when communicating with {server}:43')
 
     @staticmethod
     async def _send_and_recv(reader: asyncio.StreamReader, writer: asyncio.StreamWriter, data: str) -> str:
@@ -172,10 +171,11 @@ class AsyncWhoIsQuery(Query):
         return result
 
     @staticmethod
-    async def _create_connection(address: Tuple[str, int], timeout: int) -> Tuple[asyncio.StreamReader, asyncio.StreamWriter]:
+    async def _create_connection(address: Tuple[str, int], timeout: int) -> Tuple[
+        asyncio.StreamReader, asyncio.StreamWriter]:
         future = asyncio.open_connection(*address)
         try:
             reader, writer = await asyncio.wait_for(future, timeout)
             return reader, writer
         except:
-            raise WhoIsQueryConnectError(f'Could not reach WHOIS server at {address[0]}:{address[1]}')
+            raise QueryError(f'Could not reach WHOIS server at {address[0]}:{address[1]}')
