@@ -2,7 +2,7 @@ from .pywhois import PyWhoIs
 from .tlds import parser_supported_tlds
 
 __all__ = ['lookup', 'aio_lookup', 'whois_cmd_shell', 'aio_whois_cmd_shell', 'has_parser_support']
-__version__ = '0.2.3'
+__version__ = '0.2.4'
 
 
 def lookup(url: str, timeout: int = 10) -> PyWhoIs:
