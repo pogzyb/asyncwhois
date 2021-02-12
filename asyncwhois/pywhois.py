@@ -29,16 +29,16 @@ import subprocess
 import sys
 from typing import Union, Dict, Any
 
-import tldextract # 2.2.2
-import aiodns # 2.0.0
+import aiodns  # 2.0.0
+import tldextract  # 2.2.2
 
-from .query import WhoIsQuery, AsyncWhoIsQuery
+from .errors import QueryError
 from .parser import WhoIsParser
-from .errors import WhoIsQueryConnectError
-
+from .query import WhoIsQuery, AsyncWhoIsQuery
 
 # https://www.regextester.com/104038
-IPV4_OR_V6 = re.compile(r"((^\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\s*$)|(^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$))")
+IPV4_OR_V6 = re.compile(
+    r"((^\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\s*$)|(^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$))")
 
 
 class PyWhoIs:
@@ -58,7 +58,7 @@ class PyWhoIs:
             host, _, _ = socket.gethostbyaddr(ip_address)
             return host
         except socket.herror:
-            raise WhoIsQueryConnectError(f'Could not resolve {ip_address}')
+            raise QueryError(f'Could not resolve {ip_address}')
 
     @staticmethod
     async def _aio_get_hostname_from_ip(ip_address: str) -> Union[str, None]:
@@ -68,7 +68,7 @@ class PyWhoIs:
             host = await resolver.gethostbyaddr(ip_address)
             return host.name
         except aiodns.error.DNSError:
-            raise WhoIsQueryConnectError(f'Could not resolve {ip_address}')
+            raise QueryError(f'Could not resolve {ip_address}')
 
     @property
     def parser_output(self) -> Dict[str, Any]:
@@ -107,7 +107,8 @@ class PyWhoIs:
             query_result, _ = proc.communicate(timeout=timeout)
             query_result = query_result.decode(errors='ignore')
         except subprocess.TimeoutExpired:
-            raise WhoIsQueryConnectError(f'The shell command "whois {domain_and_tld}" exceeded timeout of {timeout} seconds')
+            raise QueryError(
+                f'The shell command "whois {domain_and_tld}" exceeded timeout of {timeout} seconds')
         parser.parse(query_result)
         pywhois.__query = query_result
         pywhois.__parser = parser
@@ -139,7 +140,8 @@ class PyWhoIs:
         # On Windows the asyncio loop must be set to "ProactorEventLoop" in order to use asyncio subprocess
         # Note: Changed in [Python] version 3.8: On Windows, ProactorEventLoop is now used by default.
         # https://docs.python.org/3/library/asyncio-platforms.html#subprocess-support-on-windows
-        if sys.platform in ("windows", "win32") and not isinstance(asyncio.get_running_loop(), asyncio.ProactorEventLoop):
+        if sys.platform in ("windows", "win32") and not isinstance(asyncio.get_running_loop(),
+                                                                   asyncio.ProactorEventLoop):
             loop_error_message = "You must set the running loop to 'asyncio.ProactorEventLoop' in order to use an asyncio subprocess on Windows."
             raise NotImplementedError(loop_error_message)
 
@@ -167,7 +169,8 @@ class PyWhoIs:
             query_result, _ = await asyncio.wait_for(proc.communicate(), timeout=timeout)
             query_result = query_result.decode(errors='ignore')
         except asyncio.TimeoutError:
-            raise WhoIsQueryConnectError(f'The shell command "whois {domain_and_tld}" exceeded timeout of {timeout} seconds')
+            raise QueryError(
+                f'The shell command "whois {domain_and_tld}" exceeded timeout of {timeout} seconds')
         parser.parse(query_result)
         pywhois.__query = query_result
         pywhois.__parser = parser

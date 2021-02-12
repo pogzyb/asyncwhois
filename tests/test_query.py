@@ -2,7 +2,7 @@ import unittest
 import unittest.mock as mock
 
 import asyncwhois.query
-from asyncwhois.errors import WhoIsQueryConnectError
+from asyncwhois.errors import QueryError
 
 
 class TestWhoIsQuery(unittest.TestCase):
@@ -31,6 +31,6 @@ class TestWhoIsQuery(unittest.TestCase):
     @mock.patch('asyncwhois.query.WhoIsQuery._send_and_recv')
     def test_whois_query_run(self, mock_send_recv):
         mock_send_recv.return_value = ""
-        self.assertRaises(WhoIsQueryConnectError, asyncwhois.query.WhoIsQuery, "some-domain")
+        self.assertRaises(QueryError, asyncwhois.query.WhoIsQuery, "some-domain")
 
 

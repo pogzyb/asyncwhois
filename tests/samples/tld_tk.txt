@@ -1,0 +1,64 @@
+
+   Domain name:
+      AMAZON.TK is Active
+
+   Owner contact:
+      Organization: Amazon Technologies, Inc.
+      Name:         Hostmaster Amazon Legal Dept.
+      Address:      P.O. Box 8102
+      Zipcode:      89507
+      City:         Reno
+      State:        Nevada
+      Country:      U.S.A.
+      Phone:        +1-2062664064
+      Fax:          +1-2062667010
+      E-mail:       hostmaster@amazon.com
+
+   Admin contact:
+      Organization: Amazon Technologies, Inc.
+      Name:         Hostmaster Amazon Legal Dept.
+      Address:      P.O. Box 8102
+      Zipcode:      89507
+      City:         Reno
+      State:        Nevada
+      Country:      U.S.A.
+      Phone:        +1-2062664064
+      Fax:          +1-2062667010
+      E-mail:       hostmaster@amazon.com
+
+   Billing contact:
+      Organization: MarkMonitor Inc.
+      Name:         Domain Administrator
+      Address:      3540 E Longwing Lane Suite 300
+      Zipcode:      83646
+      City:         Meridian
+      State:        Idaho
+      Country:      U.S.A.
+      Phone:        +1-2083895740
+      Fax:          +1-2083895771
+      E-mail:       ccopsbilling@markmonitor.com
+
+   Tech contact:
+      Organization: Amazon Technologies, Inc.
+      Name:         Hostmaster Amazon Legal Dept.
+      Address:      P.O. Box 8102
+      Zipcode:      89507
+      City:         Reno
+      State:        Nevada
+      Country:      U.S.A.
+      Phone:        +1-2062664064
+      Fax:          +1-2062667010
+      E-mail:       hostmaster@amazon.com
+
+   Domain Nameservers:
+      PDNS1.ULTRADNS.NET
+      NS2.P31.DYNECT.NET
+      PDNS6.ULTRADNS.CO.UK
+      PDNS2.ULTRADNS.NET
+      PDNS5.ULTRADNS.INFO
+
+
+   Domain registered: 09/17/2014
+   Record will expire on: 12/11/2021
+   Record maintained by: Dot TK Domain Registry
+
