@@ -10,8 +10,8 @@ def lookup(url: str, timeout: int = 10) -> PyWhoIs:
     Module entry point for whois lookups. Opens a socket connection to the
     whois server, submits a query, and then parses the query output from the server
     into a dictionary. Uses "socket.create_connection()" for the socket.
-    Raises "WhoIsQueryError" if connection to a server times out or fails.
-    Raises "WhoIsParserError" if domain record is "not found" on the server.
+    Raises "QueryError" if connection to a server times out or fails.
+    Raises "NotFoundError" if domain record is "not found" on the server.
 
     :param url: Any correctly formatted URL (e.g. https://en.wikipedia.org/wiki/WHOIS)
     :param timeout: whois server connection timeout (default 10 seconds)
@@ -38,8 +38,8 @@ async def aio_lookup(url: str, timeout: int = 10) -> PyWhoIs:
     Asynchronous module entry point for whois lookups. Opens a socket connection to the
     whois server, submits a query, and then parses the query output from the server
     into a dictionary. Uses "asyncio.open_connection()" for the socket.
-    Raises "WhoIsQueryError" if connection to a server times out or fails.
-    Raises "WhoIsParserError" if domain record is "not found" on the server.
+    Raises "QueryError" if connection to a server times out or fails.
+    Raises "NotFoundError" if domain record is "not found" on the server.
 
     :param url: Any correctly formatted URL (e.g. https://en.wikipedia.org/wiki/WHOIS)
     :param timeout: whois server connection timeout (default 10 seconds)
@@ -65,7 +65,9 @@ async def aio_whois_cmd_shell(url: str, timeout: int = 10) -> PyWhoIs:
 
 def has_parser_support(tld: str) -> bool:
     """
-    Checks if this module has explicit parser support for a given top level domain.
+    Checks if this module has "explicit" parser support for the given top level domain.
+    NOTE: Even without explicit parser support, this module will try to parse the output
+    extracted from the whois server against a common list of keys and values.
 
     :param tld: Top level domain (e.g. "com")
     :return: True if tld parser exists else False
