@@ -5,7 +5,7 @@ with open("README.rst", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="asyncwhois",
-    version="0.2.3",
+    version="0.2.4",
     author="Joseph Obarzanek",
     author_email="pogzyb@umich.edu",
     description="asyncio-compatible Python module for performing WHOIS queries for any domain.",
