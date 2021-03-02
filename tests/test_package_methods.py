@@ -50,9 +50,3 @@ class TestAsyncWhoIsQuery(asynctest.TestCase):
         mock_whois_call.assert_called_once()
         self.assertIn(f"domain name: {test_domain}", w.query_output.lower())
         self.assertEqual(w.parser_output.get('domain_name').lower(), test_domain)
-
-    def test_has_parser_support(self):
-        not_supported = 'zzz'
-        self.assertFalse(asyncwhois.has_parser_support(not_supported))
-        supported = 'com'
-        self.assertTrue(asyncwhois.has_parser_support(supported))
