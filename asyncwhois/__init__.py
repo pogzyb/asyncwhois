@@ -1,7 +1,6 @@
 from .pywhois import PyWhoIs
-from .tlds import parser_supported_tlds
 
-__all__ = ['lookup', 'aio_lookup', 'whois_cmd_shell', 'aio_whois_cmd_shell', 'has_parser_support']
+__all__ = ['lookup', 'aio_lookup', 'whois_cmd_shell', 'aio_whois_cmd_shell']
 __version__ = '0.2.4'
 
 
@@ -62,15 +61,3 @@ async def aio_whois_cmd_shell(url: str, timeout: int = 10) -> PyWhoIs:
     whois = await PyWhoIs._aio_from_whois_cmd(url, timeout)
     return whois
 
-
-def has_parser_support(tld: str) -> bool:
-    """
-    Checks if this module has "explicit" parser support for the given top level domain.
-    NOTE: Even without explicit parser support, this module will try to parse the output
-    extracted from the whois server against a common list of keys and values.
-
-    :param tld: Top level domain (e.g. "com")
-    :return: True if tld parser exists else False
-    """
-    tld = tld.lstrip(".")
-    return tld in parser_supported_tlds
