@@ -132,6 +132,7 @@ your needs.
 Example: This is a snippet of the output from running the "whois google.be" command.
 
 .. code-block:: python
+
     Domain:	google.be
     Status:	NOT AVAILABLE
     Registered:	Tue Dec 12 2000
@@ -168,6 +169,7 @@ won't find all of these server names. In order to accommodate this extra step, t
 overwritten within the parser subclass as seen below:
 
 .. code-block:: python
+
     class RegexBE(BaseParser):
         _be_expressions = {  # the base class (BaseParser) will handle these regexes
             BaseKeys.CREATED: r'Registered: *(.+)',
