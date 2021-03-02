@@ -657,6 +657,7 @@ class RegexAT(BaseParser):
 
 class RegexBE(BaseParser):
     _be_expressions = {
+        BaseKeys.DOMAIN_NAME: r'Domain: *(.+)',
         BaseKeys.CREATED: r'Registered: *(.+)',
         BaseKeys.REGISTRAR: r'Registrar:\n.+Name: *(.+)',
         BaseKeys.REGISTRANT_NAME: r'Registrant:\n *(.+)'
