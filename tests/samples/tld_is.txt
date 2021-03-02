@@ -1,0 +1,62 @@
+% This is the ISNIC Whois server.
+%
+% Rights restricted by copyright.
+% See https://www.isnic.is/en/about/copyright
+
+domain:       amazon.is
+registrant:   ACS25-IS
+admin-c:      ACS24-IS
+tech-c:       TM30-IS
+zone-c:       NU2-IS
+billing-c:    BM27-IS
+nserver:      pdns1.ultradns.net
+nserver:      pdns2.ultradns.net
+nserver:      pdns3.ultradns.org
+nserver:      pdns4.ultradns.org
+dnssec:       unsigned delegation
+created:      January 18 2000
+expires:      January 18 2022
+source:       ISNIC
+
+role:         Amazon Europe Core S.a.r.l.
+nic-hdl:      ACS25-IS
+address:      38 avenue John F. Kennedy
+address:      LU-L-1855 Luxembourg
+phone:        +352 265240000
+e-mail:       hostmaster@amazon.com
+created:      September 28 2016
+source:       ISNIC
+
+role:         Amazon Europe Core S.a.r.l.
+nic-hdl:      ACS24-IS
+address:      38 avenue John F. Kennedy
+address:      LU-L-1855 Lu
+phone:        +352 265240000
+e-mail:       hostmaster@amazon.com
+created:      September  6 2016
+source:       ISNIC
+
+role:         Billing Manager
+nic-hdl:      BM27-IS
+address:      Com Laude
+address:      28-30 Little Russell Street
+address:      GB-WC1A 2HN London
+phone:        +44 2074218250
+e-mail:       billing@comlaude.com
+created:      April 19 2006
+source:       ISNIC
+
+role:         Technical Manager
+nic-hdl:      TM30-IS
+address:      Com Laude
+address:      28-30 Little Russell Street
+address:      GB-WC1A 2HN London
+phone:        +44 2074218250
+e-mail:       hostmaster@comlaude.com
+created:      April 19 2006
+source:       ISNIC
+
+nic-hdl:      NU2-IS
+address:      US
+created:      November  3 2008
+source:       ISNIC
