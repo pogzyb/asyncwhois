@@ -48,6 +48,33 @@ Examples
 
 .. code-block:: python
 
+    from pprint import pprint
+    import asyncwhois
+
+    result = asyncwhois.lookup('bitcoin.org')
+    pprint(result.parser_output)
+    >>> {created: datetime.datetime(2008, 8, 18, 13, 19, 55),
+         dnssec: 'unsigned',
+         domain_name: 'bitcoin.org',
+         expires: datetime.datetime(2029, 8, 18, 13, 19, 55),
+         name_servers: ['dns1.registrar-servers.com', 'dns2.registrar-servers.com'],
+         registrant_address: 'P.O. Box 0823-03411',
+         registrant_city: 'Panama',
+         registrant_country: 'PA',
+         registrant_name: 'WhoisGuard Protected',
+         registrant_organization: 'WhoisGuard, Inc.',
+         registrant_state: 'Panama',
+         registrant_zipcode: '',
+         registrar: 'NAMECHEAP INC',
+         status: ['clientTransferProhibited '
+                  'https://icann.org/epp#clientTransferProhibited'],
+         updated: datetime.datetime(2019, 11, 24, 13, 58, 35, 940000)}
+
+
+**bulk standard**
+
+.. code-block:: python
+
     import asyncwhois
 
 
@@ -67,7 +94,7 @@ Examples
     if __name__ == '__main__':
         main()
 
-**asyncio**
+**bulk asyncio**
 
 .. code-block:: python
 
