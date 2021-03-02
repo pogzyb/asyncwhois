@@ -27,7 +27,7 @@ Quickstart
 
 .. code-block:: python
 
-    # Opens a connection to the appropriate WhoIs server, submits the query, and parses the output.
+    # Connects to the appropriate WhoIs server, submits a query, and parses the output.
     result = asyncwhois.lookup('google.com')
     # [for asyncio] result = await asyncwhois.aio_lookup('google.com')
     result.query_output   # raw output from the whois server
@@ -97,79 +97,66 @@ Examples
 
 Contributions
 -------------
-Top Level Domain Parsers are located in `asyncwhois/parser.py` and are based on those found in `richardpenman/pywhois`_.
-For additional TLD support, simply create a new class like the one below:
-
-.. code-block:: python
-
-    class RegexORG(BaseParser):
-
-       _org_expressions = {}  # the custom regular expressions needed to parse the output from this whois server
-
-       def __init__(self):
-           super().__init__()
-           self.server = 'whois.pir.org' # the whois server for this TLD
-           self.update_reg_expressions(self._org_expressions)
-
-
-.. _richardpenman/pywhois: https://github.com/richardpenman/pywhois
-
 Unfortunately, "the format of responses [from a Whois server] follow a semi-free text format". This means that
-situations will arise where you may find yourself needing more control over how parsing happens. Fortunately, you can
-override the "BaseParser.parse" method to suit your needs. Tests are obviously encouraged if you plan on doing this.
+situations will arise where this module does not support parsing the output of a specific server, and you may find
+yourself needing more control over how parsing happens. Fortunately, you can create customized parsers to suit
+your needs.
 
-For example, this is a snippet of the output from running a "whois google.ir" command.
+Example: This is a snippet of the output from running the "whois google.be" command.
 
 .. code-block:: python
+    Domain:	google.be
+    Status:	NOT AVAILABLE
+    Registered:	Tue Dec 12 2000
 
-    domain:	google.ir
-    ascii:	google.ir
-    remarks:	(Domain Holder) Google Inc.
-    remarks:	(Domain Holder Address) 1600 Amphitheatre Parkway, Mountain View, CA, US
-    holder-c:	go438-irnic
+    Registrant:
+        Not shown, please visit www.dnsbelgium.be for webbased whois.
+
+    Registrar Technical Contacts:
+        Organisation:	MarkMonitor Inc.
+        Language:	en
+        Phone:	+1.2083895740
+        Fax:	+1.2083895771
+
+
+    Registrar:
+        Name:	 MarkMonitor Inc.
+        Website: http://www.markmonitor.com
+
+    Nameservers:
+        ns2.google.com
+        ns1.google.com
+        ns4.google.com
+        ns3.google.com
+
+    Keys:
+
+    Flags:
+        clientTransferProhibited
     ...
 
 
-In this case, the address, city, state, and country can all be extracted from the the "registrant_address" field. So,
-as seen below, the parse method is overwritten to include this extra step.
+In this case, the "name servers" are listed on separate lines. The default BaseParser regexes
+won't find all of these server names. In order to accommodate this extra step, the "parse" method was
+overwritten within the parser subclass as seen below:
 
 .. code-block:: python
-
-    class RegexIR(BaseParser):
-
-        _ir_expressions = {
-            BaseKeys.UPDATED                    : r'last-updated: *(.+)',
-            BaseKeys.EXPIRES                    : r'expire-date: *(.+)',
-            BaseKeys.REGISTRANT_ORGANIZATION    : r'org: *(.+)',
-            BaseKeys.REGISTRANT_NAME            : r'remarks:\s+\(Domain Holder\) *(.+)',
-            BaseKeys.REGISTRANT_ADDRESS         : r'remarks:\s+\(Domain Holder Address\) *(.+)',
-            BaseKeys.NAME_SERVERS               : r'nserver: *(.+)'
+    class RegexBE(BaseParser):
+        _be_expressions = {  # the base class (BaseParser) will handle these regexes
+            BaseKeys.CREATED: r'Registered: *(.+)',
+            BaseKeys.REGISTRAR: r'Registrar:\n.+Name: *(.+)',
+            BaseKeys.REGISTRANT_NAME: r'Registrant:\n *(.+)'
         }
 
         def __init__(self):
             super().__init__()
-            self.server = 'whois.nic.ir'
-            self.update_reg_expressions(self._ir_expressions)
+            self.update_reg_expressions(self._be_expressions)
 
-        def parse(self, blob: str) -> Dict[str, Any]:
-            """
-            Custom address parsing is required.
-            """
-            parsed_output = {}
-            for key, regex in self.reg_expressions.items():
-                if key == BaseKeys.REGISTRANT_ADDRESS:
-                    match = self.find_match(regex, blob)
-                    # need to break up the address field
-                    address, city, state, country = match.split(', ')
-                    parsed_output[BaseKeys.REGISTRANT_ADDRESS] = address
-                    parsed_output[BaseKeys.REGISTRANT_CITY] = city
-                    parsed_output[BaseKeys.REGISTRANT_STATE] = state
-                    parsed_output[BaseKeys.REGISTRANT_COUNTRY] = country
-                elif not parsed_output.get(key):
-                    parsed_output[key] = self.find_match(regex, blob, many=key in self.multiple_match_keys)
-
-                # convert dates
-                if key in self.date_keys and parsed_output.get(key, None):
-                    parsed_output[key] = self._parse_date(parsed_output.get(key))
-
+        def parse(self, blob: str) -> Dict[str, Any]:  # custom parsing is needed to extract all the name servers
+            parsed_output = super().parse(blob)  # run normal parsing for other keys
+            ns_match = re.search(r"Name servers: *(.+)Keys: ", blob, re.DOTALL)  # custom parsing for name servers
+            if ns_match:
+                parsed_output[BaseKeys.NAME_SERVERS] = [m.strip() for m in ns_match.group(1).split('\n') if m.strip()]
             return parsed_output
+    ...
+
