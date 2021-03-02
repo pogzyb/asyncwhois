@@ -1,7 +1,6 @@
 import asynctest
 import asynctest.mock as mock
 
-import asyncwhois
 from asyncwhois.pywhois import PyWhoIs
 from asyncwhois.errors import QueryError
 
