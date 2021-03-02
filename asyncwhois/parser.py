@@ -128,7 +128,6 @@ class BaseParser:
     date_keys = (BaseKeys.CREATED, BaseKeys.UPDATED, BaseKeys.EXPIRES)
 
     def __init__(self):
-        self.server = None
         self.reg_expressions = self.base_expressions.copy()
 
     def update_reg_expressions(self, expressions_update: Dict[str, Any]) -> None:
@@ -211,24 +210,41 @@ class BaseParser:
 
 class WhoIsParser:
 
-    def __init__(self, top_level_domain: str):
+    _no_match_checks = [
+        'no match',
+        'not found',
+        'no entries found',
+        'invalid query',
+        'domain name not known',
+        'no object found'
+    ]
+
+    def __init__(self, tld: str):
         self.parser_output = {}
-        self._parser = self._init_parser(top_level_domain)
+        self._parser = self._init_parser(tld)
 
     def parse(self, blob: str) -> None:
-        no_match_checks = ['no match', 'not found', 'no entries found', 'invalid query', 'domain name not known']
-        if any([n in blob.lower() for n in no_match_checks]):
+        """
+        Parses `blob` (whois query output) using a parser class.
+        Saves the results into the `parser_output` attribute.
+        """
+        if any([n in blob.lower() for n in self._no_match_checks]):
             raise NotFoundError(f'Domain not found!')
         self.parser_output = self._parser.parse(blob)
 
     @staticmethod
     def _init_parser(tld: str) -> BaseParser:
+        """
+        Retrieves the parser instance which can most accurately extract
+        key/value pairs from the whois server output for the given `tld`.
+        :param tld: the top level domain
+        :return: instance of BaseParser or a BaseParser sub-class
+        """
+
+        # the cases specified below do not follow a common format,
+        # and so, must be parsed with custom defined regex sub classes.
         if tld == 'ae':
             return RegexAE()
-        elif tld == 'ai':
-            return RegexAI()
-        elif tld == 'app':
-            return RegexAPP()
         elif tld == 'ar':
             return RegexAR()
         elif tld == 'at':
@@ -237,32 +253,18 @@ class WhoIsParser:
             return RegexAU()
         elif tld == 'be':
             return RegexBE()
-        elif tld == 'biz':
-            return RegexBIZ()
         elif tld == 'br':
             return RegexBR()
-        elif tld == 'buzz':
-            return RegexBUZZ()
         elif tld == 'by':
             return RegexBY()
-        elif tld == 'ca':
-            return RegexCA()
-        elif tld == 'cat':
-            return RegexCAT()
         elif tld == 'cc':
             return RegexCC()
         elif tld == 'ch':
             return RegexCH()
         elif tld == 'cl':
             return RegexCL()
-        elif tld == 'club':
-            return RegexClub()
         elif tld == 'cn':
             return RegexCN()
-        elif tld == 'co':
-            return RegexCO()
-        elif tld == 'com':
-            return RegexCOM()
         elif tld == 'cr':
             return RegexCR()
         elif tld == 'cz':
@@ -271,8 +273,6 @@ class WhoIsParser:
             return RegexDE()
         elif tld == 'dk':
             return RegexDK()
-        elif tld == 'do':
-            return RegexDO()
         elif tld == 'edu':
             return RegexEDU()
         elif tld == 'ee':
@@ -283,38 +283,24 @@ class WhoIsParser:
             return RegexFI()
         elif tld == 'fr':
             return RegexFR()
-        elif tld == 'ga':
-            return RegexGA()
         elif tld == 'gq':
             return RegexGQ()
         elif tld == 'hk':
             return RegexHK()
-        elif tld == 'hn':
-            return RegexHN()
         elif tld == 'hr':
             return RegexHR()
-        elif tld == 'icu':
-            return RegexICU()
         elif tld == 'id':
             return RegexID()
         elif tld == 'ie':
             return RegexIE()
         elif tld == 'il':
             return RegexIL()
-        elif tld == 'in':
-            return RegexIN()
-        elif tld == 'info':
-            return RegexINFO()
-        elif tld == 'io':
-            return RegexIO()
         elif tld == 'ir':
             return RegexIR()
         elif tld == 'is':
             return RegexIS()
         elif tld == 'it':
             return RegexIT()
-        elif tld == 'jobs':
-            return RegexJobs()
         elif tld == 'jp':
             return RegexJP()
         elif tld == 'kg':
@@ -323,44 +309,30 @@ class WhoIsParser:
             return RegexKR()
         elif tld == 'kz':
             return RegexKZ()
-        elif tld == 'lat':
-            return RegexLAT()
         elif tld == 'li':
             return RegexLI()
-        elif tld == 'live':
-            return RegexLIVE()
         elif tld == 'lu':
             return RegexLU()
         elif tld == 'lv':
             return RegexLV()
         elif tld == 'ma':
             return RegexMA()
-        elif tld == 'me':
-            return RegexME()
-        elif tld == 'mobi':
-            return RegexMOBI()
-        elif tld == 'money':
-            return RegexMONEY()
         elif tld == 'mx':
             return RegexMX()
-        elif tld == 'name':
-            return RegexNAME()
-        elif tld == 'net':
-            return RegexNET()
         elif tld == 'nl':
             return RegexNL()
         elif tld == 'no':
             return RegexNO()
+        elif tld == 'nu':
+            return RegexNU()
         elif tld == 'nz':
             return RegexNZ()
-        elif tld == 'online':
-            return RegexONLINE()
-        elif tld == 'org':
-            return RegexORG()
         elif tld == 'pe':
             return RegexPE()
         elif tld == 'pl':
             return RegexPL()
+        elif tld == 'pt':
+            return RegexPT()
         elif tld == 'rf':
             return RegexRF()
         elif tld == 'ro':
@@ -375,14 +347,10 @@ class WhoIsParser:
             return RegexSI()
         elif tld == 'sk':
             return RegexSK()
-        elif tld == 'space':
-            return RegexSPACE()
         elif tld == 'su':
             return RegexSU()
         elif tld == 'tk':
             return RegexTK()
-        elif tld == 'top':
-            return RegexTOP()
         elif tld == 'tr':
             return RegexTR()
         elif tld == 'tw':
@@ -391,50 +359,18 @@ class WhoIsParser:
             return RegexUA()
         elif tld == 'uk':
             return RegexUK()
-        elif tld == 'us':
-            return RegexUS()
         elif tld == 've':
             return RegexVE()
-        elif tld == 'vg':
-            return RegexVG()
-        elif tld == 'xyz':
-            return RegexXYZ()
-
         else:
+            # The BaseParser can handle all "Generic" and some "Country-Code" TLDs.
+            # If the parsed output of lookup is not what you expect or even incorrect,
+            # check for and then modify the existing Regex subclass or create a new one.
             return BaseParser()
 
 
 # ==============================
-# WhoIs Query Output Parsers
+# Custom Query Output Parsers
 # ==============================
-
-
-class RegexCOM(BaseParser):
-    _com_expressions = {}
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.verisign-grs.com'
-        self.update_reg_expressions(self._com_expressions)
-
-
-class RegexNET(BaseParser):
-    _net_expressions = {}
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.verisign-grs.com'
-        self.update_reg_expressions(self._net_expressions)
-
-
-class RegexORG(BaseParser):
-    _org_expressions = {}
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.pir.org'
-        self.update_reg_expressions(self._org_expressions)
-
 
 class RegexRU(BaseParser):
     _ru_expressions = {
@@ -448,7 +384,6 @@ class RegexRU(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.tcinet.ru'
         self.update_reg_expressions(self._ru_expressions)
 
 
@@ -464,17 +399,7 @@ class RegexCL(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.nic.cl'
         self.update_reg_expressions(self._cl_expressions)
-
-
-class RegexCO(BaseParser):
-    _co_expressions = {}
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.nic.co'
-        self.update_reg_expressions(self._co_expressions)
 
 
 class RegexPL(BaseParser):
@@ -490,7 +415,6 @@ class RegexPL(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.dns.pl'
         self.update_reg_expressions(self._pl_expressions)
 
     def parse(self, blob: str) -> Dict[str, Any]:
@@ -519,7 +443,6 @@ class RegexRO(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.rotld.ro'
         self.update_reg_expressions(self._ro_expressions)
 
 
@@ -534,44 +457,7 @@ class RegexPE(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'kero.yachay.pe'
         self.update_reg_expressions(self._pe_expressions)
-
-
-class RegexSPACE(BaseParser):
-    _space_expressions = {}
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.nic.space'
-        self.update_reg_expressions(self._space_expressions)
-
-
-class RegexNAME(BaseParser):
-    _name_expressions = {}
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.nic.name'
-        self.update_reg_expressions(self._name_expressions)
-
-
-class RegexME(BaseParser):
-    _me_expressions = {}
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.nic.me'
-        self.update_reg_expressions(self._me_expressions)
-
-
-class RegexUS(BaseParser):
-    _us_expressions = {}
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.nic.us'
-        self.update_reg_expressions(self._us_expressions)
 
 
 class RegexEE(BaseParser):
@@ -588,17 +474,7 @@ class RegexEE(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.tld.ee'
         self.update_reg_expressions(self._ee_expressions)
-
-
-class RegexCA(BaseParser):
-    _ca_expressions = {}
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.cira.ca'
-        self.update_reg_expressions(self._ca_expressions)
 
 
 class RegexFR(BaseParser):
@@ -606,11 +482,11 @@ class RegexFR(BaseParser):
         BaseKeys.CREATED: r'created: (\d{4}-\d{2}-\d{2})',
         BaseKeys.UPDATED: r'last-update: (\d{4}-\d{2}-\d{2})',
         BaseKeys.EXPIRES: r'Expiry Date: (\d{4}-\d{2}-\d{2})',
+        BaseKeys.NAME_SERVERS: r'nserver: *(.+)'
     }
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.nic.fr'
         self.update_reg_expressions(self._fr_expressions)
 
 
@@ -626,7 +502,6 @@ class RegexBR(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.registro.br'
         self.update_reg_expressions(self._br_expressions)
 
 
@@ -636,14 +511,15 @@ class RegexKR(BaseParser):
         BaseKeys.UPDATED: r'Last Updated Date *: (\d{4}\.\s\d{2}\.\s\d{2}\.)',
         BaseKeys.EXPIRES: r'Expiration Date *: (\d{4}\.\s\d{2}\.\s\d{2}\.)',
         BaseKeys.REGISTRANT_NAME: r'Registrant *: (.+)',
-        BaseKeys.DNSSEC: r'DNSSEC *: (.+)',
+        BaseKeys.DNSSEC: r'DNSSEC *: ([a-zA-Z]+)',
         BaseKeys.REGISTRANT_ZIPCODE: r'Registrant Zip Code: *: (.+)',
-        BaseKeys.REGISTRANT_ADDRESS: r'Registrant Address *: (.+)'
+        BaseKeys.REGISTRANT_ADDRESS: r'Registrant Address *: (.+)',
+        BaseKeys.DOMAIN_NAME: r'Domain *: (.+)',
+        BaseKeys.NAME_SERVERS: r'Host Name *: (.+)'
     }
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.kr'
         self.update_reg_expressions(self._kr_expressions)
 
 
@@ -653,13 +529,20 @@ class RegexEU(BaseParser):
     # % discloses any information concerning the registrant.
 
     _eu_expressions = {
-        BaseKeys.REGISTRAR: r"Registrar:\nName: *(.+)",
+        BaseKeys.REGISTRAR: r"Registrar:\n.*Name: (.+)",
     }
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.eu'
         self.update_reg_expressions(self._eu_expressions)
+
+    def parse(self, blob: str) -> Dict[str, Any]:
+        parsed_output = super().parse(blob)
+        name_servers_match = re.search(r"Name servers:\n(.+)", blob, re.DOTALL | re.IGNORECASE)
+        if name_servers_match:
+            name_servers = name_servers_match.group(1).split('\n')
+            parsed_output[BaseKeys.NAME_SERVERS] = [self._process(ns) for ns in name_servers if ns]
+        return parsed_output
 
 
 class RegexDE(BaseParser):
@@ -671,18 +554,16 @@ class RegexDE(BaseParser):
     % This information can be obtained through use of our web-based whois service
     % available at the DENIC website:
     % http://www.denic.de/en/domains/whois-service/web-whois.html
-
     """
 
     _de_expressions = {
-        BaseKeys.UPDATED: r'Changed: (\d{4}\.\s\d{2}\.\s\d{2}\.)',
+        BaseKeys.UPDATED: r'Changed: *(.+)',
         BaseKeys.NAME_SERVERS: r'Nserver: *(.+)',
         BaseKeys.DOMAIN_NAME: r'Domain: *(.+)'
     }
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.denic.de'
         self.update_reg_expressions(self._de_expressions)
 
 
@@ -692,13 +573,26 @@ class RegexUK(BaseParser):
         BaseKeys.UPDATED: r'Last updated:\s*(\d{2}-\w{3}-\d{4})',
         BaseKeys.EXPIRES: r'Expiry date:\s*(\d{2}-\w{3}-\d{4})',
         BaseKeys.REGISTRAR: r'Registrar:\s*(.+)',
-        BaseKeys.NAME_SERVERS: r'Name servers:\s*(.+\s.+\s.+\s.+)',
+        BaseKeys.REGISTRANT_NAME: r'Registrant:\n *(.+)',
+        BaseKeys.STATUS: r'Registration status:\n *(.+)'
     }
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.nic.uk'
         self.update_reg_expressions(self._uk_expressions)
+
+    def parse(self, blob: str) -> Dict[str, Any]:
+        parsed_output = super().parse(blob)
+        # handle registrant address
+        address_match = re.search(r"Registrant's address: *(.+)Data valid", blob, re.DOTALL)
+        if address_match:
+            address_pieces = [m.strip() for m in address_match.group(1).split('\n') if m.strip()]
+            parsed_output[BaseKeys.REGISTRANT_ADDRESS] = ", ".join(address_pieces)
+        # find name servers
+        ns_match = re.search(r"Name servers: *(.+)WHOIS lookup", blob, re.DOTALL)
+        if ns_match:
+            parsed_output[BaseKeys.NAME_SERVERS] = [m.strip() for m in ns_match.group(1).split('\n') if m.strip()]
+        return parsed_output
 
 
 class RegexJP(BaseParser):
@@ -707,13 +601,22 @@ class RegexJP(BaseParser):
         BaseKeys.CREATED: r'\[登録年月日\] *(.+)',
         BaseKeys.EXPIRES: r'\[有効期限\] *(.+)',
         BaseKeys.STATUS: r'\[状態\] *(.+)',
-        BaseKeys.UPDATED: r'\[最終更新\] *(.+)'
+        BaseKeys.UPDATED: r'\[最終更新\] *(.+)',
+        BaseKeys.NAME_SERVERS: r'\[Name Server\]:: *(.+)'
     }
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.jprs.jp'
+
         self.update_reg_expressions(self._jp_expressions)
+
+    def parse(self, blob: str) -> Dict[str, Any]:
+        parsed_output = super().parse(blob)
+        address_match = re.search(r"[Postal Address] *(.+)[電話番号]", blob, re.DOTALL)
+        if address_match:
+            address_pieces = [m.strip() for m in address_match.group(1).split('\n') if m.strip()]
+            parsed_output[BaseKeys.REGISTRANT_ADDRESS] = ", ".join(address_pieces)
+        return parsed_output
 
 
 class RegexAU(BaseParser):
@@ -725,7 +628,6 @@ class RegexAU(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.auda.org.au'
         self.update_reg_expressions(self._au_expressions)
 
 
@@ -742,50 +644,41 @@ class RegexAT(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.nic.at'
         self.update_reg_expressions(self._at_expressions)
+
+    def parse(self, blob: str) -> Dict[str, Any]:
+        parsed_output = {BaseKeys.NAME_SERVERS: self.find_match(r'nserver :*(.+)', blob, many=True)}
+        for key, pattern in self.reg_expressions.items():
+            match = re.search(pattern, blob)
+            if match:
+                parsed_output[key] = self._process(match.group(1))
+        return parsed_output
 
 
 class RegexBE(BaseParser):
     _be_expressions = {
         BaseKeys.CREATED: r'Registered: *(.+)',
-        BaseKeys.REGISTRAR: r'Registrar:\n.+Name:\t\s*(.+)',
-        BaseKeys.NAME_SERVERS: r'Nameservers:\s*(.+\s.+\s.+\s.+)'
+        BaseKeys.REGISTRAR: r'Registrar:\n.+Name: *(.+)',
+        BaseKeys.REGISTRANT_NAME: r'Registrant:\n *(.+)'
     }
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.dns.be'
         self.update_reg_expressions(self._be_expressions)
 
-
-class RegexINFO(BaseParser):
-    _info_expressions = {
-        BaseKeys.REGISTRAR: r'Registrar: *(.+)',
-        BaseKeys.UPDATED: r'Updated Date: *(.+)',
-        BaseKeys.CREATED: r'Creation Date: *(.+)',
-        BaseKeys.EXPIRES: r'Registry Expiry Date: *(.+)',
-        BaseKeys.STATUS: r'Status: *(.+)',
-        BaseKeys.REGISTRANT_NAME: r'Registrant Name: *(.+)',
-        BaseKeys.REGISTRANT_ORGANIZATION: r'Registrant Organization: *(.+)',
-        BaseKeys.REGISTRANT_ADDRESS: r'Registrant Street: *(.+)',
-        BaseKeys.REGISTRANT_CITY: r'Registrant City: *(.+)',
-        BaseKeys.REGISTRANT_STATE: r'Registrant State/Province: *(.+)',
-        BaseKeys.REGISTRANT_ZIPCODE: r'Registrant Postal Code: *(.+)',
-        BaseKeys.REGISTRANT_COUNTRY: r'Registrant Country: *(.+)',
-    }
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.afilias.net'
-        self.update_reg_expressions(self._info_expressions)
+    def parse(self, blob: str) -> Dict[str, Any]:
+        parsed_output = super().parse(blob)
+        ns_match = re.search(r"Name servers: *(.+)Keys: ", blob, re.DOTALL)
+        if ns_match:
+            parsed_output[BaseKeys.NAME_SERVERS] = [m.strip() for m in ns_match.group(1).split('\n') if m.strip()]
+        return parsed_output
 
 
 class RegexRF(BaseParser):  # same as RU
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.tcinet.ru'
+
         self.update_reg_expressions(RegexRU._ru_expressions)
 
 
@@ -793,54 +686,7 @@ class RegexSU(BaseParser):  # same as RU
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.tcinet.ru'
         self.update_reg_expressions(RegexRU._ru_expressions)
-
-
-class RegexClub(BaseParser):
-    _club_expressions = {
-        BaseKeys.REGISTRAR: r'Sponsoring Registrar: *(.+)',
-        BaseKeys.STATUS: r'Domain Status: *(.+)',
-        BaseKeys.REGISTRANT_NAME: r'Registrant Name: *(.+)',
-        BaseKeys.REGISTRANT_CITY: r'Registrant City: *(.+)',
-        BaseKeys.REGISTRANT_STATE: r'Registrant State/Province: *(.+)',
-        BaseKeys.REGISTRANT_ZIPCODE: r'Registrant Postal Code: *(.+)',
-        BaseKeys.REGISTRANT_COUNTRY: r'Registrant Country: *(.+)',
-        BaseKeys.CREATED: r'Domain Registration Date: *(.+)',
-        BaseKeys.EXPIRES: r'Domain Expiration Date: *(.+)',
-        BaseKeys.UPDATED: r'Domain Last Updated Date: *(.+)',
-    }
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.nic.club'
-        self.update_reg_expressions(self._club_expressions)
-
-
-class RegexIO(BaseParser):
-    _io_expressions = {}
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.nic.io'
-        self.update_reg_expressions(self._io_expressions)
-
-
-class RegexBIZ(BaseParser):
-    _biz_expressions = {}
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.nic.biz'
-        self.update_reg_expressions(self._biz_expressions)
-
-
-class RegexMOBI(BaseParser):  # same as ME
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.nic.mobi'
-        self.update_reg_expressions(RegexME._me_expressions)
 
 
 class RegexKG(BaseParser):
@@ -855,8 +701,14 @@ class RegexKG(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.kg'
         self.update_reg_expressions(self._kg_expressions)
+
+    def parse(self, blob: str) -> Dict[str, Any]:
+        parsed_output = super().parse(blob)
+        ns_match = re.search(r"Name servers in the listed order: *(.+)", blob, re.DOTALL)
+        if ns_match:
+            parsed_output[BaseKeys.NAME_SERVERS] = [m.strip() for m in ns_match.group(1).split('\n') if m.strip()]
+        return parsed_output
 
 
 class RegexCH(BaseParser):
@@ -870,7 +722,6 @@ class RegexCH(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.nic.ch'
         self.update_reg_expressions(self._ch_expressions)
 
 
@@ -878,7 +729,6 @@ class RegexLI(BaseParser):  # same as CH
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.nic.li'
         self.update_reg_expressions(RegexCH._ch_expressions)
 
 
@@ -896,7 +746,6 @@ class RegexID(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.id'
         self.update_reg_expressions(self._id_expressions)
 
 
@@ -909,21 +758,12 @@ class RegexSE(BaseParser):
         BaseKeys.DNSSEC: r'dnssec\.*: *(.+)',
         BaseKeys.STATUS: r'status\.*: *(.+)',
         BaseKeys.REGISTRAR: r'registrar: *(.+)',
+        BaseKeys.NAME_SERVERS: r'nserver: *(.+)',
     }
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.iis.se'
         self.update_reg_expressions(self._se_expressions)
-
-
-class RegexJobs(BaseParser):
-    _jobs_expressions = {}
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.nic.jobs'
-        self.update_reg_expressions(self._jobs_expressions)
 
 
 class RegexIT(BaseParser):
@@ -940,7 +780,6 @@ class RegexIT(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.nic.it'
         self.update_reg_expressions(self._it_expressions)
 
 
@@ -954,7 +793,6 @@ class RegexSA(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.nic.net.sa'
         self.update_reg_expressions(self._sa_expressions)
 
 
@@ -973,7 +811,6 @@ class RegexSK(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.sk-nic.sk'
         self.update_reg_expressions(self._sk_expressions)
 
 
@@ -991,7 +828,6 @@ class RegexMX(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.mx'
         self.update_reg_expressions(self._mx_expressions)
 
 
@@ -1009,7 +845,6 @@ class RegexTW(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.twnic.net.tw'
         self.update_reg_expressions(self._tw_expressions)
 
 
@@ -1023,24 +858,43 @@ class RegexTR(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.nic.tr'
         self.update_reg_expressions(self._tr_expressions)
 
 
 class RegexIS(BaseParser):
     _is_expressions = {
-        BaseKeys.REGISTRANT_NAME: r'registrant: *(.+)',
-        BaseKeys.REGISTRANT_ADDRESS: r'address\.*: *(.+)',
-        BaseKeys.CREATED: r'created\.*: *(.+)',
+        BaseKeys.DOMAIN_NAME: r'domain: *(.+)',
         BaseKeys.CREATED: r'created\.*: *(.+)',
         BaseKeys.EXPIRES: r'expires\.*: *(.+)',
         BaseKeys.DNSSEC: r'dnssec\.*: *(.+)',
+        BaseKeys.NAME_SERVERS: r'nserver\.*: *(.+)'
     }
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.isnic.is'
         self.update_reg_expressions(self._is_expressions)
+
+    def parse(self, blob: str) -> Dict[str, Any]:
+        parsed_output = super().parse(blob)
+        # find first instance of person/role (registrant)
+        registrant_block = False
+        registrant_name = None
+        addresses = []
+        for line in blob.split('\n'):
+            if line.startswith('role') or line.startswith('person'):
+                if registrant_block:
+                    break
+                else:
+                    registrant_name = line.split(':')[-1].strip()
+                    registrant_block = True
+            elif line.startswith('address:'):
+                address = line.split(':')[-1].strip()
+                addresses.append(address)
+
+        parsed_output[BaseKeys.REGISTRANT_NAME] = registrant_name
+        # join the address lines together and save
+        parsed_output[BaseKeys.REGISTRANT_ADDRESS] = ", ".join(addresses)
+        return parsed_output
 
 
 class RegexDK(BaseParser):
@@ -1058,17 +912,7 @@ class RegexDK(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.dk-hostmaster.dk'
         self.update_reg_expressions(self._dk_expressions)
-
-
-class RegexAI(BaseParser):
-    _ai_expressions = {}
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.nic.ai'
-        self.update_reg_expressions(self._ai_expressions)
 
 
 class RegexIL(BaseParser):
@@ -1083,7 +927,6 @@ class RegexIL(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.isoc.org.il'
         self.update_reg_expressions(self._li_expressions)
 
 
@@ -1106,7 +949,6 @@ class RegexFI(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.fi'
         self.update_reg_expressions(self._fi_expressions)
 
 
@@ -1125,7 +967,6 @@ class RegexNU(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.iis.nu'
         self.update_reg_expressions(self._nu_expression)
 
 
@@ -1144,26 +985,7 @@ class RegexPT(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.dns.pt'
         self.update_reg_expressions(self._pt_expression)
-
-
-class RegexIN(BaseParser):
-    _in_expression = {}
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.registry.in'
-        self.update_reg_expressions(self._in_expression)
-
-
-class RegexCAT(BaseParser):
-    _cat_expressions = {}
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.nic.cat'
-        self.update_reg_expressions(self._cat_expressions)
 
 
 class RegexIE(BaseParser):
@@ -1178,7 +1000,6 @@ class RegexIE(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.iedr.ie'
         self.update_reg_expressions(self._ie_expressions)
 
 
@@ -1199,7 +1020,6 @@ class RegexNZ(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.srs.net.nz'
         self.update_reg_expressions(self._nz_expressions)
 
 
@@ -1218,13 +1038,15 @@ class RegexLU(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.dns.lu'
+
         self.update_reg_expressions(self._lu_expressions)
 
 
 class RegexCZ(BaseParser):
     _cz_expressions = {
-        BaseKeys.REGISTRANT_NAME: r'registrant: *(.+)',
+        BaseKeys.DOMAIN_NAME: r'domain: *(.+)',
+        BaseKeys.REGISTRANT_NAME: r'name: *(.+)',
+        BaseKeys.REGISTRANT_ORGANIZATION: r'org: *(.+)',
         BaseKeys.REGISTRAR: r'registrar: *(.+)',
         BaseKeys.CREATED: r'registered: *(.+)',
         BaseKeys.UPDATED: r'changed: *(.+)',
@@ -1234,17 +1056,29 @@ class RegexCZ(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.nic.cz'
         self.update_reg_expressions(self._cz_expressions)
 
-
-class RegexONLINE(BaseParser):
-    _online_expressions = {}
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.nic.online'
-        self.update_reg_expressions(self._online_expressions)
+    def parse(self, blob: str) -> Dict[str, Any]:
+        parsed_output = super().parse(blob)
+        addresses = []
+        seen_contact = False
+        # extract address from registrant info block
+        for line in blob.split('\n'):
+            # check that this is first "contact" block
+            if line.startswith('contact:'):
+                if not seen_contact:
+                    seen_contact = True
+                else:
+                    # if not; stop
+                    break
+            # append address
+            elif line.startswith('address:'):
+                line = line.split(':')[-1].strip()
+                addresses.append(line)
+        # just combine address lines; don't assume city/zipcode/country happen in any specific order
+        address = ", ".join(addresses)
+        parsed_output[BaseKeys.REGISTRANT_ADDRESS] = address
+        return parsed_output
 
 
 class RegexHR(BaseParser):
@@ -1260,7 +1094,6 @@ class RegexHR(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.dns.hr'
         self.update_reg_expressions(self._hr_expressions)
 
 
@@ -1281,13 +1114,12 @@ class RegexHK(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.hkirc.hk'
         self.update_reg_expressions(self._hk_expressions)
 
 
 class RegexUA(BaseParser):
     _ua_expressions = {
-        'domain_name': r'domain: *(.+)',
+        BaseKeys.DOMAIN_NAME: r'domain: *(.+)',
         BaseKeys.STATUS: r'status: *(.+)',
         BaseKeys.REGISTRAR: r'(?<=Registrar:)[\s\W\w]*?organization-loc:(.*)',
         BaseKeys.REGISTRANT_NAME: r'(?<=Registrant:)[\s\W\w]*?organization-loc:(.*)',
@@ -1304,54 +1136,7 @@ class RegexUA(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.ua'
         self.update_reg_expressions(self._ua_expressions)
-
-
-class RegexHN(BaseParser):
-    _hn_expressions = {
-        BaseKeys.STATUS: r'Domain Status: *(.+)',
-        BaseKeys.REGISTRAR: r'Registrar: *(.+)',
-        BaseKeys.REGISTRANT_NAME: r'Registrant Name: (.+)',
-        BaseKeys.REGISTRANT_ORGANIZATION: r'Registrant Organization: (.+)',
-        BaseKeys.REGISTRANT_CITY: r'Registrant City: (.*)',
-        BaseKeys.REGISTRANT_ADDRESS: r'Registrant Street: (.*)',
-        BaseKeys.REGISTRANT_STATE: r'Registrant State/Province: (.*)',
-        BaseKeys.REGISTRANT_ZIPCODE: r'Registrant Postal Code: (.*)',
-        BaseKeys.REGISTRANT_COUNTRY: r'Registrant Country: (.+)',
-        BaseKeys.UPDATED: r'Updated Date: *(.+)',
-        BaseKeys.CREATED: r'Creation Date: *(.+)',
-        BaseKeys.EXPIRES: r'Registry Expiry Date: *(.+)',
-        BaseKeys.NAME_SERVERS: r'Name Server: *(.+)'
-    }
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.nic.hn'
-        self.update_reg_expressions(self._hn_expressions)
-
-
-class RegexLAT(BaseParser):
-    _lat_expressions = {
-        BaseKeys.STATUS: r'Domain Status: *(.+)',
-        BaseKeys.REGISTRAR: r'Registrar: *(.+)',
-        BaseKeys.REGISTRANT_NAME: r'Registrant Name: (.+)',
-        BaseKeys.REGISTRANT_ORGANIZATION: r'Registrant Organization: (.+)',
-        BaseKeys.REGISTRANT_CITY: r'Registrant City: (.*)',
-        BaseKeys.REGISTRANT_ADDRESS: r'Registrant Street: (.*)',
-        BaseKeys.REGISTRANT_STATE: r'Registrant State/Province: (.*)',
-        BaseKeys.REGISTRANT_ZIPCODE: r'Registrant Postal Code: (.*)',
-        BaseKeys.REGISTRANT_COUNTRY: r'Registrant Country: (.+)',
-        BaseKeys.UPDATED: r'Updated Date: *(.+)',
-        BaseKeys.CREATED: r'Creation Date: *(.+)',
-        BaseKeys.EXPIRES: r'Registry Expiry Date: *(.+)',
-        BaseKeys.NAME_SERVERS: r'Name Server: *(.+)'
-    }
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.nic.lat'
-        self.update_reg_expressions(self._lat_expressions)
 
 
 class RegexCN(BaseParser):
@@ -1359,34 +1144,12 @@ class RegexCN(BaseParser):
         BaseKeys.REGISTRAR: r'Sponsoring Registrar: *(.+)',
         BaseKeys.CREATED: r'Registration Time: *(.+)',
         BaseKeys.EXPIRES: r'Expiration Time: *(.+)',
-        BaseKeys.NAME_SERVERS: r'Name Server: *(.+)',
-        BaseKeys.STATUS: r'Domain Status: *(.+)',
-        BaseKeys.DNSSEC: r'DNSSEC: *([\S]+)',
         BaseKeys.REGISTRANT_NAME: r'Registrant: *(.+)',
     }
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.cnnic.cn'
         self.update_reg_expressions(self._cn_expressions)
-
-
-class RegexAPP(BaseParser):
-    _app_expressions = {}
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.nic.google'
-        self.update_reg_expressions(self._app_expressions)
-
-
-class RegexMONEY(BaseParser):
-    _money_expressions = {}
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.nic.money'
-        self.update_reg_expressions(self._money_expressions)
 
 
 class RegexAR(BaseParser):
@@ -1402,7 +1165,6 @@ class RegexAR(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.nic.ar'
         self.update_reg_expressions(self._ar_expressions)
 
 
@@ -1410,11 +1172,6 @@ class RegexBY(BaseParser):
     _by_expressions = {
         BaseKeys.DOMAIN_NAME: r'Domain Name: *(.+)',
         BaseKeys.REGISTRAR: r'Registrar: *(.+)',
-        BaseKeys.UPDATED: r'Updated Date: *(.+)',
-        BaseKeys.CREATED: r'Creation Date: *(.+)',
-        BaseKeys.EXPIRES: r'Expiration Date: *(.+)',
-        BaseKeys.NAME_SERVERS: r'Name Server: *(.+)',
-        BaseKeys.STATUS: r'Domain Status: *(.+)',
         BaseKeys.REGISTRANT_NAME: r'Person: *(.+)',
         BaseKeys.REGISTRANT_ORGANIZATION: r'Org: *(.+)',
         BaseKeys.REGISTRANT_COUNTRY: r'Country: *(.+)',
@@ -1423,31 +1180,31 @@ class RegexBY(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.cctld.by'
         self.update_reg_expressions(self._by_expressions)
 
 
 class RegexCR(BaseParser):
     _cr_expressions = {
         BaseKeys.DOMAIN_NAME: r'domain: *(.+)',
-        BaseKeys.REGISTRANT_NAME: r'registrant: *(.+)',
+        BaseKeys.REGISTRANT_NAME: r'name: *(.+)',
         BaseKeys.REGISTRAR: r'registrar: *(.+)',
         BaseKeys.UPDATED: r'changed: *(.+)',
         BaseKeys.CREATED: r'registered: *(.+)',
         BaseKeys.EXPIRES: r'expire: *(.+)',
         BaseKeys.NAME_SERVERS: r'nserver: *(.+)',
-        BaseKeys.STATUS: r'status: *(.+)',
         BaseKeys.REGISTRANT_ORGANIZATION: r'org: *(.+)',
-        BaseKeys.REGISTRANT_ADDRESS: r'address: *(.+)',
     }
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.nic.cr'
         self.update_reg_expressions(self._cr_expressions)
 
+    def parse(self, blob: str) -> Dict[str, Any]:
+        # CR server has the same format as CZ
+        return RegexCZ().parse(blob)
 
-class RegexVE(BaseParser):
+
+class RegexVE(BaseParser):  # double check
     _ve_expressions = {
         BaseKeys.DOMAIN_NAME: r'domain: *(.+)',
         BaseKeys.CREATED: 'registered: *(.+)',
@@ -1466,17 +1223,7 @@ class RegexVE(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.nic.ve'
         self.update_reg_expressions(self._ve_expressions)
-
-
-class RegexDO(BaseParser):
-    _do_expressions = {}
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.nic.do'
-        self.update_reg_expressions(self._do_expressions)
 
 
 class RegexAE(BaseParser):
@@ -1489,7 +1236,6 @@ class RegexAE(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.aeda.net.ae'
         self.update_reg_expressions(self._ae_expressions)
 
 
@@ -1506,7 +1252,6 @@ class RegexSI(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.register.si'
         self.update_reg_expressions(self._si_expressions)
 
 
@@ -1531,7 +1276,6 @@ class RegexNO(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.norid.no'
         self.update_reg_expressions(self._no_expressions)
 
 
@@ -1552,17 +1296,7 @@ class RegexKZ(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.nic.kz'
         self.update_reg_expressions(self._kz_expressions)
-
-
-class RegexTOP(BaseParser):
-    _top_expressions = {}
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.nic.top'
-        self.update_reg_expressions(self._top_expressions)
 
 
 class RegexIR(BaseParser):
@@ -1572,100 +1306,49 @@ class RegexIR(BaseParser):
         BaseKeys.REGISTRANT_ORGANIZATION: r'org: *(.+)',
         BaseKeys.REGISTRANT_NAME: r'remarks:\s+\(Domain Holder\) *(.+)',
         BaseKeys.REGISTRANT_ADDRESS: r'remarks:\s+\(Domain Holder Address\) *(.+)',
-        BaseKeys.NAME_SERVERS: r'nserver: *(.+)'
+        BaseKeys.NAME_SERVERS: r'nserver: *(.+)',
+        BaseKeys.DOMAIN_NAME: r'domain: *(.+)',
     }
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.nic.ir'
         self.update_reg_expressions(self._ir_expressions)
-
-    def parse(self, blob: str) -> Dict[str, Any]:
-        """
-        Custom address parsing required.
-        """
-        parsed_output = {}
-        for key, regex in self.reg_expressions.items():
-            if key == BaseKeys.REGISTRANT_ADDRESS:
-                match = self.find_match(regex, blob)
-                # need to break up from address field
-                address, city, state, country = match.split(', ')
-                parsed_output[BaseKeys.REGISTRANT_ADDRESS] = address
-                parsed_output[BaseKeys.REGISTRANT_CITY] = city
-                parsed_output[BaseKeys.REGISTRANT_STATE] = state
-                parsed_output[BaseKeys.REGISTRANT_COUNTRY] = country
-            elif not parsed_output.get(key):
-                parsed_output[key] = self.find_match(regex, blob, many=key in self.multiple_match_keys)
-
-            # convert dates
-            if key in self.date_keys and parsed_output.get(key, None):
-                parsed_output[key] = self._parse_date(parsed_output.get(key))
-
-        return parsed_output
-
-
-class RegexXYZ(BaseParser):
-    _xyz_expressions = {}
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.nic.xyz'
-        self.update_reg_expressions(self._xyz_expressions)
-
-
-class RegexICU(BaseParser):
-    _icu_expressions = {}
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.nic.icu'
-        self.update_reg_expressions(self._icu_expressions)
 
 
 class RegexTK(BaseParser):
     _tk_expressions = {
-        BaseKeys.CREATED: r'Domain registered: *(.+)',
-        BaseKeys.EXPIRES: r'Record will expire on: *(.+)'
+        BaseKeys.REGISTRANT_ORGANIZATION: r'(?<=Owner contact)[\s\S]*?Organization:(.*)',
+        BaseKeys.REGISTRANT_NAME: r'(?<=Owner contact)[\s\S]*?Name:(.*)',
+        BaseKeys.REGISTRANT_ADDRESS: r'(?<=Owner contact)[\s\S]*?Address:(.*)',
+        BaseKeys.REGISTRANT_STATE: r'(?<=Owner contact)[\s\S]*?State:(.*)',
+        BaseKeys.REGISTRANT_CITY: r'(?<=Owner contact)[\s\S]*?City:(.*)',
+        BaseKeys.REGISTRANT_COUNTRY: r'(?<=Owner contact)[\s\S]*?Country:(.*)',
     }
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.dot.tk'
         self.update_reg_expressions(self._tk_expressions)
 
     def parse(self, blob: str) -> Dict[str, Any]:
-        parsed_output = {}
-        registrant_match = re.search(r'Owner contact:(?:.*?)*(.+)Admin contact:', blob, re.IGNORECASE | re.DOTALL)
-        if registrant_match:
-            info = registrant_match.group().split('\n')
-            for line in info:
-                if 'Name:' in line:
-                    parsed_output[BaseKeys.REGISTRANT_NAME] = self._process(line.split(':')[-1])
-                elif 'Organization:' in line:
-                    parsed_output[BaseKeys.REGISTRANT_ORGANIZATION] = self._process(line.split(':')[-1])
-                elif 'Zipcode:' in line:
-                    parsed_output[BaseKeys.REGISTRANT_ZIPCODE] = self._process(line.split(':')[-1])
-                elif 'City:' in line:
-                    parsed_output[BaseKeys.REGISTRANT_CITY] = self._process(line.split(':')[-1])
-                elif 'State:' in line:
-                    parsed_output[BaseKeys.REGISTRANT_STATE] = self._process(line.split(':')[-1])
-                elif 'Country:' in line:
-                    parsed_output[BaseKeys.REGISTRANT_COUNTRY] = self._process(line.split(':')[-1])
-                elif 'Address:' in line:
-                    parsed_output[BaseKeys.REGISTRANT_ADDRESS] = self._process(line.split(':')[-1])
-
-        name_server_match = re.search(r'Domain Nameservers:(?:.*?)*(.+)Domain registered', blob, re.IGNORECASE | re.DOTALL)
+        parsed_output = super().parse(blob)
+        # name servers
+        name_server_match = re.search(r'Domain Nameservers:(?:.*?)*(.+)Domain registered', blob,
+                                      re.IGNORECASE | re.DOTALL)
         if name_server_match:
             name_servers = [self._process(m) for m in name_server_match.group(1).split('\n')]
             parsed_output[BaseKeys.NAME_SERVERS] = [ns for ns in name_servers if ns]
 
-        created_match = self.find_match(self._tk_expressions[BaseKeys.CREATED], blob)
-        parsed_output[BaseKeys.CREATED] = datetime.datetime.strptime(created_match, '%m/%d/%Y')
+        # a date parser exists for '%d/%m/%Y', but this interferes with the parser needed
+        # for this one, which is '%m/%d/%Y', so this date format needs to be parsed separately here
+        created_match = re.search(r'Domain registered: *(.+)', blob, re.IGNORECASE)
+        if created_match:
+            parsed_output[BaseKeys.CREATED] = datetime.datetime.strptime(created_match.group(1), '%m/%d/%Y')
+        expires_match = re.search(r'Record will expire on: *(.+)', blob, re.IGNORECASE)
+        if expires_match:
+            parsed_output[BaseKeys.EXPIRES] = datetime.datetime.strptime(expires_match.group(1), '%m/%d/%Y')
 
-        expires_match = self.find_match(self._tk_expressions[BaseKeys.EXPIRES], blob)
-        parsed_output[BaseKeys.EXPIRES] = datetime.datetime.strptime(expires_match, '%m/%d/%Y')
-
-        domain_name_match = re.search(f'Domain name:(?:.*?)*(.+)Owner contact:', blob, re.IGNORECASE|re.DOTALL)
+        # split domain and status
+        domain_name_match = re.search(f'Domain name:(?:.*?)*(.+)Owner contact:', blob, re.IGNORECASE | re.DOTALL)
         if domain_name_match:
             domain_and_status = domain_name_match.group(1).split(' is ')
             if len(domain_and_status) > 1:
@@ -1684,7 +1367,6 @@ class RegexCC(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'ccwhois.verisign-grs.com'
         self.update_reg_expressions(self._cc_expressions)
 
 
@@ -1693,80 +1375,45 @@ class RegexEDU(BaseParser):
         BaseKeys.CREATED: 'Domain record activated: *(.+)',
         BaseKeys.UPDATED: 'Domain record last updated: *(.+)',
         BaseKeys.EXPIRES: 'Domain expires: *(.+)',
-        BaseKeys.REGISTRANT_NAME: r'Registrant:(.*?)Admin',
-        BaseKeys.NAME_SERVERS: r'Name Servers:(.*?)Domain'
     }
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.educause.edu'
         self.update_reg_expressions(self._edu_expressions)
 
     def parse(self, blob: str) -> Dict[str, Any]:
-        parsed_output = {}
-        processed_registrant = False
-        for key, regex in self.reg_expressions.items():
-            if key.startswith('registrant'):
-                if not processed_registrant:
-                    # process all registrant information here
-                    match = self.find_match(regex, blob, flags=re.DOTALL | re.IGNORECASE, many=False)
-                    registrant_info_list = match.split('\n\t')
-                    # registrant name is always first in split output
-                    parsed_output[BaseKeys.REGISTRANT_NAME] = registrant_info_list[0]
-                    # country is always last line
-                    parsed_output[BaseKeys.REGISTRANT_COUNTRY] = registrant_info_list[-1]
-                    # registrant address is always third-to-last line
-                    parsed_output[BaseKeys.REGISTRANT_ADDRESS] = registrant_info_list[-3]
-                    # break up city, state, and zipcode information; always second-to-last line
-                    city, state_zipcode = registrant_info_list[-2].split(',')
-                    state, zipcode = state_zipcode.lstrip().split()
-                    parsed_output[BaseKeys.REGISTRANT_CITY] = city
-                    parsed_output[BaseKeys.REGISTRANT_STATE] = state
-                    parsed_output[BaseKeys.REGISTRANT_ZIPCODE] = zipcode
-                    # sometimes registrant organization exists as 2nd item
-                    if len(registrant_info_list) > 4:
-                        parsed_output[BaseKeys.REGISTRANT_ORGANIZATION] = registrant_info_list[1]
-                    processed_registrant = True
+        parsed_output = super().parse(blob)
+        registrant_match = re.search(r'Registrant:*(.+)Administrative Contact', blob, re.DOTALL | re.IGNORECASE)
+        if registrant_match:
+            reg_info_raw = registrant_match.group(1).split('\n')
+            # remove duplicates and empty strings
+            reg_info_clean = []
+            for value in reg_info_raw:
+                value = value.strip()
+                if value and value not in reg_info_clean:
+                    reg_info_clean.append(value)
+            # country is usually either last or third to last
+            country_index = -3
+            for i, value in enumerate(reg_info_clean):
+                if len(value) == 2:
+                    country_index = i
+                    break
 
-            elif key == BaseKeys.NAME_SERVERS:
-                match = self.find_match(regex, blob, flags=re.DOTALL | re.IGNORECASE, many=False)
-                parsed_output[BaseKeys.NAME_SERVERS] = match.split('\n\t')
+            org = reg_info_clean[0]
+            address = ", ".join(reg_info_clean[1:country_index])
+            country = reg_info_clean[country_index]
 
-            else:
-                parsed_output[key] = self.find_match(regex, blob)
+            parsed_output[BaseKeys.REGISTRANT_NAME] = org
+            parsed_output[BaseKeys.REGISTRANT_ORGANIZATION] = org
+            parsed_output[BaseKeys.REGISTRANT_COUNTRY] = country
+            parsed_output[BaseKeys.REGISTRANT_ADDRESS] = address
 
-            # convert dates
-            if key in self.date_keys and parsed_output.get(key, None):
-                parsed_output[key] = self._parse_date(parsed_output.get(key))
+        name_servers_match = re.search(r'Name Servers:(.*?)Domain', blob, re.IGNORECASE | re.DOTALL)
+        if name_servers_match:
+            name_servers = [self._process(m) for m in name_servers_match.group(1).split('\n')]
+            parsed_output[BaseKeys.NAME_SERVERS] = [ns for ns in name_servers if ns]
 
         return parsed_output
-
-
-class RegexBUZZ(BaseParser):
-    _buzz_expressions = {}
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'nic.whois.buzz'
-        self.update_reg_expressions(self._buzz_expressions)
-
-
-class RegexLIVE(BaseParser):
-    _live_expressions = {}
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'nic.whois.live'
-        self.update_reg_expressions(self._live_expressions)
-
-
-class RegexGA(BaseParser):
-    _ga_expressions = {}
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'GA.whois-servers.net'
-        self.update_reg_expressions(self._ga_expressions)
 
 
 class RegexLV(BaseParser):
@@ -1774,11 +1421,11 @@ class RegexLV(BaseParser):
         BaseKeys.REGISTRAR: r'\[Registrar\]\n(?:.*)\nName:(.*)+',
         BaseKeys.REGISTRANT_NAME: r'\[Holder\]\n(?:.*)\nName:(.*)+',
         BaseKeys.REGISTRANT_ADDRESS: r'\[Holder\]\n(?:.*)\Address:(.*)+',
+        BaseKeys.NAME_SERVERS: r'Nserver: *(.+)'
     }
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.nic.lv'
         self.update_reg_expressions(self._lv_expressions)
 
 
@@ -1787,7 +1434,6 @@ class RegexGQ(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.dominio.gq'
         self.update_reg_expressions(self._gq_expressions)
 
     def parse(self, blob: str) -> Dict[str, Any]:
@@ -1802,25 +1448,15 @@ class RegexNL(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.domain-registry.nl'
         self.update_reg_expressions(self._nl_expressions)
 
     def parse(self, blob: str) -> Dict[str, Any]:
         parsed_output = super().parse(blob)
-        name_servers_match = re.search(r'Domain nameservers:\n(.+)Record maintained', blob, re.DOTALL|re.IGNORECASE)
+        name_servers_match = re.search(r'Domain nameservers:\n(.+)Record maintained', blob, re.DOTALL | re.IGNORECASE)
         if name_servers_match:
             name_servers = [self._process(m) for m in name_servers_match.group(1).split('\n')]
             parsed_output[BaseKeys.NAME_SERVERS] = [ns for ns in name_servers if ns]
         return parsed_output
-
-
-class RegexVG(BaseParser):
-    _vg_expressions = {}
-
-    def __init__(self):
-        super().__init__()
-        self.server = 'whois.nic.vg'
-        self.update_reg_expressions(self._vg_expressions)
 
 
 class RegexMA(BaseParser):
@@ -1830,5 +1466,4 @@ class RegexMA(BaseParser):
 
     def __init__(self):
         super().__init__()
-        self.server = 'whois.registre.ma'
         self.update_reg_expressions(self._ma_expressions)

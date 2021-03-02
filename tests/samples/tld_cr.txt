@@ -1,0 +1,70 @@
+%
+% Whoisd Server Version: 3.10.2
+% Timestamp: Tue Feb 23 01:29:04 2021
+
+domain:       amazon.cr
+registrant:   CL62533-007244
+admin-c:      CL62533-007381
+nsset:        AMAZON_CR
+registrar:    COMLAUDE
+registered:   23.03.2008 18:00:00
+changed:      05.02.2021 07:02:42
+expire:       24.03.2022
+
+contact:      CL62533-007244
+org:          Amazon Technologies, Inc.
+name:         Amazon Technologies, Inc.
+address:      P.O. Box 8102
+address:      Reno
+address:      89507
+address:      Nevada
+address:      US
+phone:        +1.2062664064
+e-mail:       hostmaster@amazon.com
+registrar:    COMLAUDE
+created:      27.03.2017 18:25:35
+
+contact:      CL62533-007381
+org:          Amazon Technologies, Inc.
+name:         Amazon Technologies, Inc.
+address:      PO BOX 8102
+address:      Attn: Trademarks
+address:      Reno
+address:      89507
+address:      Nevada
+address:      US
+phone:        +1.2062664064
+e-mail:       hostmaster@amazon.com
+registrar:    COMLAUDE
+created:      27.03.2017 18:25:35
+changed:      07.10.2020 23:14:15
+
+nsset:        AMAZON_CR
+nserver:      pdns1.ultradns.net
+nserver:      ns2.p31.dynect.net
+nserver:      pdns6.ultradns.co.uk
+nserver:      pdns2.ultradns.net
+nserver:      pdns5.ultradns.info
+nserver:      ns3.p31.dynect.net
+nserver:      pdns3.ultradns.org
+nserver:      pdns4.ultradns.org
+nserver:      ns1.p31.dynect.net
+tech-c:       CON-66
+registrar:    NIC-REG1
+created:      03.06.2011 12:24:21
+changed:      28.08.2019 07:58:25
+
+contact:      CON-66
+org:          MarkMonitor Inc.
+name:         MarkMonitor Inc
+address:      2150 S Bonito Way Suite 150
+address:      Meridian
+address:      83642
+address:      Idaho
+address:      US
+phone:        +1.2083895740
+fax-no:       +1.2083895771
+e-mail:       ccops@markmonitor.com
+registrar:    NIC-REG1
+created:      03.06.2011 22:22:36
+changed:      01.02.2021 10:43:15

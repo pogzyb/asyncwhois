@@ -29,12 +29,13 @@ import subprocess
 import sys
 from typing import Union, Dict, Any
 
-import aiodns  # 2.0.0
-import tldextract  # 2.2.2
+import aiodns  # >= 2.0.0
+import tldextract  # >= 2.2.2
 
 from .errors import QueryError
 from .parser import WhoIsParser
 from .query import WhoIsQuery, AsyncWhoIsQuery
+from .servers import CountryCodeTLD, GenericTLD, SponsoredTLD
 
 # https://www.regextester.com/104038
 IPV4_OR_V6 = re.compile(
@@ -46,6 +47,15 @@ class PyWhoIs:
     def __init__(self):
         self.__query = None
         self.__parser = None
+
+    @staticmethod
+    def _get_server_name(tld: str) -> Union[str, None]:
+        tld_converted = tld.upper().replace('-', '_')
+        for servers in [CountryCodeTLD, GenericTLD, SponsoredTLD]:
+            if hasattr(servers, tld_converted):
+                server = getattr(servers, tld_converted)
+                return server
+        return None
 
     @staticmethod
     def _get_tld_extract(url: str) -> tldextract.tldextract.ExtractResult:
@@ -129,7 +139,8 @@ class PyWhoIs:
 
         domain_and_tld = extract_result.domain + '.' + tld
         parser = WhoIsParser(tld)
-        query = WhoIsQuery(domain_and_tld, parser._parser.server, timeout)
+        server = cls._get_server_name(tld)
+        query = WhoIsQuery(domain_and_tld, server, timeout)
         parser.parse(query.query_output)
         pywhois.__query = query
         pywhois.__parser = parser
@@ -190,8 +201,9 @@ class PyWhoIs:
             tld = tld.split('.')[-1]
 
         domain_and_tld = extract_result.domain + '.' + tld
+        server = cls._get_server_name(tld)
+        query = await AsyncWhoIsQuery.create(domain_and_tld, server, timeout)
         parser = WhoIsParser(tld)
-        query = await AsyncWhoIsQuery.create(domain_and_tld, parser._parser.server, timeout)
         parser.parse(query.query_output)
         pywhois.__query = query
         pywhois.__parser = parser
