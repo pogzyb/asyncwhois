@@ -8,7 +8,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     @staticmethod
     def get_txt(tld: str):
-        with open(os.path.join(os.getcwd(), f"tests/samples/tld_{tld}.txt")) as txt_input:
+        with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), f"samples/tld_{tld}.txt")) as txt_input:
             query_output = txt_input.read()
         return query_output
 
@@ -155,7 +155,7 @@ class TestWhoIsParsers(unittest.TestCase):
         self.assertEqual(parser.parser_output.get("registrar"), None)
         # registrant
         self.assertEqual(parser.parser_output.get("registrant_organization"), "Google Inc.")
-        self.assertEqual(parser.parser_output.get("registrant_name"), "(Domain Holder) Google Inc.")
+        self.assertEqual(parser.parser_output.get("registrant_name"), "Google Inc.")
 
     def test_parser_icu(self):
         query_output = self.get_txt('icu')
@@ -235,8 +235,8 @@ class TestWhoIsParsers(unittest.TestCase):
         self.assertEqual(parser.parser_output.get("registrant_organization"), None)
         self.assertEqual(parser.parser_output.get("registrant_name"), None)
         # misc
-        self.assertEqual(len(parser.parser_output.get("name_servers")), 1)
-        self.assertEqual(len(parser.parser_output.get("status")), 0)
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 4)
+        self.assertEqual(len(parser.parser_output.get("status")), 1)
 
     def test_parser_cl(self):
         query_output = self.get_txt('cl')
@@ -268,10 +268,10 @@ class TestWhoIsParsers(unittest.TestCase):
         self.assertEqual(created_date.year, 2000)
         self.assertEqual(created_date.month, 12)
         self.assertEqual(created_date.day, 12)
-        self.assertEqual(parser.parser_output.get("registrar"), " MarkMonitor Inc.")
+        self.assertEqual(parser.parser_output.get("registrar"), "MarkMonitor Inc.")
         # registrant
         self.assertEqual(parser.parser_output.get("registrant_organization"), None)
-        self.assertEqual(parser.parser_output.get("registrant_name"), None)
+        self.assertEqual(parser.parser_output.get("registrant_name"), "Not shown, please visit www.dnsbelgium.be for webbased whois.")
 
     def test_parser_de(self):
         query_output = self.get_txt('de')
@@ -452,3 +452,601 @@ class TestWhoIsParsers(unittest.TestCase):
         self.assertEqual(parser.parser_output.get("dnssec"), "unsigned")
         self.assertEqual(len(parser.parser_output.get("name_servers")), 4)
         self.assertEqual(len(parser.parser_output.get("status")), 1)
+
+    def test_parser_ru(self):
+        query_output = self.get_txt('ru')
+        parser = WhoIsParser('ru')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        expires_date = parser.parser_output.get("expires")
+        self.assertEqual(created_date.year, 2004)
+        self.assertEqual(expires_date.year, 2021)
+        self.assertEqual(created_date.month, 3)
+        self.assertEqual(expires_date.month, 3)
+        self.assertEqual(created_date.day, 3)
+        self.assertEqual(expires_date.day, 4)
+        # registrant
+        self.assertEqual(parser.parser_output.get("registrant_organization"), "Google LLC")
+
+    def test_parser_edu(self):
+        query_output = self.get_txt('edu')
+        parser = WhoIsParser('edu')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        updated_date = parser.parser_output.get("updated")
+        expires_date = parser.parser_output.get("expires")
+        self.assertEqual(created_date.year, 1985)
+        self.assertEqual(updated_date.year, 2020)
+        self.assertEqual(expires_date.year, 2021)
+        self.assertEqual(created_date.month, 10)
+        self.assertEqual(updated_date.month, 12)
+        self.assertEqual(expires_date.month, 7)
+        self.assertEqual(created_date.day, 7)
+        self.assertEqual(updated_date.day, 26)
+        self.assertEqual(expires_date.day, 31)
+        # geo
+        self.assertEqual(parser.parser_output.get("registrant_state"), None)
+        self.assertEqual(parser.parser_output.get("registrant_city"), None)
+        self.assertEqual(parser.parser_output.get("registrant_country"), "US")
+        self.assertEqual(parser.parser_output.get("registrant_zipcode"), None)
+        self.assertEqual(parser.parser_output.get("registrant_address"),
+                         'ITCS, Arbor Lakes, 4251 Plymouth Road, Ann Arbor, MI 48105-2785')
+        # registrant
+        self.assertEqual(parser.parser_output.get("registrant_organization"), "University of Michigan -- ITD")
+        self.assertEqual(parser.parser_output.get("registrant_name"), "University of Michigan -- ITD")
+        # misc
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 3)
+
+    def test_parser_info(self):
+        query_output = self.get_txt('info')
+        parser = WhoIsParser('info')
+        parser.parse(query_output)
+        created_date = parser.parser_output.get("created")
+        updated_date = parser.parser_output.get("updated")
+        expires_date = parser.parser_output.get("expires")
+        self.assertEqual(created_date.year, 2001)
+        self.assertEqual(updated_date.year, 2020)
+        self.assertEqual(expires_date.year, 2021)
+        self.assertEqual(created_date.month, 7)
+        self.assertEqual(updated_date.month, 6)
+        self.assertEqual(expires_date.month, 7)
+        self.assertEqual(created_date.day, 31)
+        self.assertEqual(updated_date.day, 29)
+        self.assertEqual(expires_date.day, 31)
+        # geo
+        self.assertEqual(parser.parser_output.get("registrar"), "MarkMonitor Inc.")
+        self.assertEqual(parser.parser_output.get("registrant_state"), "CA")
+        self.assertEqual(parser.parser_output.get("registrant_country"), "US")
+        # registrant
+        self.assertEqual(parser.parser_output.get("registrant_organization"), "Google LLC")
+        # misc
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 4)
+        self.assertEqual(len(parser.parser_output.get("status")), 6)
+
+    def test_parser_fi(self):
+        query_output = self.get_txt('fi')
+        parser = WhoIsParser('fi')
+        parser.parse(query_output)
+        created_date = parser.parser_output.get("created")
+        updated_date = parser.parser_output.get("updated")
+        expires_date = parser.parser_output.get("expires")
+        self.assertEqual(created_date.year, 2006)
+        self.assertEqual(updated_date.year, 2020)
+        self.assertEqual(expires_date.year, 2021)
+        self.assertEqual(created_date.month, 6)
+        self.assertEqual(updated_date.month, 6)
+        self.assertEqual(expires_date.month, 7)
+        self.assertEqual(created_date.day, 30)
+        self.assertEqual(updated_date.day, 2)
+        self.assertEqual(expires_date.day, 4)
+        self.assertEqual(parser.parser_output.get("registrar"), "MarkMonitor Inc.")
+        # geo
+        self.assertEqual(parser.parser_output.get("registrant_address"), "1600 Amphitheatre Parkway")
+        self.assertEqual(parser.parser_output.get("registrant_zipcode"), "94043")
+        self.assertEqual(parser.parser_output.get("registrant_city"), "Mountain View")
+        self.assertEqual(parser.parser_output.get("registrant_country"), "United States of America")
+        # registrant
+        self.assertEqual(parser.parser_output.get("registrant_name"), "Google LLC")
+        # misc
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 4)
+        self.assertEqual(len(parser.parser_output.get("status")), 1)
+        self.assertEqual(parser.parser_output.get("dnssec"), "no")
+
+    def test_parser_kz(self):
+        query_output = self.get_txt('kz')
+        parser = WhoIsParser('kz')
+        parser.parse(query_output)
+        created_date = parser.parser_output.get("created")
+        updated_date = parser.parser_output.get("updated")
+        expires_date = parser.parser_output.get("expires")
+        self.assertEqual(created_date.year, 1999)
+        self.assertEqual(updated_date.year, 2012)
+        self.assertEqual(created_date.month, 6)
+        self.assertEqual(updated_date.month, 11)
+        self.assertEqual(created_date.day, 7)
+        self.assertEqual(updated_date.day, 28)
+        # geo
+        self.assertEqual(parser.parser_output.get("registrant_address"), "2400 E. Bayshore Pkwy")
+        self.assertEqual(parser.parser_output.get("registrant_zipcode"), "94043")
+        self.assertEqual(parser.parser_output.get("registrant_city"), "Mountain View")
+        self.assertEqual(parser.parser_output.get("registrant_country"), "US")
+        # registrant
+        self.assertEqual(parser.parser_output.get("registrant_name"), "Google Inc.")
+        self.assertEqual(parser.parser_output.get("registrant_organization"), "Google Inc.")
+        # misc
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 2)
+        self.assertEqual(len(parser.parser_output.get("status")), 1)
+        self.assertEqual(parser.parser_output.get("registrar"), "KAZNIC")
+
+    def test_parser_si(self):
+        query_output = self.get_txt('si')
+        parser = WhoIsParser('si')
+        parser.parse(query_output)
+        created_date = parser.parser_output.get("created")
+        expires_date = parser.parser_output.get("expires")
+        self.assertEqual(created_date.year, 2005)
+        self.assertEqual(expires_date.year, 2021)
+        self.assertEqual(created_date.month, 4)
+        self.assertEqual(expires_date.month, 7)
+        self.assertEqual(created_date.day, 4)
+        self.assertEqual(expires_date.day, 19)
+        # registrant
+        self.assertEqual(parser.parser_output.get("registrant_name"), "G830057")
+        # misc
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 4)
+        self.assertEqual(len(parser.parser_output.get("status")), 1)
+        self.assertEqual(parser.parser_output.get("registrar"), "MarkMonitor")
+
+    def test_parser_ae(self):
+        query_output = self.get_txt('ae')
+        parser = WhoIsParser('ae')
+        parser.parse(query_output)
+        # registrant
+        self.assertEqual(parser.parser_output.get("registrant_name"), "Domain Administrator")
+        self.assertEqual(parser.parser_output.get("registrant_organization"), "Google LLC")
+        # misc
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 2)
+        self.assertEqual(len(parser.parser_output.get("status")), 2)
+        self.assertEqual(parser.parser_output.get("registrar"), "MarkMonitor")
+
+    def test_parser_ve(self):
+        query_output = self.get_txt('ve')
+        parser = WhoIsParser('ve')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        updated_date = parser.parser_output.get("updated")
+        expires_date = parser.parser_output.get("expires")
+        self.assertEqual(created_date.year, 2002)
+        self.assertEqual(updated_date.year, 2020)
+        self.assertEqual(expires_date.year, 2021)
+        self.assertEqual(created_date.month, 6)
+        self.assertEqual(updated_date.month, 4)
+        self.assertEqual(expires_date.month, 5)
+        self.assertEqual(created_date.day, 5)
+        self.assertEqual(updated_date.day, 24)
+        self.assertEqual(expires_date.day, 6)
+        # geo
+        self.assertEqual(parser.parser_output.get("registrant_state"), "Ca")
+        self.assertEqual(parser.parser_output.get("registrant_country"), "US")
+        self.assertEqual(parser.parser_output.get("registrant_city"), "Mountain View")
+        self.assertEqual(parser.parser_output.get("registrant_zipcode"), "94043")
+        self.assertEqual(parser.parser_output.get("registrant_address"), "1600 Amphitheatre Parkway")
+        # registrar
+        self.assertEqual(parser.parser_output.get("registrar"), "NIC-VE")
+        # registrant
+        self.assertEqual(parser.parser_output.get("registrant_organization"), "Google Llc")
+        # misc
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 4)
+
+    def test_parser_app(self):
+        query_output = self.get_txt('app')
+        parser = WhoIsParser('app')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        updated_date = parser.parser_output.get("updated")
+        expires_date = parser.parser_output.get("expires")
+        self.assertEqual(created_date.year, 2018)
+        self.assertEqual(updated_date.year, 2020)
+        self.assertEqual(expires_date.year, 2021)
+        self.assertEqual(created_date.month, 3)
+        self.assertEqual(updated_date.month, 3)
+        self.assertEqual(expires_date.month, 3)
+        self.assertEqual(created_date.day, 29)
+        self.assertEqual(updated_date.day, 2)
+        self.assertEqual(expires_date.day, 29)
+        # geo
+        self.assertEqual(parser.parser_output.get("registrant_state"), "CA")
+        self.assertEqual(parser.parser_output.get("registrant_country"), "US")
+        self.assertEqual(parser.parser_output.get("registrant_city"), "REDACTED FOR PRIVACY")
+        self.assertEqual(parser.parser_output.get("registrant_zipcode"), "REDACTED FOR PRIVACY")
+        self.assertEqual(parser.parser_output.get("registrant_address"), "REDACTED FOR PRIVACY")
+        # registrar
+        self.assertEqual(parser.parser_output.get("registrar"), "MarkMonitor Inc.")
+        # registrant
+        self.assertEqual(parser.parser_output.get("registrant_organization"), "Google LLC")
+        # misc
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 4)
+        self.assertEqual(len(parser.parser_output.get("status")), 3)
+
+    def test_parser_cn(self):
+        query_output = self.get_txt('cn')
+        parser = WhoIsParser('cn')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        expires_date = parser.parser_output.get("expires")
+        self.assertEqual(created_date.year, 2003)
+        self.assertEqual(expires_date.year, 2022)
+        self.assertEqual(created_date.month, 3)
+        self.assertEqual(expires_date.month, 3)
+        self.assertEqual(created_date.day, 17)
+        self.assertEqual(expires_date.day, 17)
+        # geo
+        self.assertEqual(parser.parser_output.get("registrant_name"), "北京谷翔信息技术有限公司")
+        # registrar
+        self.assertEqual(parser.parser_output.get("registrar"), "厦门易名科技股份有限公司")
+        # registrant
+        # misc
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 4)
+        self.assertEqual(len(parser.parser_output.get("status")), 5)
+        self.assertEqual(parser.parser_output.get("dnssec"), "unsigned")
+
+    def test_parser_co(self):
+        query_output = self.get_txt('co')
+        parser = WhoIsParser('co')
+        parser.parse(query_output)
+        created_date = parser.parser_output.get("created")
+        updated_date = parser.parser_output.get("updated")
+        expires_date = parser.parser_output.get("expires")
+        self.assertEqual(created_date.year, 2010)
+        self.assertEqual(updated_date.year, 2020)
+        self.assertEqual(expires_date.year, 2021)
+        self.assertEqual(created_date.month, 2)
+        self.assertEqual(updated_date.month, 1)
+        self.assertEqual(expires_date.month, 2)
+        self.assertEqual(created_date.day, 25)
+        self.assertEqual(updated_date.day, 28)
+        self.assertEqual(expires_date.day, 24)
+        # geo
+        self.assertEqual(parser.parser_output.get("registrant_address"), "REDACTED FOR PRIVACY")
+        self.assertEqual(parser.parser_output.get("registrant_zipcode"), "REDACTED FOR PRIVACY")
+        self.assertEqual(parser.parser_output.get("registrant_city"), "REDACTED FOR PRIVACY")
+        self.assertEqual(parser.parser_output.get("registrant_country"), "US")
+        self.assertEqual(parser.parser_output.get("registrant_state"), "CA")
+        # registrant
+        self.assertEqual(parser.parser_output.get("registrant_name"), "REDACTED FOR PRIVACY")
+        self.assertEqual(parser.parser_output.get("registrant_organization"), "Google Inc.")
+        # misc
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 4)
+        self.assertEqual(len(parser.parser_output.get("status")), 3)
+        self.assertEqual(parser.parser_output.get("registrar"), "MarkMonitor, Inc.")
+        self.assertEqual(parser.parser_output.get("dnssec"), "unsigned")
+
+    def test_parser_pl(self):
+        query_output = self.get_txt('pl')
+        parser = WhoIsParser('pl')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        updated_date = parser.parser_output.get("updated")
+        expires_date = parser.parser_output.get("expires")
+        self.assertEqual(created_date.year, 2002)
+        self.assertEqual(updated_date.year, 2020)
+        self.assertEqual(expires_date.year, 2023)
+        self.assertEqual(created_date.month, 9)
+        self.assertEqual(updated_date.month, 8)
+        self.assertEqual(expires_date.month, 10)
+        self.assertEqual(created_date.day, 19)
+        self.assertEqual(updated_date.day, 17)
+        self.assertEqual(expires_date.day, 14)
+        # registrar
+        self.assertEqual(parser.parser_output.get("registrar"), "Markmonitor, Inc.")
+        # misc
+        self.assertEqual(parser.parser_output.get("dnssec"), "Unsigned")
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 4)
+
+    def test_parser_online(self):
+        query_output = self.get_txt('online')
+        parser = WhoIsParser('online')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        updated_date = parser.parser_output.get("updated")
+        expires_date = parser.parser_output.get("expires")
+        self.assertEqual(created_date.year, 2015)
+        self.assertEqual(updated_date.year, 2020)
+        self.assertEqual(expires_date.year, 2021)
+        self.assertEqual(created_date.month, 8)
+        self.assertEqual(updated_date.month, 8)
+        self.assertEqual(expires_date.month, 8)
+        self.assertEqual(created_date.day, 19)
+        self.assertEqual(updated_date.day, 25)
+        self.assertEqual(expires_date.day, 19)
+        # registrar
+        self.assertEqual(parser.parser_output.get("registrar"), "MarkMonitor, Inc (TLDs)")
+        # registrant
+        self.assertEqual(parser.parser_output.get("registrant_organization"), "Google LLC")
+        self.assertEqual(parser.parser_output.get("registrant_country"), "US")
+        self.assertEqual(parser.parser_output.get("registrant_state"), "CA")
+        # misc
+        self.assertEqual(parser.parser_output.get("dnssec"), "unsigned")
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 4)
+
+    def test_parser_buzz(self):
+        query_output = self.get_txt('buzz')
+        parser = WhoIsParser('buzz')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        updated_date = parser.parser_output.get("updated")
+        expires_date = parser.parser_output.get("expires")
+        self.assertEqual(created_date.year, 2014)
+        self.assertEqual(updated_date.year, 2020)
+        self.assertEqual(expires_date.year, 2021)
+        self.assertEqual(created_date.month, 3)
+        self.assertEqual(updated_date.month, 2)
+        self.assertEqual(expires_date.month, 3)
+        self.assertEqual(created_date.day, 18)
+        self.assertEqual(updated_date.day, 19)
+        self.assertEqual(expires_date.day, 17)
+        # registrar
+        self.assertEqual(parser.parser_output.get("registrar"), "MarkMonitor, Inc.")
+        # registrant
+        self.assertEqual(parser.parser_output.get("registrant_organization"), "Google LLC")
+        self.assertEqual(parser.parser_output.get("registrant_country"), "US")
+        self.assertEqual(parser.parser_output.get("registrant_state"), "CA")
+        self.assertEqual(parser.parser_output.get("registrant_address"), "REDACTED FOR PRIVACY")
+        self.assertEqual(parser.parser_output.get("registrant_city"), "REDACTED FOR PRIVACY")
+
+    def test_parser_live(self):
+        query_output = self.get_txt('live')
+        parser = WhoIsParser('live')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        updated_date = parser.parser_output.get("updated")
+        expires_date = parser.parser_output.get("expires")
+        self.assertEqual(created_date.year, 2015)
+        self.assertEqual(updated_date.year, 2020)
+        self.assertEqual(expires_date.year, 2021)
+        self.assertEqual(created_date.month, 10)
+        self.assertEqual(updated_date.month, 10)
+        self.assertEqual(expires_date.month, 10)
+        self.assertEqual(created_date.day, 19)
+        self.assertEqual(updated_date.day, 19)
+        self.assertEqual(expires_date.day, 19)
+        # registrar
+        self.assertEqual(parser.parser_output.get("registrar"), "Nom-iq Ltd. dba COM LAUDE")
+        # registrant
+        self.assertEqual(parser.parser_output.get("registrant_organization"), "Amazon Technologies, Inc.")
+        self.assertEqual(parser.parser_output.get("registrant_country"), "US")
+        self.assertEqual(parser.parser_output.get("registrant_state"), "NV")
+        self.assertEqual(parser.parser_output.get("registrant_address"), "REDACTED FOR PRIVACY")
+        self.assertEqual(parser.parser_output.get("registrant_city"), "REDACTED FOR PRIVACY")
+
+    def test_parser_cat(self):
+        query_output = self.get_txt('cat')
+        parser = WhoIsParser('cat')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        updated_date = parser.parser_output.get("updated")
+        expires_date = parser.parser_output.get("expires")
+        self.assertEqual(created_date.year, 2006)
+        self.assertEqual(updated_date.year, 2021)
+        self.assertEqual(expires_date.year, 2022)
+        self.assertEqual(created_date.month, 2)
+        self.assertEqual(updated_date.month, 1)
+        self.assertEqual(expires_date.month, 2)
+        self.assertEqual(created_date.day, 14)
+        self.assertEqual(updated_date.day, 15)
+        self.assertEqual(expires_date.day, 14)
+        # registrar
+        self.assertEqual(parser.parser_output.get("registrar"), "MarkMonitor")
+        # registrant
+        self.assertEqual(parser.parser_output.get("registrant_organization"), "Google LLC")
+        self.assertEqual(parser.parser_output.get("registrant_country"), "US")
+        self.assertEqual(parser.parser_output.get("registrant_state"), "CA")
+
+    def test_parser_ma(self):
+        query_output = self.get_txt('ma')
+        parser = WhoIsParser('ma')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        updated_date = parser.parser_output.get("updated")
+        expires_date = parser.parser_output.get("expires")
+        self.assertEqual(created_date.year, 2009)
+        self.assertEqual(updated_date.year, 2020)
+        self.assertEqual(expires_date.year, 2021)
+        self.assertEqual(created_date.month, 3)
+        self.assertEqual(updated_date.month, 2)
+        self.assertEqual(expires_date.month, 3)
+        self.assertEqual(created_date.day, 24)
+        self.assertEqual(updated_date.day, 25)
+        self.assertEqual(expires_date.day, 24)
+        # registrar
+        self.assertEqual(parser.parser_output.get("registrar"), "GENIOUS COMMUNICATION")
+        # registrant
+        self.assertEqual(parser.parser_output.get("registrant_name"), "Google LLC")
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 4)
+        self.assertEqual(len(parser.parser_output.get("status")), 2)
+
+    def test_parser_vg(self):
+        query_output = self.get_txt('vg')
+        parser = WhoIsParser('vg')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        updated_date = parser.parser_output.get("updated")
+        expires_date = parser.parser_output.get("expires")
+        self.assertEqual(created_date.year, 1999)
+        self.assertEqual(updated_date.year, 2020)
+        self.assertEqual(expires_date.year, 2021)
+        self.assertEqual(created_date.month, 6)
+        self.assertEqual(updated_date.month, 12)
+        self.assertEqual(expires_date.month, 6)
+        self.assertEqual(created_date.day, 5)
+        self.assertEqual(updated_date.day, 10)
+        self.assertEqual(expires_date.day, 5)
+        # registrar
+        self.assertEqual(parser.parser_output.get("registrar"), "MarkMonitor, Inc.")
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 4)
+        self.assertEqual(len(parser.parser_output.get("status")), 3)
+
+    def test_parser_tk(self):
+        query_output = self.get_txt('tk')
+        parser = WhoIsParser('tk')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        expires_date = parser.parser_output.get("expires")
+        self.assertEqual(created_date.year, 2014)
+        self.assertEqual(expires_date.year, 2021)
+        self.assertEqual(created_date.month, 9)
+        self.assertEqual(expires_date.month, 12)
+        self.assertEqual(created_date.day, 17)
+        self.assertEqual(expires_date.day, 11)
+        # registrar
+        self.assertEqual(parser.parser_output.get("registrar"), None)
+        self.assertEqual(parser.parser_output.get("registrant_organization"), "Amazon Technologies, Inc.")
+        self.assertEqual(parser.parser_output.get("registrant_name"), "Hostmaster Amazon Legal Dept.")
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 5)
+        self.assertEqual(len(parser.parser_output.get("status")), 1)
+        self.assertEqual(parser.parser_output.get("registrant_country"), "U.S.A.")
+        self.assertEqual(parser.parser_output.get("registrant_state"), "Nevada")
+        self.assertEqual(parser.parser_output.get("registrant_address"), "P.O. Box 8102")
+        self.assertEqual(parser.parser_output.get("registrant_city"), "Reno")
+
+    def test_parser_nl(self):
+        query_output = self.get_txt('nl')
+        parser = WhoIsParser('nl')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        updated_date = parser.parser_output.get("updated")
+        self.assertEqual(created_date.year, 1999)
+        self.assertEqual(updated_date.year, 2015)
+        self.assertEqual(created_date.month, 5)
+        self.assertEqual(updated_date.month, 12)
+        self.assertEqual(created_date.day, 27)
+        self.assertEqual(updated_date.day, 30)
+        # registrar
+        self.assertEqual(parser.parser_output.get("registrar"), "MarkMonitor Inc.")
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 4)
+        self.assertEqual(len(parser.parser_output.get("status")), 1)
+
+    def test_parser_gq(self):
+        query_output = self.get_txt('gq')
+        parser = WhoIsParser('gq')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        self.assertEqual(created_date.year, 2014)
+        self.assertEqual(created_date.month, 10)
+        self.assertEqual(created_date.day, 14)
+        # registrar
+        self.assertEqual(parser.parser_output.get("registrar"), None)
+        self.assertEqual(parser.parser_output.get("registrant_organization"), "Google Inc")
+        self.assertEqual(parser.parser_output.get("registrant_name"), "DNS Admin")
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 4)
+        self.assertEqual(len(parser.parser_output.get("status")), 1)
+        self.assertEqual(parser.parser_output.get("registrant_country"), "U.S.A.")
+        self.assertEqual(parser.parser_output.get("registrant_state"), "California")
+        self.assertEqual(parser.parser_output.get("registrant_address"), "1600 Amphitheatre Parkway")
+        self.assertEqual(parser.parser_output.get("registrant_city"), "Mountain View")
+
+    def test_tld_nu(self):
+        query_output = self.get_txt('nu')
+        parser = WhoIsParser('nu')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        self.assertEqual(created_date.year, 2011)
+        self.assertEqual(created_date.month, 4)
+        self.assertEqual(created_date.day, 15)
+        updated_date = parser.parser_output.get("updated")
+        self.assertEqual(updated_date.year, 2021)
+        self.assertEqual(updated_date.month, 2)
+        self.assertEqual(updated_date.day, 16)
+        expired_date = parser.parser_output.get("expires")
+        self.assertEqual(expired_date.year, 2022)
+        self.assertEqual(expired_date.month, 4)
+        self.assertEqual(expired_date.day, 15)
+        # registrar
+        self.assertEqual(parser.parser_output.get("registrar"), "Domeneshop AS")
+        self.assertEqual(parser.parser_output.get("registrant_name"), "DNS1856879")
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 3)
+        self.assertEqual(len(parser.parser_output.get("status")), 1)
+        self.assertEqual(parser.parser_output.get("dnssec"), "signed delegation")
+
+    def test_tld_is(self):
+        query_output = self.get_txt('is')
+        parser = WhoIsParser('is')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        self.assertEqual(created_date.year, 2000)
+        self.assertEqual(created_date.month, 1)
+        self.assertEqual(created_date.day, 18)
+        expired_date = parser.parser_output.get("expires")
+        self.assertEqual(expired_date.year, 2022)
+        self.assertEqual(expired_date.month, 1)
+        self.assertEqual(expired_date.day, 18)
+        # registrar
+        self.assertEqual(parser.parser_output.get("registrant_name"), "Amazon Europe Core S.a.r.l.")
+        self.assertEqual(parser.parser_output.get("registrant_address"), "38 avenue John F. Kennedy, LU-L-1855 Luxembourg")
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 4)
+        self.assertEqual(parser.parser_output.get("dnssec"), "unsigned delegation")
+
+    def test_tld_cr(self):
+        query_output = self.get_txt('cr')
+        parser = WhoIsParser('cr')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        self.assertEqual(created_date.year, 2008)
+        self.assertEqual(created_date.month, 3)
+        self.assertEqual(created_date.day, 23)
+        updated_date = parser.parser_output.get("updated")
+        self.assertEqual(updated_date.year, 2021)
+        self.assertEqual(updated_date.month, 2)
+        self.assertEqual(updated_date.day, 5)
+        expired_date = parser.parser_output.get("expires")
+        self.assertEqual(expired_date.year, 2022)
+        self.assertEqual(expired_date.month, 3)
+        self.assertEqual(expired_date.day, 24)
+        # registrar
+        self.assertEqual(parser.parser_output.get("registrar"), "COMLAUDE")
+        self.assertEqual(parser.parser_output.get("registrant_name"), "Amazon Technologies, Inc.")
+        self.assertEqual(parser.parser_output.get("registrant_organization"), "Amazon Technologies, Inc.")
+        self.assertEqual(parser.parser_output.get("registrant_address"), "P.O. Box 8102, Reno, 89507, Nevada, US")
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 9)
+
+    def test_tld_cz(self):
+        query_output = self.get_txt('cz')
+        parser = WhoIsParser('cz')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        self.assertEqual(created_date.year, 1997)
+        self.assertEqual(created_date.month, 9)
+        self.assertEqual(created_date.day, 19)
+        expired_date = parser.parser_output.get("expires")
+        self.assertEqual(expired_date.year, 2021)
+        self.assertEqual(expired_date.month, 10)
+        self.assertEqual(expired_date.day, 28)
+        updated_date = parser.parser_output.get("updated")
+        self.assertEqual(updated_date.year, 2017)
+        self.assertEqual(updated_date.month, 1)
+        self.assertEqual(updated_date.day, 12)
+        # registrar
+        self.assertEqual(parser.parser_output.get("registrar"), "REG-NOMIQ")
+        self.assertEqual(parser.parser_output.get("registrant_name"), "Legal Department")
+        self.assertEqual(parser.parser_output.get("registrant_organization"), "Amazon Europe Holding Technologies SCS")
+        self.assertEqual(parser.parser_output.get("registrant_address"), "65, boulevard Grande-Duchesse Charlotte, Luxembourg City, 1331, LU")
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 6)

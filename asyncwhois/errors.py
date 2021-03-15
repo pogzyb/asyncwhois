@@ -1,7 +1,12 @@
 
-class WhoIsQueryConnectError(Exception):
+
+class WhoIsError(Exception):
     pass
 
 
-class WhoIsQueryParserError(Exception):
+class QueryError(WhoIsError):
+    pass
+
+
+class NotFoundError(WhoIsError):
     pass

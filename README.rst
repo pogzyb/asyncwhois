@@ -22,19 +22,12 @@ Installation
 
     pip install asyncwhois
 
-**Dependencies**
-
-.. code-block:: python
-
-    tldextract==2.2.2
-    aiodns==2.0.0
-
 Quickstart
 ----------
 
 .. code-block:: python
 
-    # Opens a socket connection to the appropriate WhoIs server, submits the query, and parses the output.
+    # Connects to the appropriate WhoIs server, submits a query, and parses the output.
     result = asyncwhois.lookup('google.com')
     # [for asyncio] result = await asyncwhois.aio_lookup('google.com')
     result.query_output   # raw output from the whois server
@@ -51,57 +44,72 @@ Quickstart
 
 Examples
 -------------
-**normal**
+**standard**
 
 .. code-block:: python
 
-    import time
+    from pprint import pprint
+    import asyncwhois
+
+    result = asyncwhois.lookup('bitcoin.org')
+    pprint(result.parser_output)
+    >>> {created: datetime.datetime(2008, 8, 18, 13, 19, 55),
+         dnssec: 'unsigned',
+         domain_name: 'bitcoin.org',
+         expires: datetime.datetime(2029, 8, 18, 13, 19, 55),
+         name_servers: ['dns1.registrar-servers.com', 'dns2.registrar-servers.com'],
+         registrant_address: 'P.O. Box 0823-03411',
+         registrant_city: 'Panama',
+         registrant_country: 'PA',
+         registrant_name: 'WhoisGuard Protected',
+         registrant_organization: 'WhoisGuard, Inc.',
+         registrant_state: 'Panama',
+         registrant_zipcode: '',
+         registrar: 'NAMECHEAP INC',
+         status: ['clientTransferProhibited '
+                  'https://icann.org/epp#clientTransferProhibited'],
+         updated: datetime.datetime(2019, 11, 24, 13, 58, 35, 940000)}
+
+
+**bulk standard**
+
+.. code-block:: python
 
     import asyncwhois
 
 
     def main():
         urls = [
-            'https://www.google.co.uk',
+            'www.google.co.uk',
             'en.wikipedia.org/wiki/Pi',
-            'https://www.urbandictionary.com/define.php?term=async',
-            'twitch.tv',
-            'reuters.com',
-            'https://www.pcpartpicker.com',
-            'https://packaging.python.org/',
-            'imgur.com'
+            'https://twitch.tv',
+            'https://www.bing.com/search?q=llama',
+            'agar.io',
+            '172.217.3.110'
         ]
         for url in urls:
             asyncwhois.lookup(url)
 
 
     if __name__ == '__main__':
-        start = time.time()
         main()
-        print(f'Done! [{round(time.time() - start, 4)}] seconds.')
 
-
-**asyncio**
-
+**bulk asyncio**
 
 .. code-block:: python
 
     import asyncio
-    import time
-
     import asyncwhois
 
 
     async def main():
         urls = [
-            'https://www.google.co.uk',
+            'www.google.co.uk',
             'en.wikipedia.org/wiki/Pi',
-            'https://www.urbandictionary.com/define.php?term=async',
-            'twitch.tv',
-            'reuters.com',
-            'https://www.pcpartpicker.com',
-            'https://packaging.python.org/',
-            'imgur.com'
+            'https://twitch.tv',
+            'https://www.bing.com/search?q=llama',
+            'agar.io',
+            '172.217.3.110'
         ]
         tasks = []
         for url in urls:
@@ -112,52 +120,72 @@ Examples
 
 
     if __name__ == '__main__':
-        start = time.time()
         asyncio.run(main())
-        print(f'Done! [{round(time.time() - start, 4)}] seconds.')
-
-
-**aiohttp**
-
-
-.. code-block:: python
-
-    from aiohttp import web
-    import asyncwhois
-
-
-    async def whois_handler(request):
-        domain = request.match_info.get('domain', 'google.com')
-        result = await asyncwhois.aio_lookup(domain)
-        return web.Response(
-            text=f'WhoIs Query Parsed:\n{result.parser_output}\nQuery Output:\n{result.query_output}'
-        )
-
-
-
-    app = web.Application()
-    app.add_routes([web.get('/whois/{domain}', whois)])
-    web.run_app(app)
-
 
 Contributions
 -------------
-Parsers located in asyncwhois/parser.py are based on those found in `richardpenman/pywhois`_ .
+Unfortunately, "the format of responses [from a Whois server] follow a semi-free text format". This means that
+situations will arise where this module does not support parsing the output of a specific server, and you may find
+yourself needing more control over how parsing happens. Fortunately, you can create customized parsers to suit
+your needs.
 
-For additional TLD support, simply created a new Regex Class containing:
-    - "self.server" or the whois server for this TLD
-    - "_<tld>_expressions" or the regexes that can extract and parse the output from this server
+Example: This is a snippet of the output from running the "whois google.be" command.
 
 .. code-block:: python
 
-    class RegexORG(BaseParser):
+    Domain:	google.be
+    Status:	NOT AVAILABLE
+    Registered:	Tue Dec 12 2000
 
-       _org_expressions = {}
+    Registrant:
+        Not shown, please visit www.dnsbelgium.be for webbased whois.
 
-       def __init__(self):
-           super().__init__()
-           self.server = 'whois.pir.org'
-           self.update_reg_expressions(self._org_expressions)
+    Registrar Technical Contacts:
+        Organisation:	MarkMonitor Inc.
+        Language:	en
+        Phone:	+1.2083895740
+        Fax:	+1.2083895771
 
 
-.. _richardpenman/pywhois: https://github.com/richardpenman/pywhois
+    Registrar:
+        Name:	 MarkMonitor Inc.
+        Website: http://www.markmonitor.com
+
+    Nameservers:
+        ns2.google.com
+        ns1.google.com
+        ns4.google.com
+        ns3.google.com
+
+    Keys:
+
+    Flags:
+        clientTransferProhibited
+    ...
+
+
+In this case, the "name servers" are listed on separate lines. The default BaseParser regexes
+won't find all of these server names. In order to accommodate this extra step, the "parse" method was
+overwritten within the parser subclass as seen below:
+
+.. code-block:: python
+
+    class RegexBE(BaseParser):
+        _be_expressions = {  # the base class (BaseParser) will handle these regexes
+            BaseKeys.CREATED: r'Registered: *(.+)',
+            BaseKeys.REGISTRAR: r'Registrar:\n.+Name: *(.+)',
+            BaseKeys.REGISTRANT_NAME: r'Registrant:\n *(.+)'
+        }
+
+        def __init__(self):
+            super().__init__()
+            self.update_reg_expressions(self._be_expressions)
+
+        def parse(self, blob: str) -> Dict[str, Any]:  # custom parsing is needed to extract all the name servers
+            parsed_output = super().parse(blob)  # run normal parsing for other keys
+            ns_match = re.search(r"Name servers: *(.+)Keys: ", blob, re.DOTALL)  # custom parsing for name servers
+            if ns_match:
+                parsed_output[BaseKeys.NAME_SERVERS] = [m.strip() for m in ns_match.group(1).split('\n') if m.strip()]
+            return parsed_output
+    ...
+

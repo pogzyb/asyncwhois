@@ -1,0 +1,62 @@
+% Full text available at:
+% http://www.nic.cz/page/306/intended-use-of-supplied-data-and-information/
+%
+% See also a search service at http://www.nic.cz/whois/
+%
+%
+% Whoisd Server Version: 3.12.0
+% Timestamp: Tue Feb 23 08:27:34 2021
+
+domain:       amazon.cz
+registrant:   CL134233-010452
+admin-c:      CL15581-010453
+nsset:        AMAZONCZ-37E2EFA-ED99B
+registrar:    REG-NOMIQ
+registered:   19.09.1997 02:00:00
+changed:      12.01.2017 16:58:49
+expire:       28.10.2021
+
+contact:      CL134233-010452
+org:          Amazon Europe Holding Technologies SCS
+name:         Legal Department
+address:      65, boulevard Grande-Duchesse Charlotte
+address:      Luxembourg City
+address:      1331
+address:      LU
+registrar:    REG-NOMIQ
+created:      11.01.2017 14:42:32
+changed:      15.05.2018 21:32:00
+
+contact:      CL15581-010453
+org:          Amazon Europe Holding Technologies SCS
+name:         Legal Department
+address:      65, boulevard Grande-Duchesse Charlotte
+address:      Luxembourg City
+address:      1331
+address:      LU
+registrar:    REG-NOMIQ
+created:      12.01.2017 16:58:00
+changed:      15.05.2018 21:32:00
+
+nsset:        AMAZONCZ-37E2EFA-ED99B
+nserver:      pdns1.ultradns.net
+nserver:      pdns2.ultradns.net
+nserver:      pdns3.ultradns.org
+nserver:      pdns4.ultradns.org
+nserver:      pdns5.ultradns.info
+nserver:      pdns6.ultradns.co.uk
+tech-c:       CL131152-000284
+registrar:    REG-NOMIQ
+created:      12.01.2017 16:58:49
+
+contact:      CL131152-000284
+org:          Com Laude
+name:         Technical Manager
+address:      28-30 Little Russell Street
+address:      London
+address:      WC1A 2HN
+address:      London
+address:      GB
+registrar:    REG-NOMIQ
+created:      24.10.2016 15:11:52
+changed:      13.06.2019 14:32:05
