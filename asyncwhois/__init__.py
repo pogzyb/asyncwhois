@@ -1,7 +1,7 @@
 from .pywhois import PyWhoIs
 
 __all__ = ['lookup', 'aio_lookup', 'whois_cmd_shell', 'aio_whois_cmd_shell']
-__version__ = '0.3.0'
+__version__ = '0.3.1'
 
 
 def lookup(url: str, timeout: int = 10) -> PyWhoIs:
