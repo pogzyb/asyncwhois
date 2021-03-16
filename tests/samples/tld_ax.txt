@@ -1,0 +1,30 @@
+domain...............: google.ax
+status...............: Registered
+created..............: 08.09.2016
+expires..............: 08.09.2021
+available............: 08.10.2021
+modified.............: 05.09.2020
+RegistryLock.........: no
+
+Nameservers
+
+nserver..............: kate.ns.cloudflare.com
+nserver..............: merlin.ns.cloudflare.com
+
+Holder
+
+name.................: xTom GmbH
+address..............: Kreuzstr.60
+address..............: 40210
+address..............: Duesseldorf
+country..............: Tyskland
+phone................: +49 21197635976
+holder email.........: domains@xtom.com
+
+Registrar
+
+registrar............: xTom
+www..................: https://xtom.com/
+
+Copyright (c) Ã
+lands Landskapsregering
