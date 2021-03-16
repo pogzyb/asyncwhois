@@ -284,6 +284,10 @@ class WhoIsParser:
             return RegexAT()
         elif tld == 'au':
             return RegexAU()
+        elif tld == 'aw':
+            return RegexAW()
+        elif tld == 'ax':
+            return RegexAX()
         elif tld == 'be':
             return RegexBE()
         elif tld == 'br':
@@ -316,6 +320,10 @@ class WhoIsParser:
             return RegexFI()
         elif tld == 'fr':
             return RegexFR()
+        elif tld == 'ge':
+            return RegexGE()
+        elif tld == 'gg':
+            return RegexGG()
         elif tld == 'gq':
             return RegexGQ()
         elif tld == 'hk':
@@ -1467,3 +1475,78 @@ class RegexMA(BaseParser):
     def __init__(self):
         super().__init__()
         self.update_reg_expressions(self._ma_expressions)
+
+
+class RegexGE(BaseParser):
+    _ge_expressions = {
+        BaseKeys.REGISTRANT_NAME: r'Registrant: *(.+)',
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.update_reg_expressions(self._ge_expressions)
+
+
+class RegexGG(BaseParser):
+    _gg_expressions = {
+        BaseKeys.DOMAIN_NAME: r'Domain:\n*(.+)',
+        BaseKeys.REGISTRANT_NAME: r'Registrant:\n*(.+)',
+        BaseKeys.REGISTRAR: r'Registrar:\n*(.+)',
+        BaseKeys.CREATED: r'Registered on *(.+) at',
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.update_reg_expressions(self._gg_expressions)
+
+    def parse(self, blob: str) -> Dict[str, Any]:
+        parsed_output = super().parse(blob)
+        # parse created date
+        created_match = parsed_output.get('created')  # looks like 30th April 2003; need to remove day suffix
+        if created_match and isinstance(created_match, str):
+            date_string = re.sub(r'(\d)(st|nd|rd|th)', r'\1', created_match)
+            parsed_output[BaseKeys.CREATED] = datetime.datetime.strptime(date_string, '%d %B %Y')
+        # handle multiline nameservers and statuses
+        parsed_output[BaseKeys.NAME_SERVERS] = self.find_multiline_match('Name servers:', blob)
+        parsed_output[BaseKeys.STATUS] = self.find_multiline_match('Domain status:', blob)
+        return parsed_output
+
+
+class RegexAW(BaseParser):
+    _aw_expressions = {
+        BaseKeys.REGISTRAR: r'Registrar:\n*(.+)',
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.update_reg_expressions(self._aw_expressions)
+
+    def parse(self, blob: str) -> Dict[str, Any]:
+        parsed_output = super().parse(blob)
+        parsed_output[BaseKeys.NAME_SERVERS] = self.find_multiline_match('Domain nameservers:', blob)
+        return parsed_output
+
+
+class RegexAX(BaseParser):
+    _ax_expressions = {
+        BaseKeys.DOMAIN_NAME: r'domain\.+: *(.+)',
+        BaseKeys.REGISTRAR: r'registrar\.+: *(.+)',
+        BaseKeys.REGISTRANT_NAME: r'name\.+: *(.+)',
+        BaseKeys.REGISTRANT_COUNTRY: r'country\.+: *(.+)',
+        BaseKeys.CREATED: r'created\.+: *(.+)',
+        BaseKeys.EXPIRES: r'expires\.+: *(.+)',
+        BaseKeys.UPDATED: r'modified\.+: *(.+)',
+        BaseKeys.STATUS: r'status\.+: *(.+)',
+        BaseKeys.NAME_SERVERS: r'nserver\.+: *(.+)'
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.update_reg_expressions(self._ax_expressions)
+
+    def parse(self, blob: str) -> Dict[str, Any]:
+        parsed_output = super().parse(blob)
+        addresses = self.find_match(r'address\.+: *(.+)', blob, many=True)
+        if addresses:
+            parsed_output[BaseKeys.REGISTRANT_ADDRESS] = ', '.join(addresses)
+        return parsed_output
