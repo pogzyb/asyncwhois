@@ -577,15 +577,13 @@ class RegexEU(BaseParser):
 
 
 class RegexDE(BaseParser):
-    """
-    .de disclaimer (very hard to extract information from this provider):
-
-    % The DENIC whois service on port 43 doesn't disclose any information concerning
-    % the domain holder, general request and abuse contact.
-    % This information can be obtained through use of our web-based whois service
-    % available at the DENIC website:
-    % http://www.denic.de/en/domains/whois-service/web-whois.html
-    """
+    # .de disclaimer (very hard to extract information from this provider):
+    #
+    # % The DENIC whois service on port 43 doesn't disclose any information concerning
+    # % the domain holder, general request and abuse contact.
+    # % This information can be obtained through use of our web-based whois service
+    # % available at the DENIC website:
+    # % http://www.denic.de/en/domains/whois-service/web-whois.html
 
     _de_expressions = {
         BaseKeys.UPDATED: r'Changed: *(.+)',
@@ -628,10 +626,10 @@ class RegexJP(BaseParser):
     _jp_expressions = {
         BaseKeys.REGISTRANT_NAME: r'\[Registrant\] *(.+)',
         BaseKeys.CREATED: r'\[登録年月日\] *(.+)',
-        BaseKeys.EXPIRES: r'\[有効期限\] *(.+)',
+        BaseKeys.EXPIRES: r'\[(?:有効限|有効期限)\]*(.+)',
         BaseKeys.STATUS: r'\[状態\] *(.+)',
         BaseKeys.UPDATED: r'\[最終更新\] *(.+)',
-        BaseKeys.NAME_SERVERS: r'\[Name Server\]:: *(.+)'
+        BaseKeys.NAME_SERVERS: r'\[Name Server\] *(.+)'
     }
 
     def __init__(self):
@@ -641,7 +639,7 @@ class RegexJP(BaseParser):
 
     def parse(self, blob: str) -> Dict[str, Any]:
         parsed_output = super().parse(blob)
-        address_match = re.search(r"[Postal Address] *(.+)[電話番号]", blob, re.DOTALL)
+        address_match = re.search(r"\[Postal Address\]([^\[|.]+)\[\w+\](.+)", blob, re.DOTALL)
         if address_match:
             address_pieces = [m.strip() for m in address_match.group(1).split('\n') if m.strip()]
             parsed_output[BaseKeys.REGISTRANT_ADDRESS] = ", ".join(address_pieces)
@@ -1103,13 +1101,13 @@ class RegexCZ(BaseParser):
 
 class RegexHR(BaseParser):
     _hr_expressions = {
-        BaseKeys.DOMAIN_NAME: 'Domain Name: *(.+)',
-        BaseKeys.UPDATED: 'Updated Date: *(.+)',
-        BaseKeys.CREATED: 'Creation Date: *(.+)',
-        BaseKeys.EXPIRES: 'Registrar Registration Expiration Date: *(.+)',
-        BaseKeys.NAME_SERVERS: 'Name Server: *(.+)',
-        BaseKeys.REGISTRANT_NAME: 'Registrant Name:\s(.+)',
-        BaseKeys.REGISTRANT_ADDRESS: 'Registrant Street:\s*(.+)',
+        BaseKeys.DOMAIN_NAME: r'Domain Name: *(.+)',
+        BaseKeys.UPDATED: r'Updated Date: *(.+)',
+        BaseKeys.CREATED: r'Creation Date: *(.+)',
+        BaseKeys.EXPIRES: r'Registrar Registration Expiration Date: *(.+)',
+        BaseKeys.NAME_SERVERS: r'Name Server: *(.+)',
+        BaseKeys.REGISTRANT_NAME: r'Registrant Name:\s(.+)',
+        BaseKeys.REGISTRANT_ADDRESS: r'Registrant Street:\s*(.+)',
     }
 
     def __init__(self):
