@@ -12,6 +12,21 @@ class TestPyWhoIs(asynctest.TestCase):
         self.fake_domain = "some-domain-somewhere-out-there.co.uk"
         self.fake_query_result = "Domain Name: some-domain-somewhere-out-there.co.uk"
 
+    def test_get_server_name(self):
+        pyw = PyWhoIs()
+        generic_tld = 'com'
+        whois_server = pyw._get_server_name(generic_tld)
+        self.assertEqual(whois_server, 'whois.verisign-grs.com')
+        generic_tld_unicode = 'xn--4gbrim'
+        whois_server = pyw._get_server_name(generic_tld_unicode)
+        self.assertEqual(whois_server, 'whois.afilias-srs.net')
+        country_tld = 'us'
+        whois_server = pyw._get_server_name(country_tld)
+        self.assertEqual(whois_server, 'whois.nic.us')
+        sponsored_tld = 'aero'
+        whois_server = pyw._get_server_name(sponsored_tld)
+        self.assertEqual(whois_server, 'whois.aero')
+
     def test_get_tld_extract(self):
         pyw = PyWhoIs()
         assert pyw._get_tld_extract('https://www.microsoft.com').suffix == 'com'

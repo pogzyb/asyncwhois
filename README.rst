@@ -27,149 +27,104 @@ Quickstart
 
 .. code-block:: python
 
-    # Opens a connection to the appropriate WhoIs server, submits the query, and parses the output.
-    result = asyncwhois.lookup('google.com')
-    # [for asyncio] result = await asyncwhois.aio_lookup('google.com')
-    result.query_output   # raw output from the whois server
-    result.parser_output  # dictionary of key/values extracted from query_output
-
-
-.. code-block:: python
-
-    # Equivalent to running "whois <domain>" from the shell. Uses the "subprocess" package.
-    result = asyncwhois.whois_cmd_shell('google.com')
-    # [for asyncio] result = await asyncwhois.aio_whois_cmd_shell('google.com')
-    result.query_output   # raw output from the whois server
-    result.parser_output  # dictionary of key/values extracted from query_output
-
-Examples
--------------
-**standard**
-
-.. code-block:: python
-
-    import asyncwhois
-
-
-    def main():
-        urls = [
-            'www.google.co.uk',
-            'en.wikipedia.org/wiki/Pi',
-            'https://twitch.tv',
-            'https://www.bing.com/search?q=llama',
-            'agar.io',
-            '172.217.3.110'
-        ]
-        for url in urls:
-            asyncwhois.lookup(url)
-
-
-    if __name__ == '__main__':
-        main()
-
-**asyncio**
-
-.. code-block:: python
-
     import asyncio
+    from pprint import pprint
+
     import asyncwhois
 
+    # standard call
+    result = asyncwhois.lookup('www.google.com')
+    # result.query_output   # The semi-free text output from the whois server
+    # result.parser_output  # A dictionary of key/values extracted from query_output
 
-    async def main():
-        urls = [
-            'www.google.co.uk',
-            'en.wikipedia.org/wiki/Pi',
-            'https://twitch.tv',
-            'https://www.bing.com/search?q=llama',
-            'agar.io',
-            '172.217.3.110'
-        ]
-        tasks = []
-        for url in urls:
-            awaitable = asyncwhois.aio_lookup(url)
-            tasks.append(awaitable)
+    # asyncio call
+    loop = asyncio.get_event_loop()
+    result = loop.run_until_complete(asyncwhois.aio_lookup('https://bitcoin.org'))
 
-        await asyncio.gather(*tasks)
-
-
-    if __name__ == '__main__':
-        asyncio.run(main())
+    pprint(result.parser_output)
+    """
+    {created: datetime.datetime(2008, 8, 18, 13, 19, 55),
+     dnssec: 'unsigned',
+     domain_name: 'bitcoin.org',
+     expires: datetime.datetime(2029, 8, 18, 13, 19, 55),
+     name_servers: ['dns1.registrar-servers.com', 'dns2.registrar-servers.com'],
+     registrant_address: 'P.O. Box 0823-03411',
+     registrant_city: 'Panama',
+     registrant_country: 'PA',
+     registrant_name: 'WhoisGuard Protected',
+     registrant_organization: 'WhoisGuard, Inc.',
+     registrant_state: 'Panama',
+     registrant_zipcode: '',
+     registrar: 'NAMECHEAP INC',
+     status: ['clientTransferProhibited '
+              'https://icann.org/epp#clientTransferProhibited'],
+     updated: datetime.datetime(2019, 11, 24, 13, 58, 35, 940000)}
+     """
 
 Contributions
 -------------
-Top Level Domain Parsers are located in `asyncwhois/parser.py` and are based on those found in `richardpenman/pywhois`_.
-For additional TLD support, simply create a new class like the one below:
+Unfortunately, "the format of responses [from a WHOIS server] follow a semi-free text format". Therefore,
+situations will arise where this module does not support parsing the output from a specific server, and you may find
+yourself needing more control over how parsing happens. Fortunately, you can create customized parsers to suit your needs.
+
+Example: This is a snippet of the output from running the "whois google.be" command.
 
 .. code-block:: python
 
-    class RegexORG(BaseParser):
+    Domain:	google.be
+    Status:	NOT AVAILABLE
+    Registered:	Tue Dec 12 2000
 
-       _org_expressions = {}  # the custom regular expressions needed to parse the output from this whois server
+    Registrant:
+        Not shown, please visit www.dnsbelgium.be for webbased whois.
 
-       def __init__(self):
-           super().__init__()
-           self.server = 'whois.pir.org' # the whois server for this TLD
-           self.update_reg_expressions(self._org_expressions)
+    Registrar Technical Contacts:
+        Organisation:	MarkMonitor Inc.
+        Language:	en
+        Phone:	+1.2083895740
+        Fax:	+1.2083895771
 
+    Registrar:
+        Name:	 MarkMonitor Inc.
+        Website: http://www.markmonitor.com
 
-.. _richardpenman/pywhois: https://github.com/richardpenman/pywhois
+    Nameservers:
+        ns2.google.com
+        ns1.google.com
+        ns4.google.com
+        ns3.google.com
 
-Unfortunately, "the format of responses [from a Whois server] follow a semi-free text format". This means that
-situations will arise where you may find yourself needing more control over how parsing happens. Fortunately, you can
-override the "BaseParser.parse" method to suit your needs. Tests are obviously encouraged if you plan on doing this.
+    Keys:
 
-For example, this is a snippet of the output from running a "whois google.ir" command.
-
-.. code-block:: python
-
-    domain:	google.ir
-    ascii:	google.ir
-    remarks:	(Domain Holder) Google Inc.
-    remarks:	(Domain Holder Address) 1600 Amphitheatre Parkway, Mountain View, CA, US
-    holder-c:	go438-irnic
+    Flags:
+        clientTransferProhibited
     ...
 
 
-In this case, the address, city, state, and country can all be extracted from the the "registrant_address" field. So,
-as seen below, the parse method is overwritten to include this extra step.
+In this case, the "name servers" are listed on separate lines. The default BaseParser regexes
+won't find all of these server names. In order to accommodate this extra step, the "parse" method was
+overwritten within the parser subclass as seen below:
 
 .. code-block:: python
 
-    class RegexIR(BaseParser):
-
-        _ir_expressions = {
-            BaseKeys.UPDATED                    : r'last-updated: *(.+)',
-            BaseKeys.EXPIRES                    : r'expire-date: *(.+)',
-            BaseKeys.REGISTRANT_ORGANIZATION    : r'org: *(.+)',
-            BaseKeys.REGISTRANT_NAME            : r'remarks:\s+\(Domain Holder\) *(.+)',
-            BaseKeys.REGISTRANT_ADDRESS         : r'remarks:\s+\(Domain Holder Address\) *(.+)',
-            BaseKeys.NAME_SERVERS               : r'nserver: *(.+)'
+    class RegexBE(BaseParser):
+        _be_expressions = {  # the base class (BaseParser) will handle these regexes
+            BaseKeys.CREATED: r'Registered: *(.+)',
+            BaseKeys.REGISTRAR: r'Registrar:\n.+Name: *(.+)',
+            BaseKeys.REGISTRANT_NAME: r'Registrant:\n *(.+)'
         }
 
         def __init__(self):
             super().__init__()
-            self.server = 'whois.nic.ir'
-            self.update_reg_expressions(self._ir_expressions)
+            self.update_reg_expressions(self._be_expressions)
 
         def parse(self, blob: str) -> Dict[str, Any]:
-            """
-            Custom address parsing is required.
-            """
-            parsed_output = {}
-            for key, regex in self.reg_expressions.items():
-                if key == BaseKeys.REGISTRANT_ADDRESS:
-                    match = self.find_match(regex, blob)
-                    # need to break up the address field
-                    address, city, state, country = match.split(', ')
-                    parsed_output[BaseKeys.REGISTRANT_ADDRESS] = address
-                    parsed_output[BaseKeys.REGISTRANT_CITY] = city
-                    parsed_output[BaseKeys.REGISTRANT_STATE] = state
-                    parsed_output[BaseKeys.REGISTRANT_COUNTRY] = country
-                elif not parsed_output.get(key):
-                    parsed_output[key] = self.find_match(regex, blob, many=key in self.multiple_match_keys)
-
-                # convert dates
-                if key in self.date_keys and parsed_output.get(key, None):
-                    parsed_output[key] = self._parse_date(parsed_output.get(key))
-
+            # run base class parsing for other keys
+            parsed_output = super().parse(blob)
+            # custom parsing is needed to extract all the name servers
+            ns_match = re.search(r"Name servers: *(.+)Keys: ", blob, re.DOTALL)
+            if ns_match:
+                parsed_output[BaseKeys.NAME_SERVERS] = [m.strip() for m in ns_match.group(1).split('\n') if m.strip()]
             return parsed_output
+    ...
+
