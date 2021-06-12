@@ -5,10 +5,10 @@ with open("README.rst", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="asyncwhois",
-    version="0.3.1",
+    version="0.3.2",
     author="Joseph Obarzanek",
     author_email="pogzyb@umich.edu",
-    description="asyncio-compatible Python module for performing WHOIS queries for any domain.",
+    description="Python package for performing WHOIS queries and parsing WHOIS text output.",
     long_description=long_description,
     license="MIT",
     install_requires=[
@@ -22,8 +22,9 @@ setuptools.setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Topic :: Internet :: WWW/HTTP",
-        "Programming Language :: Python :: 3",
-        "Framework :: AsyncIO"
+        "Topic :: Software Development",
+        "Topic :: Security",
+        "Programming Language :: Python :: 3 :: Only",
     ],
     url="https://github.com/pogzyb/asyncwhois",
     packages=["asyncwhois"],
