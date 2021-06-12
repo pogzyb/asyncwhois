@@ -1,33 +1,11 @@
-"""
-WHOIS Server Query module written in Python with asyncio support.
-
-Copyright (c) 2020 Joe Obarzanek
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-"""
-
 import asyncio
 import re
 import socket
 from typing import Tuple
 
 from .errors import QueryError
+
+BLOCKSIZE = 1024
 
 
 class Query:
@@ -93,7 +71,7 @@ class WhoIsQuery(Query):
         conn.sendall(data.encode())
         result = ""
         while True:
-            received = conn.recv(1024)
+            received = conn.recv(BLOCKSIZE)
             if received == b"":
                 break
             else:
@@ -106,8 +84,6 @@ class WhoIsQuery(Query):
             return socket.create_connection(address=address, timeout=timeout)
         except socket.timeout:
             raise QueryError(f'Could not reach WHOIS server at {address[0]}:{address[1]}')
-        except:
-            raise
 
 
 class AsyncWhoIsQuery(Query):
@@ -151,9 +127,6 @@ class AsyncWhoIsQuery(Query):
 
             writer.close()
             await writer.wait_closed()
-        except asyncio.TimeoutError:
-            server = self.server or self._iana_server
-            raise QueryError(f'Socket timed out when attempting to reach {server}:43')
         except ConnectionResetError:
             server = self.server or self._iana_server
             raise QueryError(f'"Connection reset by peer" when communicating with {server}:43')
@@ -163,7 +136,7 @@ class AsyncWhoIsQuery(Query):
         writer.write(data.encode())
         result = ""
         while True:
-            received = await reader.read(1024)
+            received = await reader.read(BLOCKSIZE)
             if received == b"":
                 break
             else:
@@ -177,5 +150,5 @@ class AsyncWhoIsQuery(Query):
         try:
             reader, writer = await asyncio.wait_for(future, timeout)
             return reader, writer
-        except:
+        except asyncio.TimeoutError:
             raise QueryError(f'Could not reach WHOIS server at {address[0]}:{address[1]}')
