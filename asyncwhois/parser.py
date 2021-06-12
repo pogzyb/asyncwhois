@@ -52,6 +52,45 @@ class BaseKeys(str, Enum):
     REGISTRANT_STATE = 'registrant_state'
     REGISTRANT_COUNTRY = 'registrant_country'
     REGISTRANT_ZIPCODE = 'registrant_zipcode'
+    REGISTRANT_PHONE = 'registrant_phone'
+    REGISTRANT_FAX = 'registrant_fax'
+    REGISTRANT_EMAIL = 'registrant_email'
+
+    ADMIN_NAME = 'admin_name'
+    ADMIN_ID = 'admin_id'
+    ADMIN_ORGANIZATION = 'admin_organization'
+    ADMIN_ADDRESS = 'admin_address'
+    ADMIN_CITY = 'admin_city'
+    ADMIN_STATE = 'admin_state'
+    ADMIN_COUNTRY = 'admin_country'
+    ADMIN_ZIPCODE = 'admin_zipcode'
+    ADMIN_PHONE = 'admin_phone'
+    ADMIN_FAX = 'admin_fax'
+    ADMIN_EMAIL = 'admin_email'
+
+    BILLING_NAME = 'billing_name'
+    BILLING_ID = 'billing_id'
+    BILLING_ORGANIZATION = 'billing_organization'
+    BILLING_ADDRESS = 'billing_address'
+    BILLING_CITY = 'billing_city'
+    BILLING_STATE = 'billing_state'
+    BILLING_COUNTRY = 'billing_country'
+    BILLING_ZIPCODE = 'billing_zipcode'
+    BILLING_PHONE = 'billing_phone'
+    BILLING_FAX = 'billing_fax'
+    BILLING_EMAIL = 'billing_email'
+
+    TECH_NAME = 'tech_name'
+    TECH_ID = 'tech_id'
+    TECH_ORGANIZATION = 'tech_organization'
+    TECH_ADDRESS = 'tech_address'
+    TECH_CITY = 'tech_city'
+    TECH_STATE = 'tech_state'
+    TECH_COUNTRY = 'tech_country'
+    TECH_ZIPCODE = 'tech_zipcode'
+    TECH_PHONE = 'tech_phone'
+    TECH_FAX = 'tech_fax'
+    TECH_EMAIL = 'tech_email'
 
     DNSSEC = 'dnssec'
     STATUS = 'status'
@@ -81,47 +120,47 @@ class BaseParser:
         BaseKeys.REGISTRANT_STATE: r'Registrant State/Province: *(.+)',
         BaseKeys.REGISTRANT_ZIPCODE: r'Registrant Postal Code: *(.+)',
         BaseKeys.REGISTRANT_COUNTRY: r'Registrant Country: *(.+)',
+        BaseKeys.REGISTRANT_EMAIL: r'Registrant Email: *(.+)',
 
         BaseKeys.DNSSEC: r'DNSSEC: *([\S]+)',
         BaseKeys.STATUS: r'Status: *(.+)',
-        BaseKeys.NAME_SERVERS: r'Name server: *(.+)'
+        BaseKeys.NAME_SERVERS: r'Name server: *(.+)',
 
-        # todo: A future PR will include information beyond "Registrant"
-        # 'admin_name':                     'Admin Name: (.+)',
-        # 'admin_id':                       'Admin ID: (.+)',
-        # 'admin_organization':             'Admin Organization: (.+)',
-        # 'admin_city':                     'Admin City: (.*)',
-        # 'admin_street':                   'Admin Street: (.*)',
-        # 'admin_state_province':           'Admin State/Province: (.*)',
-        # 'admin_postal_code':              'Admin Postal Code: (.*)',
-        # 'admin_country':                  'Admin Country: (.+)',
-        # 'admin_phone':                    'Admin Phone: (.+)',
-        # 'admin_fax':                      'Admin Fax: (.+)',
-        # 'admin_email':                    'Admin Email: (.+)',
-        #
-        # 'billing_name':                   'Billing Name: (.+)',
-        # 'billing_id':                     'Billing ID: (.+)',
-        # 'billing_organization':           'Billing Organization: (.+)',
-        # 'billing_city':                   'Billing City: (.*)',
-        # 'billing_street':                 'Billing Street: (.*)',
-        # 'billing_state_province':         'Billing State/Province: (.*)',
-        # 'billing_postal_code':            'Billing Postal Code: (.*)',
-        # 'billing_country':                'Billing Country: (.+)',
-        # 'billing_phone':                  'Billing Phone: (.+)',
-        # 'billing_fax':                    'Billing Fax: (.+)',
-        # 'billing_email':                  'Billing Email: (.+)',
-        #
-        # 'tech_name':                      'Tech Name: (.+)',
-        # 'tech_id':                        'Tech ID: (.+)',
-        # 'tech_organization':              'Tech Organization: (.+)',
-        # 'tech_city':                      'Tech City: (.*)',
-        # 'tech_street':                    'Tech Street: (.*)',
-        # 'tech_state_province':            'Tech State/Province: (.*)',
-        # 'tech_postal_code':               'Tech Postal Code: (.*)',
-        # 'tech_country':                   'Tech Country: (.+)',
-        # 'tech_phone':                     'Tech Phone: (.+)',
-        # 'tech_fax':                       'Tech Fax: (.+)',
-        # 'tech_email':                     'Tech Email: (.+)',
+        BaseKeys.ADMIN_NAME: r'Admin Name: (.+)',
+        BaseKeys.ADMIN_ID: r'Admin ID: (.+)',
+        BaseKeys.ADMIN_ORGANIZATION: r'Admin Organization: (.+)',
+        BaseKeys.ADMIN_CITY: r'Admin City: (.*)',
+        BaseKeys.ADMIN_ADDRESS: r'Admin Street: (.*)',
+        BaseKeys.ADMIN_STATE: r'Admin State/Province: (.*)',
+        BaseKeys.ADMIN_ZIPCODE: r'Admin Postal Code: (.*)',
+        BaseKeys.ADMIN_COUNTRY: r'Admin Country: (.+)',
+        BaseKeys.ADMIN_PHONE: r'Admin Phone: (.+)',
+        BaseKeys.ADMIN_FAX: r'Admin Fax: (.+)',
+        BaseKeys.ADMIN_EMAIL: r'Admin Email: (.+)',
+
+        BaseKeys.BILLING_NAME: r'Billing Name: (.+)',
+        BaseKeys.BILLING_ID: r'Billing ID: (.+)',
+        BaseKeys.BILLING_ORGANIZATION: r'Billing Organization: (.+)',
+        BaseKeys.BILLING_CITY: r'Billing City: (.*)',
+        BaseKeys.BILLING_ADDRESS: r'Billing Street: (.*)',
+        BaseKeys.BILLING_STATE: r'Billing State/Province: (.*)',
+        BaseKeys.BILLING_ZIPCODE: r'Billing Postal Code: (.*)',
+        BaseKeys.BILLING_COUNTRY: r'Billing Country: (.+)',
+        BaseKeys.BILLING_PHONE: r'Billing Phone: (.+)',
+        BaseKeys.BILLING_FAX: r'Billing Fax: (.+)',
+        BaseKeys.BILLING_EMAIL: r'Billing Email: (.+)',
+
+        BaseKeys.TECH_NAME: r'Tech Name: (.+)',
+        BaseKeys.TECH_ID: r'Tech ID: (.+)',
+        BaseKeys.TECH_ORGANIZATION: r'Tech Organization: (.+)',
+        BaseKeys.TECH_CITY: r'Tech City: (.*)',
+        BaseKeys.TECH_ADDRESS: r'Tech Street: (.*)',
+        BaseKeys.TECH_STATE: r'Tech State/Province: (.*)',
+        BaseKeys.TECH_ZIPCODE: r'Tech Postal Code: (.*)',
+        BaseKeys.TECH_COUNTRY: r'Tech Country: (.+)',
+        BaseKeys.TECH_PHONE: r'Tech Phone: (.+)',
+        BaseKeys.TECH_FAX: r'Tech Fax: (.+)',
+        BaseKeys.TECH_EMAIL: r'Tech Email: (.+)',
     }
 
     multiple_match_keys = (BaseKeys.NAME_SERVERS, BaseKeys.STATUS)
@@ -242,7 +281,6 @@ class BaseParser:
 
 
 class WhoIsParser:
-
     _no_match_checks = [
         'no match',
         'not found',

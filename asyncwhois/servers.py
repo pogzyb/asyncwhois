@@ -1,6 +1,6 @@
 # Top Level Domain WHOIS Server Names
 # Retrieved from https://www.iana.org/domains/root/db
-# This file was last updated on 2021-03-01
+# This file was last updated on 2021-06-12
 
 class CountryCodeTLD:
     AC = 'whois.nic.ac'
@@ -468,7 +468,7 @@ class GenericTLD:
     BUILDERS = 'whois.nic.builders'
     BUSINESS = 'whois.nic.business'
     BUY = 'whois.nic.buy'
-    BUZZ = None
+    BUZZ = 'whois.nic.buzz'
     BZH = 'whois.nic.bzh'
     CAB = 'whois.nic.cab'
     CAFE = 'whois.nic.cafe'
