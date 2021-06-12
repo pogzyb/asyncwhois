@@ -12,7 +12,7 @@
 asyncwhois
 ==========
 
-asyncio-compatible Python module for performing WHOIS queries for any domain.
+Async-friendly Python package for performing WHOIS queries and parsing WHOIS text output.
 
 
 Installation
@@ -63,7 +63,7 @@ Quickstart
 
 Contributions
 -------------
-Unfortunately, "the format of responses [from a WHOIS server] follow a semi-free text format". Therefore,
+Parsed output not what you expected? Unfortunately, "the format of responses [from a WHOIS server] follow a semi-free text format". Therefore,
 situations will arise where this module does not support parsing the output from a specific server, and you may find
 yourself needing more control over how parsing happens. Fortunately, you can create customized parsers to suit your needs.
 
