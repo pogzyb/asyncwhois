@@ -7,6 +7,7 @@ from typing import Union, Dict, Any
 
 import aiodns
 import tldextract
+import whodap
 
 from .errors import QueryError
 from .parser import WhoIsParser
@@ -38,6 +39,32 @@ class PyWhoIs:
         extract_result = tldextract.extract(url)
         return extract_result
 
+    async def _aio_get_domain_and_tld(self, url: str):
+        extract_result = self._get_tld_extract(url)
+
+        if IPV4_OR_V6.match(extract_result.domain):
+            host = await self._aio_get_hostname_from_ip(extract_result.domain)
+            extract_result = tldextract.extract(host)
+
+        tld = extract_result.suffix
+        if len(tld.split('.')) > 1:
+            tld = tld.split('.')[-1]
+
+        return extract_result.domain, tld
+
+    def _get_domain_and_tld(self, url: str):
+        extract_result = self._get_tld_extract(url)
+
+        if IPV4_OR_V6.match(extract_result.domain):
+            host = self._get_hostname_from_ip(extract_result.domain)
+            extract_result = tldextract.extract(host)
+
+        tld = extract_result.suffix
+        if len(tld.split('.')) > 1:
+            tld = tld.split('.')[-1]
+
+        return extract_result.domain, tld
+
     @staticmethod
     def _get_hostname_from_ip(ip_address: str) -> Union[str, None]:
         try:
@@ -58,7 +85,10 @@ class PyWhoIs:
 
     @property
     def parser_output(self) -> Dict[str, Any]:
-        return self.__parser.parser_output
+        if isinstance(self.__parser, dict):
+            return self.__parser
+        elif isinstance(self.__parser, WhoIsParser):
+            return self.__parser.parser_output
 
     @property
     def query_output(self) -> str:
@@ -103,20 +133,10 @@ class PyWhoIs:
     @classmethod
     def _from_url(cls, url: str, timeout: int):
         pywhois = cls()
-        extract_result = tldextract.extract(url)
-
-        if IPV4_OR_V6.match(extract_result.domain):
-            host = pywhois._get_hostname_from_ip(extract_result.domain)
-            extract_result = tldextract.extract(host)
-
-        tld = extract_result.suffix
-        if len(tld.split('.')) > 1:
-            tld = tld.split('.')[-1]
-
-        domain_and_tld = extract_result.domain + '.' + tld
+        domain, tld = pywhois._get_domain_and_tld(url)
         parser = WhoIsParser(tld)
         server = cls._get_server_name(tld)
-        query = WhoIsQuery(domain_and_tld, server, timeout)
+        query = WhoIsQuery(domain + '.' + tld, server, timeout)
         parser.parse(query.query_output)
         pywhois.__query = query
         pywhois.__parser = parser
@@ -129,24 +149,16 @@ class PyWhoIs:
         # https://docs.python.org/3/library/asyncio-platforms.html#subprocess-support-on-windows
         if sys.platform in ("windows", "win32") and not isinstance(asyncio.get_running_loop(),
                                                                    asyncio.ProactorEventLoop):
-            loop_error_message = "You must set the running loop to 'asyncio.ProactorEventLoop' in order to use an asyncio subprocess on Windows."
+            loop_error_message = "You must set the running loop to 'asyncio.ProactorEventLoop' in order to use an " \
+                                 "asyncio subprocess on Windows. "
             raise NotImplementedError(loop_error_message)
 
         pywhois = cls()
-        extract_result = tldextract.extract(url)
+        domain, tld = pywhois._get_domain_and_tld(url)
 
-        if IPV4_OR_V6.match(extract_result.domain):
-            host = pywhois._get_hostname_from_ip(extract_result.domain)
-            extract_result = tldextract.extract(host)
-
-        tld = extract_result.suffix
-        if len(tld.split('.')) > 1:
-            tld = tld.split('.')[-1]
-
-        domain_and_tld = extract_result.domain + '.' + tld
         # open a new process for "whois" command
         proc = await asyncio.create_subprocess_shell(
-            f"whois {domain_and_tld}",
+            f"whois {domain + '.' + tld}",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE
         )
@@ -156,6 +168,7 @@ class PyWhoIs:
             query_result, _ = await asyncio.wait_for(proc.communicate(), timeout=timeout)
             query_result = query_result.decode(errors='ignore')
         except asyncio.TimeoutError:
+            domain_and_tld = domain + '.' + tld
             raise QueryError(
                 f'The shell command "whois {domain_and_tld}" exceeded timeout of {timeout} seconds')
         parser.parse(query_result)
@@ -166,21 +179,47 @@ class PyWhoIs:
     @classmethod
     async def _aio_from_url(cls, url: str, timeout: int):
         pywhois = cls()
-        extract_result = tldextract.extract(url)
-
-        if IPV4_OR_V6.match(extract_result.domain):
-            host = await pywhois._aio_get_hostname_from_ip(extract_result.domain)
-            extract_result = tldextract.extract(host)
-
-        tld = extract_result.suffix
-        if len(tld.split('.')) > 1:
-            tld = tld.split('.')[-1]
-
-        domain_and_tld = extract_result.domain + '.' + tld
+        domain, tld = pywhois._get_domain_and_tld(url)
         server = cls._get_server_name(tld)
-        query = await AsyncWhoIsQuery.create(domain_and_tld, server, timeout)
+        query = await AsyncWhoIsQuery.create(domain + '.' + tld, server, timeout)
         parser = WhoIsParser(tld)
         parser.parse(query.query_output)
         pywhois.__query = query
         pywhois.__parser = parser
+        return pywhois
+
+    @classmethod
+    async def _aio_rdap_domain_from_url(cls, url: str, http_client: Any = None):
+        """
+        Performs an RDAP query by leveraging whodap.aio_lookup_domain;
+        stores the resulting RDAP output into "query_output" and a WHOIS friendly
+        key/value pair dictionary into "parser_output".
+
+        :param url: the given url to search
+        :param http_client_kws: keyword arguments passed directly to the underlying httpx client
+        :return: initialized instance of PyWhoIs
+        """
+        pywhois = cls()
+        domain, tld = await pywhois._aio_get_domain_and_tld(url)
+        response = await whodap.aio_lookup_domain(domain, tld, http_client)
+        pywhois.__query = response.to_dict()
+        pywhois.__parser = response.to_whois_dict()
+        return pywhois
+
+    @classmethod
+    def _rdap_domain_from_url(cls, url: str, http_client: Any = None):
+        """
+        Performs an RDAP query by leveraging whodap.lookup_domain;
+        stores the resulting RDAP output into "query_output" and a WHOIS friendly
+        key/value pair dictionary into "parser_output".
+
+        :param url: the given url to search
+        :param http_client_kws: keyword arguments passed directly to the underlying httpx client
+        :return: initialized instance of PyWhoIs
+        """
+        pywhois = cls()
+        domain, tld = pywhois._get_domain_and_tld(url)
+        response = whodap.lookup_domain(domain, tld, http_client)
+        pywhois.__query = response.to_dict()
+        pywhois.__parser = response.to_whois_dict()
         return pywhois
