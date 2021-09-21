@@ -1,12 +1,16 @@
 language: python
+
 python:
+  - "3.6"
   - "3.7"
-before_install:
-  - sudo apt-get -y install whois
-install:
-  - pip install -e . 
-  - pip install asynctest pytest-cov codecov
-script:
-  - pytest --cov=asyncwhois
-after_success:
-  - codecov
+  - "3.8"
+  - "3.9"
+
+install: pip install tox-travis codecov
+
+script: tox
+
+notifications:
+  email: false
+
+after_success: codecov
