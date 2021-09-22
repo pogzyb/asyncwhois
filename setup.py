@@ -26,9 +26,9 @@ setuptools.setup(
     long_description=long_description,
     license="MIT",
     install_requires=[
-        "aiodns>=3.0.0",
-        "tldextract>=3.1.0",
-        "whodap>=0.1.1"
+        "aiodns>=2.0.0",
+        "tldextract>=2.2.0",
+        "whodap>=0.1.2"
     ],
     classifiers=[
         "Environment :: Web Environment",
