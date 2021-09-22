@@ -1,7 +1,17 @@
+from typing import Any, Optional
+
 from .pywhois import PyWhoIs
 
-__all__ = ['lookup', 'aio_lookup', 'whois_cmd_shell', 'aio_whois_cmd_shell']
-__version__ = '0.3.2'
+
+__all__ = [
+    'lookup',
+    'aio_lookup',
+    'whois_cmd_shell',
+    'aio_whois_cmd_shell',
+    'rdap_domain_lookup',
+    'aio_rdap_domain_lookup'
+]
+__version__ = '0.4.0'
 
 
 def lookup(url: str, timeout: int = 10) -> PyWhoIs:
@@ -45,6 +55,30 @@ async def aio_lookup(url: str, timeout: int = 10) -> PyWhoIs:
     :return: instance of PyWhoIs with "query_output" and "parser_output" attributes
     """
     whois = await PyWhoIs._aio_from_url(url, timeout)
+    return whois
+
+
+def rdap_domain_lookup(url: str, http_client: Optional[Any] = None) -> PyWhoIs:
+    """
+    Runs an RDAP query for the given url.
+
+    :param url: Any correctly formatted URL (e.g. https://en.wikipedia.org/wiki/WHOIS)
+    :param http_client: Optional HTTP Client such as `httpx.Client` or `requests.Session`
+    :return: instance of PyWhoIs with "query_output" and "parser_output" attributes
+    """
+    whois = PyWhoIs._rdap_domain_from_url(url, http_client)
+    return whois
+
+
+async def aio_rdap_domain_lookup(url: str, http_client: Optional[Any] = None) -> PyWhoIs:
+    """
+    Runs an RDAP query for the given url.
+
+    :param url: Any correctly formatted URL (e.g. https://en.wikipedia.org/wiki/WHOIS)
+    :param http_client: Optional Async HTTP Client such as `httpx.AsyncClient`
+    :return: instance of PyWhoIs with "query_output" and "parser_output" attributes
+    """
+    whois = await PyWhoIs._aio_rdap_domain_from_url(url, http_client)
     return whois
 
 
