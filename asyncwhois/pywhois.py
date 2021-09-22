@@ -24,6 +24,10 @@ class PyWhoIs:
     def __init__(self):
         self.__query = None
         self.__parser = None
+        self.subdomain = None
+        self.domain = None
+        self.suffix = None
+        self.tld = None
 
     @staticmethod
     def _get_server_name(tld: str) -> Union[str, None]:
@@ -62,6 +66,11 @@ class PyWhoIs:
         tld = extract_result.suffix
         if len(tld.split('.')) > 1:
             tld = tld.split('.')[-1]
+
+        self.subdomain = extract_result.subdomain
+        self.domain = extract_result.domain
+        self.suffix = extract_result.suffix
+        self.tld = tld
 
         return extract_result.domain, tld
 
