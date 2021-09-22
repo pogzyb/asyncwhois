@@ -126,7 +126,8 @@ class AsyncWhoIsQuery(Query):
                 self.query_output = await self._send_and_recv(reader, writer, data)
 
             writer.close()
-            await writer.wait_closed()
+            if hasattr(writer, 'wait_closed'):
+                await writer.wait_closed()
         except ConnectionResetError:
             server = self.server or self._iana_server
             raise QueryError(f'"Connection reset by peer" when communicating with {server}:43')
