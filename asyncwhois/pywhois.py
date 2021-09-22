@@ -10,7 +10,7 @@ import tldextract
 import whodap
 
 from .errors import QueryError
-from .parser import WhoIsParser
+from .parser import WhoIsParser, BaseKeys
 from .query import WhoIsQuery, AsyncWhoIsQuery
 from .servers import CountryCodeTLD, GenericTLD, SponsoredTLD
 
@@ -212,7 +212,13 @@ class PyWhoIs:
         domain, tld = await pywhois._aio_get_domain_and_tld(url)
         response = await whodap.aio_lookup_domain(domain, tld, http_client)
         pywhois.__query = response.to_dict()
-        pywhois.__parser = response.to_whois_dict()
+        whois_dict = response.to_whois_dict()
+        # date keys are mismatched between projects; change these keys to the asyncwhois set.
+        for a_key, b_key in [(BaseKeys.EXPIRES, 'expires_date'),
+                             (BaseKeys.UPDATED, 'updated_date'),
+                             (BaseKeys.CREATED, 'created_date')]:
+            whois_dict[a_key] = whois_dict.pop(b_key)
+        pywhois.__parser = whois_dict
         return pywhois
 
     @classmethod
@@ -230,5 +236,11 @@ class PyWhoIs:
         domain, tld = pywhois._get_domain_and_tld(url)
         response = whodap.lookup_domain(domain, tld, http_client)
         pywhois.__query = response.to_dict()
-        pywhois.__parser = response.to_whois_dict()
+        # date keys are mismatched between projects; change these keys to the asyncwhois set.
+        whois_dict = response.to_whois_dict()
+        for a_key, b_key in [(BaseKeys.EXPIRES, 'expires_date'),
+                             (BaseKeys.UPDATED, 'updated_date'),
+                             (BaseKeys.CREATED, 'created_date')]:
+            whois_dict[a_key] = whois_dict.pop(b_key)
+        pywhois.__parser = whois_dict
         return pywhois
