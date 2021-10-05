@@ -52,6 +52,45 @@ class BaseKeys(str, Enum):
     REGISTRANT_STATE = 'registrant_state'
     REGISTRANT_COUNTRY = 'registrant_country'
     REGISTRANT_ZIPCODE = 'registrant_zipcode'
+    REGISTRANT_PHONE = 'registrant_phone'
+    REGISTRANT_FAX = 'registrant_fax'
+    REGISTRANT_EMAIL = 'registrant_email'
+
+    ADMIN_NAME = 'admin_name'
+    ADMIN_ID = 'admin_id'
+    ADMIN_ORGANIZATION = 'admin_organization'
+    ADMIN_ADDRESS = 'admin_address'
+    ADMIN_CITY = 'admin_city'
+    ADMIN_STATE = 'admin_state'
+    ADMIN_COUNTRY = 'admin_country'
+    ADMIN_ZIPCODE = 'admin_zipcode'
+    ADMIN_PHONE = 'admin_phone'
+    ADMIN_FAX = 'admin_fax'
+    ADMIN_EMAIL = 'admin_email'
+
+    BILLING_NAME = 'billing_name'
+    BILLING_ID = 'billing_id'
+    BILLING_ORGANIZATION = 'billing_organization'
+    BILLING_ADDRESS = 'billing_address'
+    BILLING_CITY = 'billing_city'
+    BILLING_STATE = 'billing_state'
+    BILLING_COUNTRY = 'billing_country'
+    BILLING_ZIPCODE = 'billing_zipcode'
+    BILLING_PHONE = 'billing_phone'
+    BILLING_FAX = 'billing_fax'
+    BILLING_EMAIL = 'billing_email'
+
+    TECH_NAME = 'tech_name'
+    TECH_ID = 'tech_id'
+    TECH_ORGANIZATION = 'tech_organization'
+    TECH_ADDRESS = 'tech_address'
+    TECH_CITY = 'tech_city'
+    TECH_STATE = 'tech_state'
+    TECH_COUNTRY = 'tech_country'
+    TECH_ZIPCODE = 'tech_zipcode'
+    TECH_PHONE = 'tech_phone'
+    TECH_FAX = 'tech_fax'
+    TECH_EMAIL = 'tech_email'
 
     DNSSEC = 'dnssec'
     STATUS = 'status'
@@ -81,47 +120,47 @@ class BaseParser:
         BaseKeys.REGISTRANT_STATE: r'Registrant State/Province: *(.+)',
         BaseKeys.REGISTRANT_ZIPCODE: r'Registrant Postal Code: *(.+)',
         BaseKeys.REGISTRANT_COUNTRY: r'Registrant Country: *(.+)',
+        BaseKeys.REGISTRANT_EMAIL: r'Registrant Email: *(.+)',
 
         BaseKeys.DNSSEC: r'DNSSEC: *([\S]+)',
         BaseKeys.STATUS: r'Status: *(.+)',
-        BaseKeys.NAME_SERVERS: r'Name server: *(.+)'
+        BaseKeys.NAME_SERVERS: r'Name server: *(.+)',
 
-        # todo: A future PR will include information beyond "Registrant"
-        # 'admin_name':                     'Admin Name: (.+)',
-        # 'admin_id':                       'Admin ID: (.+)',
-        # 'admin_organization':             'Admin Organization: (.+)',
-        # 'admin_city':                     'Admin City: (.*)',
-        # 'admin_street':                   'Admin Street: (.*)',
-        # 'admin_state_province':           'Admin State/Province: (.*)',
-        # 'admin_postal_code':              'Admin Postal Code: (.*)',
-        # 'admin_country':                  'Admin Country: (.+)',
-        # 'admin_phone':                    'Admin Phone: (.+)',
-        # 'admin_fax':                      'Admin Fax: (.+)',
-        # 'admin_email':                    'Admin Email: (.+)',
-        #
-        # 'billing_name':                   'Billing Name: (.+)',
-        # 'billing_id':                     'Billing ID: (.+)',
-        # 'billing_organization':           'Billing Organization: (.+)',
-        # 'billing_city':                   'Billing City: (.*)',
-        # 'billing_street':                 'Billing Street: (.*)',
-        # 'billing_state_province':         'Billing State/Province: (.*)',
-        # 'billing_postal_code':            'Billing Postal Code: (.*)',
-        # 'billing_country':                'Billing Country: (.+)',
-        # 'billing_phone':                  'Billing Phone: (.+)',
-        # 'billing_fax':                    'Billing Fax: (.+)',
-        # 'billing_email':                  'Billing Email: (.+)',
-        #
-        # 'tech_name':                      'Tech Name: (.+)',
-        # 'tech_id':                        'Tech ID: (.+)',
-        # 'tech_organization':              'Tech Organization: (.+)',
-        # 'tech_city':                      'Tech City: (.*)',
-        # 'tech_street':                    'Tech Street: (.*)',
-        # 'tech_state_province':            'Tech State/Province: (.*)',
-        # 'tech_postal_code':               'Tech Postal Code: (.*)',
-        # 'tech_country':                   'Tech Country: (.+)',
-        # 'tech_phone':                     'Tech Phone: (.+)',
-        # 'tech_fax':                       'Tech Fax: (.+)',
-        # 'tech_email':                     'Tech Email: (.+)',
+        BaseKeys.ADMIN_NAME: r'Admin Name: (.+)',
+        BaseKeys.ADMIN_ID: r'Admin ID: (.+)',
+        BaseKeys.ADMIN_ORGANIZATION: r'Admin Organization: (.+)',
+        BaseKeys.ADMIN_CITY: r'Admin City: (.*)',
+        BaseKeys.ADMIN_ADDRESS: r'Admin Street: (.*)',
+        BaseKeys.ADMIN_STATE: r'Admin State/Province: (.*)',
+        BaseKeys.ADMIN_ZIPCODE: r'Admin Postal Code: (.*)',
+        BaseKeys.ADMIN_COUNTRY: r'Admin Country: (.+)',
+        BaseKeys.ADMIN_PHONE: r'Admin Phone: (.+)',
+        BaseKeys.ADMIN_FAX: r'Admin Fax: (.+)',
+        BaseKeys.ADMIN_EMAIL: r'Admin Email: (.+)',
+
+        BaseKeys.BILLING_NAME: r'Billing Name: (.+)',
+        BaseKeys.BILLING_ID: r'Billing ID: (.+)',
+        BaseKeys.BILLING_ORGANIZATION: r'Billing Organization: (.+)',
+        BaseKeys.BILLING_CITY: r'Billing City: (.*)',
+        BaseKeys.BILLING_ADDRESS: r'Billing Street: (.*)',
+        BaseKeys.BILLING_STATE: r'Billing State/Province: (.*)',
+        BaseKeys.BILLING_ZIPCODE: r'Billing Postal Code: (.*)',
+        BaseKeys.BILLING_COUNTRY: r'Billing Country: (.+)',
+        BaseKeys.BILLING_PHONE: r'Billing Phone: (.+)',
+        BaseKeys.BILLING_FAX: r'Billing Fax: (.+)',
+        BaseKeys.BILLING_EMAIL: r'Billing Email: (.+)',
+
+        BaseKeys.TECH_NAME: r'Tech Name: (.+)',
+        BaseKeys.TECH_ID: r'Tech ID: (.+)',
+        BaseKeys.TECH_ORGANIZATION: r'Tech Organization: (.+)',
+        BaseKeys.TECH_CITY: r'Tech City: (.*)',
+        BaseKeys.TECH_ADDRESS: r'Tech Street: (.*)',
+        BaseKeys.TECH_STATE: r'Tech State/Province: (.*)',
+        BaseKeys.TECH_ZIPCODE: r'Tech Postal Code: (.*)',
+        BaseKeys.TECH_COUNTRY: r'Tech Country: (.+)',
+        BaseKeys.TECH_PHONE: r'Tech Phone: (.+)',
+        BaseKeys.TECH_FAX: r'Tech Fax: (.+)',
+        BaseKeys.TECH_EMAIL: r'Tech Email: (.+)',
     }
 
     multiple_match_keys = (BaseKeys.NAME_SERVERS, BaseKeys.STATUS)
@@ -179,6 +218,37 @@ class BaseParser:
                 return self._process(match.group(1))
             return None
 
+    def find_multiline_match(self, start: str, blob: str) -> List[str]:
+        """
+        Used to find multiple lines related to a single key within the
+        WHOIS query response. Assumes the values are on a newline below
+        the key, and that a blank line separates the last value from the
+        next key or end of the text.
+
+        Example:
+        -------
+        example_blob = '''
+            Name servers:
+                 ns1.google.com
+                 ns2.google.com
+                 ns3.google.com
+                 ns4.google.com
+
+        '''
+        find_multiline_match('Name servers:\n', example_blob)
+        # would return... ['ns1.google.com', 'ns2.google.com', 'ns3.google.com', 'ns4.google.com']
+
+        :param start: a key that identifies where to begin the multiline search in blob
+        :param blob: the whois query text
+        :return: a list of values as strings
+        """
+        matches = []
+        regex_string = start + r'\s+([A-Za-z0-9\.\s]+\n\n)'
+        multiline_match = re.search(regex_string, blob, re.DOTALL | re.IGNORECASE)
+        if multiline_match:
+            matches = self._process_many(multiline_match.group(1))
+        return matches
+
     @staticmethod
     def _parse_date(date_string: str) -> Union[datetime.datetime, str]:
         """
@@ -198,9 +268,11 @@ class BaseParser:
     def _process_many(self, match: str) -> List[str]:
         if '\n' in match:
             match = match.split('\n')
-            return [self._process(m) for m in match if m]
+            matches = [self._process(m) for m in match if m]
+            return [m for m in matches if m]  # remove empty strings
         else:
-            return [self._process(match)]
+            match = self._process(match)
+            return [match] if match else []  # remove empty strings
 
     @staticmethod
     def _process(match: str) -> str:
@@ -209,7 +281,6 @@ class BaseParser:
 
 
 class WhoIsParser:
-
     _no_match_checks = [
         'no match',
         'not found',
@@ -251,6 +322,10 @@ class WhoIsParser:
             return RegexAT()
         elif tld == 'au':
             return RegexAU()
+        elif tld == 'aw':
+            return RegexAW()
+        elif tld == 'ax':
+            return RegexAX()
         elif tld == 'be':
             return RegexBE()
         elif tld == 'br':
@@ -283,6 +358,10 @@ class WhoIsParser:
             return RegexFI()
         elif tld == 'fr':
             return RegexFR()
+        elif tld == 'ge':
+            return RegexGE()
+        elif tld == 'gg':
+            return RegexGG()
         elif tld == 'gq':
             return RegexGQ()
         elif tld == 'hk':
@@ -405,7 +484,6 @@ class RegexCL(BaseParser):
 class RegexPL(BaseParser):
     _pl_expressions = {
         BaseKeys.DOMAIN_NAME: r'DOMAIN NAME: *(.+)\n',
-        BaseKeys.NAME_SERVERS: r'nameservers:(.*?)created',
         BaseKeys.REGISTRAR: r'REGISTRAR:\s*(.+)',
         BaseKeys.CREATED: r'created: *(.+)',
         BaseKeys.EXPIRES: r'option expiration date: *(.+)',
@@ -418,17 +496,10 @@ class RegexPL(BaseParser):
         self.update_reg_expressions(self._pl_expressions)
 
     def parse(self, blob: str) -> Dict[str, Any]:
-        parsed_output = {}
-        for key, regex in self.reg_expressions.items():
-            if key == BaseKeys.NAME_SERVERS:
-                match = self.find_match(regex, blob, flags=re.DOTALL | re.IGNORECASE, many=False)
-                parsed_output[BaseKeys.NAME_SERVERS] = [self._process(m) for m in match.split('\n')]
-            else:
-                many = key in self.multiple_match_keys
-                parsed_output[key] = self.find_match(regex, blob, many=many)
-                if key in self.date_keys and parsed_output.get(key, None):
-                    parsed_output[key] = self._parse_date(parsed_output.get(key))
-
+        parsed_output = super().parse(blob)
+        nameservers_match = self.find_match(r'nameservers:*(.+)\ncreated:\s', blob, flags=re.DOTALL | re.IGNORECASE)
+        if nameservers_match:
+            parsed_output[BaseKeys.NAME_SERVERS] = [self._process(m) for m in nameservers_match.split('\n')]
         return parsed_output
 
 
@@ -538,23 +609,19 @@ class RegexEU(BaseParser):
 
     def parse(self, blob: str) -> Dict[str, Any]:
         parsed_output = super().parse(blob)
-        name_servers_match = re.search(r"Name servers:\n(.+)", blob, re.DOTALL | re.IGNORECASE)
-        if name_servers_match:
-            name_servers = name_servers_match.group(1).split('\n')
-            parsed_output[BaseKeys.NAME_SERVERS] = [self._process(ns) for ns in name_servers if ns]
+        # find name servers
+        parsed_output[BaseKeys.NAME_SERVERS] = self.find_multiline_match("Name servers:", blob)
         return parsed_output
 
 
 class RegexDE(BaseParser):
-    """
-    .de disclaimer (very hard to extract information from this provider):
-
-    % The DENIC whois service on port 43 doesn't disclose any information concerning
-    % the domain holder, general request and abuse contact.
-    % This information can be obtained through use of our web-based whois service
-    % available at the DENIC website:
-    % http://www.denic.de/en/domains/whois-service/web-whois.html
-    """
+    # .de disclaimer (very hard to extract information from this provider):
+    #
+    # % The DENIC whois service on port 43 doesn't disclose any information concerning
+    # % the domain holder, general request and abuse contact.
+    # % This information can be obtained through use of our web-based whois service
+    # % available at the DENIC website:
+    # % http://www.denic.de/en/domains/whois-service/web-whois.html
 
     _de_expressions = {
         BaseKeys.UPDATED: r'Changed: *(.+)',
@@ -589,9 +656,7 @@ class RegexUK(BaseParser):
             address_pieces = [m.strip() for m in address_match.group(1).split('\n') if m.strip()]
             parsed_output[BaseKeys.REGISTRANT_ADDRESS] = ", ".join(address_pieces)
         # find name servers
-        ns_match = re.search(r"Name servers: *(.+)WHOIS lookup", blob, re.DOTALL)
-        if ns_match:
-            parsed_output[BaseKeys.NAME_SERVERS] = [m.strip() for m in ns_match.group(1).split('\n') if m.strip()]
+        parsed_output[BaseKeys.NAME_SERVERS] = self.find_multiline_match("Name servers:", blob)
         return parsed_output
 
 
@@ -599,10 +664,10 @@ class RegexJP(BaseParser):
     _jp_expressions = {
         BaseKeys.REGISTRANT_NAME: r'\[Registrant\] *(.+)',
         BaseKeys.CREATED: r'\[登録年月日\] *(.+)',
-        BaseKeys.EXPIRES: r'\[有効期限\] *(.+)',
+        BaseKeys.EXPIRES: r'\[(?:有効限|有効期限)\]*(.+)',
         BaseKeys.STATUS: r'\[状態\] *(.+)',
         BaseKeys.UPDATED: r'\[最終更新\] *(.+)',
-        BaseKeys.NAME_SERVERS: r'\[Name Server\]:: *(.+)'
+        BaseKeys.NAME_SERVERS: r'\[Name Server\] *(.+)'
     }
 
     def __init__(self):
@@ -612,7 +677,7 @@ class RegexJP(BaseParser):
 
     def parse(self, blob: str) -> Dict[str, Any]:
         parsed_output = super().parse(blob)
-        address_match = re.search(r"[Postal Address] *(.+)[電話番号]", blob, re.DOTALL)
+        address_match = re.search(r"\[Postal Address\]([^\[|.]+)\[\w+\](.+)", blob, re.DOTALL)
         if address_match:
             address_pieces = [m.strip() for m in address_match.group(1).split('\n') if m.strip()]
             parsed_output[BaseKeys.REGISTRANT_ADDRESS] = ", ".join(address_pieces)
@@ -633,6 +698,7 @@ class RegexAU(BaseParser):
 
 class RegexAT(BaseParser):
     _at_expressions = {
+        BaseKeys.DOMAIN_NAME: r'domain: *(.+)',
         BaseKeys.REGISTRAR: r'registrar: *(.+)',
         BaseKeys.REGISTRANT_NAME: r'personname: *(.+)',
         BaseKeys.REGISTRANT_ADDRESS: r'street address: *(.+)',
@@ -640,19 +706,12 @@ class RegexAT(BaseParser):
         BaseKeys.REGISTRANT_CITY: r'city: *(.+)',
         BaseKeys.REGISTRANT_COUNTRY: r'country: *(.+)',
         BaseKeys.UPDATED: r'changed: *(.+)',
+        BaseKeys.NAME_SERVERS: r'nserver :*(.+)'
     }
 
     def __init__(self):
         super().__init__()
         self.update_reg_expressions(self._at_expressions)
-
-    def parse(self, blob: str) -> Dict[str, Any]:
-        parsed_output = {BaseKeys.NAME_SERVERS: self.find_match(r'nserver :*(.+)', blob, many=True)}
-        for key, pattern in self.reg_expressions.items():
-            match = re.search(pattern, blob)
-            if match:
-                parsed_output[key] = self._process(match.group(1))
-        return parsed_output
 
 
 class RegexBE(BaseParser):
@@ -669,9 +728,7 @@ class RegexBE(BaseParser):
 
     def parse(self, blob: str) -> Dict[str, Any]:
         parsed_output = super().parse(blob)
-        ns_match = re.search(r"Name servers: *(.+)Keys: ", blob, re.DOTALL)
-        if ns_match:
-            parsed_output[BaseKeys.NAME_SERVERS] = [m.strip() for m in ns_match.group(1).split('\n') if m.strip()]
+        parsed_output[BaseKeys.NAME_SERVERS] = self.find_multiline_match("Name servers:", blob)
         return parsed_output
 
 
@@ -706,9 +763,7 @@ class RegexKG(BaseParser):
 
     def parse(self, blob: str) -> Dict[str, Any]:
         parsed_output = super().parse(blob)
-        ns_match = re.search(r"Name servers in the listed order: *(.+)", blob, re.DOTALL)
-        if ns_match:
-            parsed_output[BaseKeys.NAME_SERVERS] = [m.strip() for m in ns_match.group(1).split('\n') if m.strip()]
+        parsed_output[BaseKeys.NAME_SERVERS] = self.find_multiline_match("Name servers in the listed order:", blob)
         return parsed_output
 
 
@@ -1084,13 +1139,13 @@ class RegexCZ(BaseParser):
 
 class RegexHR(BaseParser):
     _hr_expressions = {
-        BaseKeys.DOMAIN_NAME: 'Domain Name: *(.+)',
-        BaseKeys.UPDATED: 'Updated Date: *(.+)',
-        BaseKeys.CREATED: 'Creation Date: *(.+)',
-        BaseKeys.EXPIRES: 'Registrar Registration Expiration Date: *(.+)',
-        BaseKeys.NAME_SERVERS: 'Name Server: *(.+)',
-        BaseKeys.REGISTRANT_NAME: 'Registrant Name:\s(.+)',
-        BaseKeys.REGISTRANT_ADDRESS: 'Registrant Street:\s*(.+)',
+        BaseKeys.DOMAIN_NAME: r'Domain Name: *(.+)',
+        BaseKeys.UPDATED: r'Updated Date: *(.+)',
+        BaseKeys.CREATED: r'Creation Date: *(.+)',
+        BaseKeys.EXPIRES: r'Registrar Registration Expiration Date: *(.+)',
+        BaseKeys.NAME_SERVERS: r'Name Server: *(.+)',
+        BaseKeys.REGISTRANT_NAME: r'Registrant Name:\s(.+)',
+        BaseKeys.REGISTRANT_ADDRESS: r'Registrant Street:\s*(.+)',
     }
 
     def __init__(self):
@@ -1332,13 +1387,8 @@ class RegexTK(BaseParser):
 
     def parse(self, blob: str) -> Dict[str, Any]:
         parsed_output = super().parse(blob)
-        # name servers
-        name_server_match = re.search(r'Domain Nameservers:(?:.*?)*(.+)Domain registered', blob,
-                                      re.IGNORECASE | re.DOTALL)
-        if name_server_match:
-            name_servers = [self._process(m) for m in name_server_match.group(1).split('\n')]
-            parsed_output[BaseKeys.NAME_SERVERS] = [ns for ns in name_servers if ns]
-
+        # handle multiline nameservers
+        parsed_output[BaseKeys.NAME_SERVERS] = self.find_multiline_match('Domain nameservers:', blob)
         # a date parser exists for '%d/%m/%Y', but this interferes with the parser needed
         # for this one, which is '%m/%d/%Y', so this date format needs to be parsed separately here
         created_match = re.search(r'Domain registered: *(.+)', blob, re.IGNORECASE)
@@ -1347,7 +1397,6 @@ class RegexTK(BaseParser):
         expires_match = re.search(r'Record will expire on: *(.+)', blob, re.IGNORECASE)
         if expires_match:
             parsed_output[BaseKeys.EXPIRES] = datetime.datetime.strptime(expires_match.group(1), '%m/%d/%Y')
-
         # split domain and status
         domain_name_match = re.search(f'Domain name:(?:.*?)*(.+)Owner contact:', blob, re.IGNORECASE | re.DOTALL)
         if domain_name_match:
@@ -1357,7 +1406,6 @@ class RegexTK(BaseParser):
                 parsed_output[BaseKeys.STATUS] = [self._process(domain_and_status[1])]
             else:
                 parsed_output[BaseKeys.DOMAIN_NAME] = domain_and_status
-
         return parsed_output
 
 
@@ -1409,11 +1457,8 @@ class RegexEDU(BaseParser):
             parsed_output[BaseKeys.REGISTRANT_COUNTRY] = country
             parsed_output[BaseKeys.REGISTRANT_ADDRESS] = address
 
-        name_servers_match = re.search(r'Name Servers:(.*?)Domain', blob, re.IGNORECASE | re.DOTALL)
-        if name_servers_match:
-            name_servers = [self._process(m) for m in name_servers_match.group(1).split('\n')]
-            parsed_output[BaseKeys.NAME_SERVERS] = [ns for ns in name_servers if ns]
-
+        # handle multiline nameservers
+        parsed_output[BaseKeys.NAME_SERVERS] = self.find_multiline_match('Name Servers:', blob)
         return parsed_output
 
 
@@ -1453,10 +1498,8 @@ class RegexNL(BaseParser):
 
     def parse(self, blob: str) -> Dict[str, Any]:
         parsed_output = super().parse(blob)
-        name_servers_match = re.search(r'Domain nameservers:\n(.+)Record maintained', blob, re.DOTALL | re.IGNORECASE)
-        if name_servers_match:
-            name_servers = [self._process(m) for m in name_servers_match.group(1).split('\n')]
-            parsed_output[BaseKeys.NAME_SERVERS] = [ns for ns in name_servers if ns]
+        # handle multiline nameservers
+        parsed_output[BaseKeys.NAME_SERVERS] = self.find_multiline_match('Domain nameservers:', blob)
         return parsed_output
 
 
@@ -1468,3 +1511,78 @@ class RegexMA(BaseParser):
     def __init__(self):
         super().__init__()
         self.update_reg_expressions(self._ma_expressions)
+
+
+class RegexGE(BaseParser):
+    _ge_expressions = {
+        BaseKeys.REGISTRANT_NAME: r'Registrant: *(.+)',
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.update_reg_expressions(self._ge_expressions)
+
+
+class RegexGG(BaseParser):
+    _gg_expressions = {
+        BaseKeys.DOMAIN_NAME: r'Domain:\n*(.+)',
+        BaseKeys.REGISTRANT_NAME: r'Registrant:\n*(.+)',
+        BaseKeys.REGISTRAR: r'Registrar:\n*(.+)',
+        BaseKeys.CREATED: r'Registered on *(.+) at',
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.update_reg_expressions(self._gg_expressions)
+
+    def parse(self, blob: str) -> Dict[str, Any]:
+        parsed_output = super().parse(blob)
+        # parse created date
+        created_match = parsed_output.get('created')  # looks like 30th April 2003; need to remove day suffix
+        if created_match and isinstance(created_match, str):
+            date_string = re.sub(r'(\d)(st|nd|rd|th)', r'\1', created_match)
+            parsed_output[BaseKeys.CREATED] = datetime.datetime.strptime(date_string, '%d %B %Y')
+        # handle multiline nameservers and statuses
+        parsed_output[BaseKeys.NAME_SERVERS] = self.find_multiline_match('Name servers:', blob)
+        parsed_output[BaseKeys.STATUS] = self.find_multiline_match('Domain status:', blob)
+        return parsed_output
+
+
+class RegexAW(BaseParser):
+    _aw_expressions = {
+        BaseKeys.REGISTRAR: r'Registrar:\n*(.+)',
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.update_reg_expressions(self._aw_expressions)
+
+    def parse(self, blob: str) -> Dict[str, Any]:
+        parsed_output = super().parse(blob)
+        parsed_output[BaseKeys.NAME_SERVERS] = self.find_multiline_match('Domain nameservers:', blob)
+        return parsed_output
+
+
+class RegexAX(BaseParser):
+    _ax_expressions = {
+        BaseKeys.DOMAIN_NAME: r'domain\.+: *(.+)',
+        BaseKeys.REGISTRAR: r'registrar\.+: *(.+)',
+        BaseKeys.REGISTRANT_NAME: r'name\.+: *(.+)',
+        BaseKeys.REGISTRANT_COUNTRY: r'country\.+: *(.+)',
+        BaseKeys.CREATED: r'created\.+: *(.+)',
+        BaseKeys.EXPIRES: r'expires\.+: *(.+)',
+        BaseKeys.UPDATED: r'modified\.+: *(.+)',
+        BaseKeys.STATUS: r'status\.+: *(.+)',
+        BaseKeys.NAME_SERVERS: r'nserver\.+: *(.+)'
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.update_reg_expressions(self._ax_expressions)
+
+    def parse(self, blob: str) -> Dict[str, Any]:
+        parsed_output = super().parse(blob)
+        addresses = self.find_match(r'address\.+: *(.+)', blob, many=True)
+        if addresses:
+            parsed_output[BaseKeys.REGISTRANT_ADDRESS] = ', '.join(addresses)
+        return parsed_output

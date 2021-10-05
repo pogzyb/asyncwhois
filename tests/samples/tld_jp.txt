@@ -1,0 +1,44 @@
+[ JPRS database provides information on network administration. Its use
+ is    ]
+[ restricted to network administration purposes. For further
+information,     ]
+"[ use whois -h whois.jprs.jp help. To suppress Japanese output, "
+"add/e     ]"
+"[ at the end of command, e.g. whois -h whois.jprs.jp "
+"xxx/e.                 ]"
+
+Domain Information: [ドメイン情報]
+[Domain Name]                   AMAZON.JP
+
+[登録者名]                      Amazon, Inc.
+[Registrant]                    Amazon, Inc.
+
+[Name Server]                   pdns1.ultradns.net
+[Name Server]                   pdns6.ultradns.co.uk
+[Name Server]                   pdns2.ultradns.net
+[Name Server]                   pdns5.ultradns.info
+[Name Server]                   pdns3.ultradns.org
+[Name Server]                   pdns4.ultradns.org
+[Name Server]                   ns2.p31.dynect.net
+[Name Server]                   ns1.p31.dynect.net
+[Signing Key]
+
+[登録年月日]                    2010/09/22
+[有効限]                      2021/09/30
+[状態]                          Active
+[最終更新]                      2020/10/01 01:05:09 (JST)
+
+Contact Information: [公開連絡窓口]
+[名前]                          Amazon, Inc.
+[Name]                          Amazon, Inc.
+[Email]                         hostmaster@amazon.com
+[Web Page]
+[郵便番号]                      150-0002
+[住]                          東京都Meguro-ku
+                             Arco Tower Annex
+                             8-1, Shimomeguro 1-chome
+[Postal Address]                Meguro-ku
+                             Arco Tower Annex
+                             8-1, Shimomeguro 1-chome
+[電話番号]                      +81.342884000
+[FAX番号]

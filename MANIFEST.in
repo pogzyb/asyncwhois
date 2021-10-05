@@ -1,2 +1,4 @@
-include README.rst
+include pyproject.toml
+include *.md
 include LICENSE
+include setup.py
