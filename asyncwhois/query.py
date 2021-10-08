@@ -46,13 +46,12 @@ class WhoIsQuery(Query):
                     self.server = self._find_match(regex=r"refer: *(.+)", blob=iana_result_blob)
                     if not self.server:
                         raise QueryError(f"Could not find a whois server for {self.domain}")
-
             # connect to <server>:43
             with self._create_connection((self.server, self._whois_port), self.timeout) as conn:
                 # save output into "query_output"
                 self.query_output = self._send_and_recv(conn, data)
                 # check for "authoritative" whois server via regex
-                whois_server = self._find_match(regex=r"WHOIS server:*(.+)", blob=self.query_output)
+                whois_server = self._find_match(regex=r"whois server: *(.+)", blob=self.query_output)
                 whois_server = whois_server.replace(' ', '').rstrip(':')
                 if whois_server and self.server != whois_server:
                     # if there is a more authoritative source; connect and re-query
@@ -123,7 +122,7 @@ class AsyncWhoIsQuery(Query):
 
             reader, writer = await self._create_connection((self.server, self._whois_port), self.timeout)
             self.query_output = await self._send_and_recv(reader, writer, data)
-            whois_server = self._find_match(regex=r"WHOIS server:*(.+)", blob=self.query_output)
+            whois_server = self._find_match(regex=r"whois server: *(.+)", blob=self.query_output)
             whois_server = whois_server.replace(' ', '').rstrip(':')
             if whois_server:
                 self.server = whois_server
