@@ -308,143 +308,81 @@ class WhoIsParser:
         """
         Retrieves the parser instance which can most accurately extract
         key/value pairs from the whois server output for the given `tld`.
+
         :param tld: the top level domain
         :return: instance of BaseParser or a BaseParser sub-class
         """
-
-        # the cases specified below do not follow a common format,
-        # and so, must be parsed with custom defined regex sub classes.
-        if tld == 'ae':
-            return RegexAE()
-        elif tld == 'ar':
-            return RegexAR()
-        elif tld == 'at':
-            return RegexAT()
-        elif tld == 'au':
-            return RegexAU()
-        elif tld == 'aw':
-            return RegexAW()
-        elif tld == 'ax':
-            return RegexAX()
-        elif tld == 'be':
-            return RegexBE()
-        elif tld == 'br':
-            return RegexBR()
-        elif tld == 'by':
-            return RegexBY()
-        elif tld == 'cc':
-            return RegexCC()
-        elif tld == 'ch':
-            return RegexCH()
-        elif tld == 'cl':
-            return RegexCL()
-        elif tld == 'cn':
-            return RegexCN()
-        elif tld == 'cr':
-            return RegexCR()
-        elif tld == 'cz':
-            return RegexCZ()
-        elif tld == 'de':
-            return RegexDE()
-        elif tld == 'dk':
-            return RegexDK()
-        elif tld == 'edu':
-            return RegexEDU()
-        elif tld == 'ee':
-            return RegexEE()
-        elif tld == 'eu':
-            return RegexEU()
-        elif tld == 'fi':
-            return RegexFI()
-        elif tld == 'fr':
-            return RegexFR()
-        elif tld == 'ge':
-            return RegexGE()
-        elif tld == 'gg':
-            return RegexGG()
-        elif tld == 'gq':
-            return RegexGQ()
-        elif tld == 'hk':
-            return RegexHK()
-        elif tld == 'hr':
-            return RegexHR()
-        elif tld == 'id':
-            return RegexID()
-        elif tld == 'ie':
-            return RegexIE()
-        elif tld == 'il':
-            return RegexIL()
-        elif tld == 'ir':
-            return RegexIR()
-        elif tld == 'is':
-            return RegexIS()
-        elif tld == 'it':
-            return RegexIT()
-        elif tld == 'jp':
-            return RegexJP()
-        elif tld == 'kg':
-            return RegexKG()
-        elif tld == 'kr':
-            return RegexKR()
-        elif tld == 'kz':
-            return RegexKZ()
-        elif tld == 'li':
-            return RegexLI()
-        elif tld == 'lu':
-            return RegexLU()
-        elif tld == 'lv':
-            return RegexLV()
-        elif tld == 'ma':
-            return RegexMA()
-        elif tld == 'mx':
-            return RegexMX()
-        elif tld == 'nl':
-            return RegexNL()
-        elif tld == 'no':
-            return RegexNO()
-        elif tld == 'nu':
-            return RegexNU()
-        elif tld == 'nz':
-            return RegexNZ()
-        elif tld == 'pe':
-            return RegexPE()
-        elif tld == 'pl':
-            return RegexPL()
-        elif tld == 'pt':
-            return RegexPT()
-        elif tld == 'rf':
-            return RegexRF()
-        elif tld == 'ro':
-            return RegexRO()
-        elif tld == 'ru':
-            return RegexRU()
-        elif tld == 'sa':
-            return RegexSA()
-        elif tld == 'se':
-            return RegexSE()
-        elif tld == 'si':
-            return RegexSI()
-        elif tld == 'sk':
-            return RegexSK()
-        elif tld == 'su':
-            return RegexSU()
-        elif tld == 'tk':
-            return RegexTK()
-        elif tld == 'tr':
-            return RegexTR()
-        elif tld == 'tw':
-            return RegexTW()
-        elif tld == 'ua':
-            return RegexUA()
-        elif tld == 'uk':
-            return RegexUK()
-        elif tld == 've':
-            return RegexVE()
-        else:
-            # The BaseParser can handle all "Generic" and some "Country-Code" TLDs.
-            # If the parsed output of lookup is not what you expect or even incorrect,
-            # check for and then modify the existing Regex subclass or create a new one.
-            return BaseParser()
+        tld_parsers = {
+            'ae': RegexAE(),
+            'ar': RegexAR(),
+            'at': RegexAT(),
+            'au': RegexAU(),
+            'aw': RegexAW(),
+            'ax': RegexAX(),
+            'be': RegexBE(),
+            'br': RegexBR(),
+            'by': RegexBY(),
+            'cc': RegexCC(),
+            'ch': RegexCH(),
+            'cl': RegexCL(),
+            'cn': RegexCN(),
+            'cr': RegexCR(),
+            'cz': RegexCZ(),
+            'de': RegexDE(),
+            'dk': RegexDK(),
+            'edu': RegexEDU(),
+            'ee': RegexEE(),
+            'eu': RegexEU(),
+            'fi': RegexFI(),
+            'fr': RegexFR(),
+            'ge': RegexGE(),
+            'gg': RegexGG(),
+            'gq': RegexGQ(),
+            'hk': RegexHK(),
+            'hr': RegexHR(),
+            'id': RegexID(),
+            'ie': RegexIE(),
+            'il': RegexIL(),
+            'ir': RegexIR(),
+            'is': RegexIS(),
+            'it': RegexIT(),
+            'jp': RegexJP(),
+            'kg': RegexKG(),
+            'kr': RegexKR(),
+            'kz': RegexKZ(),
+            'li': RegexLI(),
+            'lu': RegexLU(),
+            'lv': RegexLV(),
+            'ma': RegexMA(),
+            'ml': RegexML(),
+            'mx': RegexMX(),
+            'nl': RegexNL(),
+            'no': RegexNO(),
+            'nu': RegexNU(),
+            'nz': RegexNZ(),
+            'om': RegexOM(),
+            'pe': RegexPE(),
+            'pl': RegexPL(),
+            'pt': RegexPT(),
+            'rf': RegexRF(),
+            'ro': RegexRO(),
+            'ru': RegexRU(),
+            'sa': RegexSA(),
+            'se': RegexSE(),
+            'si': RegexSI(),
+            'sk': RegexSK(),
+            'su': RegexSU(),
+            'tk': RegexTK(),
+            'tr': RegexTR(),
+            'tw': RegexTW(),
+            'ua': RegexUA(),
+            'uk': RegexUK(),
+            've': RegexVE()
+        }
+        # The BaseParser can handle all "Generic" and some "Country-Code" TLDs.
+        # If the parsed output of lookup is not what you expect or even incorrect,
+        # check for and then modify the existing Regex subclass or create a new one.
+        return tld_parsers.get(tld, BaseParser())
 
 
 # ==============================
@@ -1586,3 +1524,64 @@ class RegexAX(BaseParser):
         if addresses:
             parsed_output[BaseKeys.REGISTRANT_ADDRESS] = ', '.join(addresses)
         return parsed_output
+
+
+class RegexML(BaseParser):
+    _ml_expressions = {
+        BaseKeys.EXPIRES: r'Record will expire on: *(.+)',
+        BaseKeys.CREATED: r'Domain registered: *(.+)',
+        BaseKeys.DOMAIN_NAME: r'Domain name:\n*(.+)\sis\s',
+        BaseKeys.STATUS: r'Domain name:\n.+\sis\s*(.+)'
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.update_reg_expressions(self._ml_expressions)
+
+    def parse(self, blob: str) -> Dict[str, Any]:
+        parsed_output = super().parse(blob)
+        parsed_output[BaseKeys.NAME_SERVERS] = self.find_multiline_match('Domain nameservers:', blob)
+        for contact in ('Admin', 'Billing', 'Owner', 'Tech'):
+            # isolate the appropriate contact block
+            contact_blob = re.search(f'{contact} contact:\n(.+)\n\n', blob, re.DOTALL)
+            if contact_blob:
+                if contact == 'Owner':
+                    # map "owner" to registrant
+                    contact = 'Registrant'
+                for key in ('Organization', 'Name', 'Address', 'Zipcode', 'City',
+                            'State', 'Country', 'Phone', 'Fax', 'E-mail'):
+                    # special case: Email -> E-mail
+                    if key == 'E-mail':
+                        base_key = getattr(BaseKeys, f'{contact}_Email'.upper())
+                    else:
+                        base_key = getattr(BaseKeys, f'{contact}_{key}'.upper())
+                    if not base_key:
+                        continue
+                    # updated parser dict
+                    parsed_output[base_key] = self.find_match(f'{key}: *(.+)', contact_blob.group(0))
+        date_format = '%m/%d/%Y' # example: 05/28/2013
+        parsed_output[BaseKeys.EXPIRES] = datetime.datetime.strptime(parsed_output[BaseKeys.EXPIRES], date_format)
+        parsed_output[BaseKeys.CREATED] = datetime.datetime.strptime(parsed_output[BaseKeys.CREATED], date_format)
+        return parsed_output
+
+
+class RegexOM(BaseParser):
+    _om_expressions = {
+        BaseKeys.REGISTRAR: r'Registrar Name: *(.+)',
+        BaseKeys.UPDATED: r'Last Modified: *(.+)',
+        BaseKeys.REGISTRANT_CITY: r'Registrant Contact City: *(.+)',
+        BaseKeys.REGISTRANT_COUNTRY: r'Registrant Contact Country: *(.+)',
+        BaseKeys.REGISTRANT_ORGANIZATION: r'Registrant Contact Organisation: *(.+)',
+        BaseKeys.REGISTRANT_NAME: r'Registrant Contact Name: *(.+)',
+        BaseKeys.REGISTRANT_EMAIL: r'Registrant Contact Email: *(.+)',
+        BaseKeys.TECH_CITY: r'Tech Contact City: *(.+)',
+        BaseKeys.TECH_COUNTRY: r'Tech Contact Country: *(.+)',
+        BaseKeys.TECH_ORGANIZATION: r'Tech Contact Organisation: *(.+)',
+        BaseKeys.TECH_NAME: r'Tech Contact Name: *(.+)',
+        BaseKeys.TECH_EMAIL: r'Tech Contact Email: *(.+)',
+        BaseKeys.NAME_SERVERS: r'Name Server: *(.+)',
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.update_reg_expressions(self._om_expressions)

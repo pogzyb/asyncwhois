@@ -54,6 +54,11 @@ class PyWhoIs:
         if len(tld.split('.')) > 1:
             tld = tld.split('.')[-1]
 
+        self.subdomain = extract_result.subdomain
+        self.domain = extract_result.domain
+        self.suffix = extract_result.suffix
+        self.tld = tld
+
         return extract_result.domain, tld
 
     def _get_domain_and_tld(self, url: str):
@@ -200,12 +205,12 @@ class PyWhoIs:
     @classmethod
     async def _aio_rdap_domain_from_url(cls, url: str, http_client: Any = None):
         """
-        Performs an RDAP query by leveraging whodap.aio_lookup_domain;
+        Performs an RDAP query by leveraging `whodap.aio_lookup_domain`;
         stores the resulting RDAP output into "query_output" and a WHOIS friendly
         key/value pair dictionary into "parser_output".
 
         :param url: the given url to search
-        :param http_client_kws: keyword arguments passed directly to the underlying httpx client
+        :param http_client: the underlying httpx client to pass to `whodap.aio_lookup_domain`
         :return: initialized instance of PyWhoIs
         """
         pywhois = cls()
@@ -224,12 +229,12 @@ class PyWhoIs:
     @classmethod
     def _rdap_domain_from_url(cls, url: str, http_client: Any = None):
         """
-        Performs an RDAP query by leveraging whodap.lookup_domain;
+        Performs an RDAP query by leveraging `whodap.lookup_domain`;
         stores the resulting RDAP output into "query_output" and a WHOIS friendly
         key/value pair dictionary into "parser_output".
 
         :param url: the given url to search
-        :param http_client_kws: keyword arguments passed directly to the underlying httpx client
+        :param http_client: the underlying httpx client to pass to `whodap.lookup_domain`
         :return: initialized instance of PyWhoIs
         """
         pywhois = cls()

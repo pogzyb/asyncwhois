@@ -11,7 +11,7 @@ __all__ = [
     'rdap_domain_lookup',
     'aio_rdap_domain_lookup'
 ]
-__version__ = '0.4.0'
+__version__ = '0.4.1'
 
 
 def lookup(url: str, timeout: int = 10) -> PyWhoIs:
