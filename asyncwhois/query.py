@@ -46,25 +46,26 @@ class WhoIsQuery(Query):
                     self.server = self._find_match(regex=r"refer: *(.+)", blob=iana_result_blob)
                     if not self.server:
                         raise QueryError(f"Could not find a whois server for {self.domain}")
-
             # connect to <server>:43
             with self._create_connection((self.server, self._whois_port), self.timeout) as conn:
                 # save output into "query_output"
                 self.query_output = self._send_and_recv(conn, data)
                 # check for "authoritative" whois server via regex
-                whois_server = self._find_match(regex=r"WHOIS server: *(.+)", blob=self.query_output)
-                if whois_server:
+                whois_server = self._find_match(regex=r"whois server: *(.+)", blob=self.query_output)
+                whois_server = whois_server.replace(' ', '').rstrip(':')
+                if whois_server and self.server != whois_server:
                     # if there is a more authoritative source; connect and re-query
                     self.server = whois_server
                     with self._create_connection((self.server, self._whois_port), self.timeout) as conn:
                         # save output into "query_output"
                         self.query_output = self._send_and_recv(conn, data)
+        
+        except ConnectionRefusedError:
+            raise QueryError(f'')
+
         except ConnectionResetError:
             server = self.server or self._iana_server
             raise QueryError(f'"Connection reset by peer" when communicating with {server}:43')
-        except socket.timeout:
-            server = self.server or self._iana_server
-            raise QueryError(f'Socket timed out when attempting to reach {server}:43')
 
     @staticmethod
     def _send_and_recv(conn: socket.socket, data: str) -> str:
@@ -83,7 +84,9 @@ class WhoIsQuery(Query):
         try:
             return socket.create_connection(address=address, timeout=timeout)
         except socket.timeout:
-            raise QueryError(f'Could not reach WHOIS server at {address[0]}:{address[1]}')
+            raise QueryError(f'Connection timeout for WHOIS server at {address[0]}:{address[1]}')
+        except socket.gaierror:
+            raise QueryError(f'Could not get address information for {address[0]}:{address[1]}')
 
 
 class AsyncWhoIsQuery(Query):
@@ -119,14 +122,16 @@ class AsyncWhoIsQuery(Query):
 
             reader, writer = await self._create_connection((self.server, self._whois_port), self.timeout)
             self.query_output = await self._send_and_recv(reader, writer, data)
-            whois_server = self._find_match(regex=r"WHOIS server: *(.+)", blob=self.query_output)
+            whois_server = self._find_match(regex=r"whois server: *(.+)", blob=self.query_output)
+            whois_server = whois_server.replace(' ', '').rstrip(':')
             if whois_server:
                 self.server = whois_server
                 reader, writer = await self._create_connection((self.server, self._whois_port), self.timeout)
                 self.query_output = await self._send_and_recv(reader, writer, data)
 
             writer.close()
-            await writer.wait_closed()
+            if hasattr(writer, 'wait_closed'):
+                await writer.wait_closed()
         except ConnectionResetError:
             server = self.server or self._iana_server
             raise QueryError(f'"Connection reset by peer" when communicating with {server}:43')
