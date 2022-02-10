@@ -10,3 +10,7 @@ class QueryError(WhoIsError):
 
 class NotFoundError(WhoIsError):
     pass
+
+
+class GeneralError(WhoIsError):
+    pass
