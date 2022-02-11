@@ -42,7 +42,7 @@ class Query:
         match = ""
         found = re.search(regex, blob, flags=re.IGNORECASE)
         if found:
-            match = found.group(1).rstrip("\r").replace(" ", "").rstrip(":")
+            match = found.group(1).rstrip("\r").replace(" ", "").rstrip(":").rstrip("/")
         return match
 
     @contextmanager
