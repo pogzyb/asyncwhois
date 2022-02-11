@@ -24,7 +24,7 @@ __version__ = '1.0.0'
 
 def whois_domain(
     domain: str,
-    authoritative_only: bool = True,
+    authoritative_only: bool = False,
     proxy_url: str = None,
     timeout: int = 10
 ) -> DomainLookup:
@@ -45,7 +45,7 @@ def whois_domain(
 
 async def aio_whois_domain(
     domain: str,
-    authoritative_only: bool = True,
+    authoritative_only: bool = False,
     proxy_url: str = None,
     timeout: int = 10
 ) -> DomainLookup:
@@ -99,7 +99,7 @@ async def aio_rdap_domain(
 
 def whois_ipv4(
     ipv4: Union[IPv4Address, str],
-    authoritative_only: bool = True,
+    authoritative_only: bool = False,
     proxy_url: str = None,
     timeout: int = 10
 ) -> NumberLookup:
@@ -120,7 +120,7 @@ def whois_ipv4(
 
 async def aio_whois_ipv4(
     ipv4: Union[IPv4Address, str],
-    authoritative_only: bool = True,
+    authoritative_only: bool = False,
     proxy_url: str = None,
     timeout: int = 10
 ) -> NumberLookup:
@@ -171,7 +171,7 @@ async def aio_rdap_ipv4(
 
 def whois_ipv6(
     ipv6: Union[IPv6Address, str],
-    authoritative_only: bool = True,
+    authoritative_only: bool = False,
     proxy_url: str = None,
     timeout: int = 10
 ) -> NumberLookup:
@@ -192,7 +192,7 @@ def whois_ipv6(
 
 async def aio_whois_ipv6(
     ipv6: Union[IPv6Address, str],
-    authoritative_only: bool = True,
+    authoritative_only: bool = False,
     proxy_url: str = None,
     timeout: int = 10
 ) -> NumberLookup:
