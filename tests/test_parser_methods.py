@@ -1,7 +1,7 @@
 import unittest
 import datetime
 
-from asyncwhois.parser import WhoIsParser, BaseParser
+from asyncwhois.parse import BaseParser
 
 
 class TestWhoIsParserMethods(unittest.TestCase):

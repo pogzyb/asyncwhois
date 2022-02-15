@@ -1,97 +1,271 @@
-from typing import Any, Optional
+from ipaddress import IPv4Address, IPv6Address
+from typing import Any, Optional, Union
 
-from .pywhois import PyWhoIs
-
+from .pywhois import DomainLookup, NumberLookup, ASNLookup
 
 __all__ = [
-    'lookup',
-    'aio_lookup',
-    'whois_cmd_shell',
-    'aio_whois_cmd_shell',
-    'rdap_domain_lookup',
-    'aio_rdap_domain_lookup'
+    'aio_whois_domain',
+    'aio_whois_ipv4',
+    'aio_whois_ipv6',
+    'aio_rdap_domain',
+    'aio_rdap_ipv4',
+    'aio_rdap_ipv6',
+    'aio_rdap_asn',
+    'rdap_domain',
+    'rdap_ipv4',
+    'rdap_ipv6',
+    'rdap_asn',
+    'whois_domain',
+    'whois_ipv4',
+    'whois_ipv6',
 ]
-__version__ = '0.4.1'
+__version__ = '1.0.0'
 
 
-def lookup(url: str, timeout: int = 10) -> PyWhoIs:
+def whois_domain(
+    domain: str,
+    authoritative_only: bool = False,
+    proxy_url: str = None,
+    timeout: int = 10
+) -> DomainLookup:
     """
-    Module entry point for whois lookups. Opens a socket connection to the
-    whois server, submits a query, and then parses the query output from the server
-    into a dictionary. Uses "socket.create_connection()" for the socket.
-    Raises "QueryError" if connection to a server times out or fails.
-    Raises "NotFoundError" if domain record is "not found" on the server.
+    Performs domain lookups with WHOIS.
+    Finds the authoritative WHOIS server and parses the response from the server.
 
-    :param url: Any correctly formatted URL (e.g. https://en.wikipedia.org/wiki/WHOIS)
-    :param timeout: whois server connection timeout (default 10 seconds)
-    :return: instance of PyWhoIs with "query_output" and "parser_output" attributes
+    :param domain: Any domain or URL (e.g. 'wikipedia.org' or 'https://en.wikipedia.org/wiki/WHOIS')
+    :param authoritative_only: If False, returns the entire WHOIS query chain
+        in `query_output`; If True only the authoritative response is included.
+    :param proxy_url: Optional SOCKS4 or SOCKS5 proxy url (e.g. 'socks5://host:port')
+    :param timeout: Connection timeout. Default is 10 seconds.
+    :return: instance of DomainLookup
     """
-    whois = PyWhoIs._from_url(url, timeout)
-    return whois
+    result = DomainLookup.whois_domain(domain, authoritative_only, proxy_url, timeout)
+    return result
 
 
-def whois_cmd_shell(url: str, timeout: int = 10) -> PyWhoIs:
+async def aio_whois_domain(
+    domain: str,
+    authoritative_only: bool = False,
+    proxy_url: str = None,
+    timeout: int = 10
+) -> DomainLookup:
     """
-    Equivalent to running "whois <domain>" from the shell. Uses subprocess.Popen().
+    Performs asynchronous domain lookups with WHOIS.
+    Finds the authoritative WHOIS server and parses the response from the server.
 
-    :param url: Any correctly formatted URL (e.g. https://en.wikipedia.org/wiki/WHOIS)
-    :param timeout: whois server connection timeout (default 10 seconds)
-    :return: instance of PyWhoIs with "query_output" and "parser_output" attributes
+    :param domain: Any domain or URL (e.g. 'wikipedia.org' or 'https://en.wikipedia.org/wiki/WHOIS')
+    :param authoritative_only: If False, returns the entire WHOIS query chain
+        in `query_output`; If True only the authoritative response is included.
+    :param proxy_url: Optional SOCKS4 or SOCKS5 proxy url (e.g. 'socks5://host:port')
+    :param timeout: Connection timeout. Default is 10 seconds.
+    :return: instance of DomainLookup
     """
-    whois = PyWhoIs._from_whois_cmd(url, timeout)
-    return whois
+    result = await DomainLookup.aio_whois_domain(domain, authoritative_only,
+                                                  proxy_url, timeout)
+    return result
 
 
-async def aio_lookup(url: str, timeout: int = 10) -> PyWhoIs:
+def rdap_domain(
+    domain: str,
+    httpx_client: Optional[Any] = None
+) -> DomainLookup:
     """
-    Asynchronous module entry point for whois lookups. Opens a socket connection to the
-    whois server, submits a query, and then parses the query output from the server
-    into a dictionary. Uses "asyncio.open_connection()" for the socket.
-    Raises "QueryError" if connection to a server times out or fails.
-    Raises "NotFoundError" if domain record is "not found" on the server.
+    Performs an RDAP query for the given domain.
+    Finds the authoritative RDAP server and parses the response from that server.
 
-    :param url: Any correctly formatted URL (e.g. https://en.wikipedia.org/wiki/WHOIS)
-    :param timeout: whois server connection timeout (default 10 seconds)
-    :return: instance of PyWhoIs with "query_output" and "parser_output" attributes
+    :param domain: Any domain name or URL
+        (e.g. 'wikipedia.org' or 'https://en.wikipedia.org/wiki/WHOIS')
+    :param httpx_client: Optional preconfigured `httpx.Client`
+    :return: instance of DomainLookup
     """
-    whois = await PyWhoIs._aio_from_url(url, timeout)
-    return whois
+    result = DomainLookup.rdap_domain(domain, httpx_client)
+    return result
 
 
-def rdap_domain_lookup(url: str, http_client: Optional[Any] = None) -> PyWhoIs:
+async def aio_rdap_domain(
+    domain: str,
+    httpx_client: Optional[Any] = None
+) -> DomainLookup:
     """
-    Runs an RDAP query for the given url.
+    Performs an async RDAP query for the given domain name.
 
-    :param url: Any correctly formatted URL (e.g. https://en.wikipedia.org/wiki/WHOIS)
-    :param http_client: Optional HTTP Client such as `httpx.Client` or `requests.Session`
-    :return: instance of PyWhoIs with "query_output" and "parser_output" attributes
+    :param domain: Any domain or URL (e.g. 'wikipedia.org' or 'https://en.wikipedia.org/wiki/WHOIS')
+    :param httpx_client: Optional preconfigured `httpx.AsyncClient`
+    :return: instance of DomainLookup
     """
-    whois = PyWhoIs._rdap_domain_from_url(url, http_client)
-    return whois
+    result = await DomainLookup.aio_rdap_domain(domain, httpx_client)
+    return result
 
 
-async def aio_rdap_domain_lookup(url: str, http_client: Optional[Any] = None) -> PyWhoIs:
+def whois_ipv4(
+    ipv4: Union[IPv4Address, str],
+    authoritative_only: bool = False,
+    proxy_url: str = None,
+    timeout: int = 10
+) -> NumberLookup:
     """
-    Runs an RDAP query for the given url.
+    Performs a WHOIS query for the given IPv4 address.
+    Finds the authoritative WHOIS server and parses the response from the server.
 
-    :param url: Any correctly formatted URL (e.g. https://en.wikipedia.org/wiki/WHOIS)
-    :param http_client: Optional Async HTTP Client such as `httpx.AsyncClient`
-    :return: instance of PyWhoIs with "query_output" and "parser_output" attributes
+    :param ipv4: ip address as a str or `ipaddress.IPv4Address` object
+    :param authoritative_only: If False, returns the entire WHOIS query chain
+        in `query_output`; If True only the authoritative response is included.
+    :param proxy_url: Optional SOCKS4 or SOCKS5 proxy url
+    :param timeout: Connection timeout. Default is 10 seconds.
+    :return: instance of DomainLookup
     """
-    whois = await PyWhoIs._aio_rdap_domain_from_url(url, http_client)
-    return whois
+    result = NumberLookup.whois_ipv4(ipv4, authoritative_only, proxy_url, timeout)
+    return result
 
 
-async def aio_whois_cmd_shell(url: str, timeout: int = 10) -> PyWhoIs:
+async def aio_whois_ipv4(
+    ipv4: Union[IPv4Address, str],
+    authoritative_only: bool = False,
+    proxy_url: str = None,
+    timeout: int = 10
+) -> NumberLookup:
     """
-    Equivalent to running "whois <domain>" from the shell. Leverages "asyncio.subprocess".
-    IMPORTANT: Raises "NotImplementedError" if running on Windows and the event loop is
-    not set to be type "asyncio.ProactorEventLoop". Must set: loop = asyncio.ProactorEventLoop()
+    Performs an async WHOIS query for the given IPv4 address.
+    Finds the authoritative WHOIS server and parses the response from the server.
 
-    :param url: Any correctly formatted URL (e.g. https://en.wikipedia.org/wiki/WHOIS)
-    :param timeout: whois server connection timeout (default 10 seconds)
-    :return: instance of PyWhoIs with "query_output" and "parser_output" attributes
+    :param ipv4: ip address as a str or `ipaddress.IPv4Address` object
+    :param authoritative_only: If False, returns the entire WHOIS query chain
+        in `query_output`; If True only the authoritative response is included.
+    :param proxy_url: Optional SOCKS4 or SOCKS5 proxy url
+    :param timeout: Connection timeout. Default is 10 seconds.
+    :return: instance of NumberLookup
     """
-    whois = await PyWhoIs._aio_from_whois_cmd(url, timeout)
-    return whois
+    result = await NumberLookup.aio_whois_ipv4(ipv4, authoritative_only, proxy_url, timeout)
+    return result
 
+
+def rdap_ipv4(
+    ipv4: Union[IPv4Address, str],
+    httpx_client: Optional[Any] = None
+) -> NumberLookup:
+    """
+    Performs an RDAP query for the given IPv4 address.
+
+    :param ipv4: IP address as a string or `ipaddress.IPv4Address` object
+    :param httpx_client: Optional preconfigured `httpx.Client`
+    :return: instance of NumberLookup
+    """
+    result = NumberLookup.rdap_ipv4(ipv4, httpx_client)
+    return result
+
+
+async def aio_rdap_ipv4(
+    ipv4: Union[IPv4Address, str],
+    httpx_client: Optional[Any] = None
+) -> NumberLookup:
+    """
+    Performs an async RDAP query for the given IPv6 address.
+
+    :param ipv4: IP address as a string or `ipaddress.IPv4Address` object
+    :param httpx_client: Optional preconfigured `httpx.AsyncClient`
+    :return: instance of NumberLookup
+    """
+    result = await NumberLookup.aio_rdap_ipv4(ipv4, httpx_client)
+    return result
+
+
+def whois_ipv6(
+    ipv6: Union[IPv6Address, str],
+    authoritative_only: bool = False,
+    proxy_url: str = None,
+    timeout: int = 10
+) -> NumberLookup:
+    """
+    Performs a WHOIS query for the given IPv6 address.
+    Looks up the WHOIS server, submits the query, and then parses the response from the server.
+
+    :param ipv6: ip address as a str or `ipaddress.IPv6address` object
+    :param authoritative_only: If False, returns the entire WHOIS query chain
+        in `query_output`; If True only the authoritative response is included.
+    :param proxy_url: Optional SOCKS4 or SOCKS5 proxy url
+    :param timeout: Connection timeout. Default is 10 seconds.
+    :return: instance of NumberLookup
+    """
+    result = NumberLookup.whois_ipv6(ipv6, authoritative_only, proxy_url, timeout)
+    return result
+
+
+async def aio_whois_ipv6(
+    ipv6: Union[IPv6Address, str],
+    authoritative_only: bool = False,
+    proxy_url: str = None,
+    timeout: int = 10
+) -> NumberLookup:
+    """
+    Performs an async WHOIS query for the given IPv6 address.
+    Looks up the WHOIS server, submits the query, and then parses the response from the server.
+
+    :param ipv6: ip address as a str or `ipaddress.IPv6Address` object
+    :param authoritative_only: If False, returns the entire WHOIS query chain
+        in `query_output`; If True only the authoritative response is included.
+    :param proxy_url: Optional SOCKS4 or SOCKS5 proxy url
+    :param timeout: Connection timeout. Default is 10 seconds.
+    :return: instance of NumberLookup
+    """
+    result = await NumberLookup.aio_whois_ipv6(ipv6, authoritative_only, proxy_url, timeout)
+    return result
+
+
+def rdap_ipv6(
+    ipv6: Union[IPv6Address, str],
+    httpx_client: Optional[Any] = None
+) -> NumberLookup:
+    """
+    Performs an RDAP query for the given IPv6 address.
+
+    :param ipv6: IP address as a string or `ipaddress.IPv6Address` object
+    :param httpx_client: Optional preconfigured `httpx.Client`
+    :return: instance of NumberLookup
+    """
+    result = NumberLookup.rdap_ipv6(ipv6, httpx_client)
+    return result
+
+
+async def aio_rdap_ipv6(
+    ipv6: Union[IPv6Address, str],
+    httpx_client: Optional[Any] = None
+) -> NumberLookup:
+    """
+    Performs an async RDAP query for the given IPv6 address.
+
+    :param ipv6: IP address as a string or `ipaddress.IPv6Address` object
+    :param httpx_client: Optional preconfigured `httpx.AsyncClient`
+    :return: instance of NumberLookup
+    """
+    result = await NumberLookup.aio_rdap_ipv6(ipv6, httpx_client)
+    return result
+
+
+def rdap_asn(
+    asn: int,
+    httpx_client: Optional[Any] = None
+) -> ASNLookup:
+    """
+    Performs an RDAP query for the given Autonomous System Number.
+
+    :param asn: The ASN number as an integer
+    :param httpx_client: Optional preconfigured `httpx.Client`
+    :return: instance of ASNLookup
+    """
+    result = ASNLookup.rdap_asn(asn, httpx_client)
+    return result
+
+
+async def aio_rdap_asn(
+    asn: int,
+    httpx_client: Optional[Any] = None
+) -> ASNLookup:
+    """
+    Performs an async RDAP query for the given Autonomous System Number.
+
+    :param asn: The ASN number as an integer
+    :param httpx_client: Optional preconfigured `httpx.AsyncClient`
+    :return: instance of ASNLookup
+    """
+    result = await ASNLookup.aio_rdap_asn(asn, httpx_client)
+    return result

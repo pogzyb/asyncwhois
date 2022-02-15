@@ -4,7 +4,7 @@
 [![Build Status](https://app.travis-ci.com/pogzyb/asyncwhois.svg?branch=master)](https://app.travis-ci.com/pogzyb/asyncwhois)
 [![codecov](https://codecov.io/gh/pogzyb/asyncwhois/branch/master/graph/badge.svg?token=Q4xtgezXGX)](https://codecov.io/gh/pogzyb/asyncwhois)
 
-`asyncwhois` | Python utility for performing WHOIS domain queries and parsing WHOIS text output.
+`asyncwhois` | Async-friendly Python library for WHOIS and RDAP queries.
 
 #### Quickstart
 
@@ -14,14 +14,20 @@ from pprint import pprint
 
 import asyncwhois
 
+# pick a domain
+domain = 'bitcoin.org'
+# domain could also be a URL; asyncwhois uses tldextract to parse the URL
+domain = 'https://www.google.com?q=asyncwhois'
+
 # standard call
-result = asyncwhois.lookup('www.google.com')
-# result.query_output   # The semi-free text output from the whois server
-# result.parser_output  # A dictionary of key/values extracted from query_output
+result = asyncwhois.whois_domain(domain)
+# result.query_output       # The semi-free text output from the whois server
+# result.parser_output      # A dictionary of key:values extracted from query_output
+# result.tld_extract_result # tldextract result (`tldextract.tldextract.ExtractResult`)
 
 # asyncio call
 loop = asyncio.get_event_loop()
-result = loop.run_until_complete(asyncwhois.aio_lookup('https://bitcoin.org'))
+result = loop.run_until_complete(asyncwhois.aio_whois_domain(domain))
 
 pprint(result.parser_output)
 """
@@ -43,15 +49,75 @@ pprint(result.parser_output)
  updated: datetime.datetime(2019, 11, 24, 13, 58, 35, 940000)}
  ...
  """
-
- # RDAP domain query
- result = asyncwhois.rdap_domain_lookup('https://google.com')
-
- # RDAP domain query via asyncio
- result = loop.run_until_complete(asyncwhois.aio_rdap_domain_lookup('https://google.com'))
- pprint(result.query_output)   # Raw RDAP query output as a dictionary
- pprint(result.parser_output)  # RDAP query output parsed/flattened into a WHOIS-like dictionary
 ```
+
+#### RDAP
+
+The `whodap` (https://github.com/pogzyb/whodap) project is used behind the scenes to perform RDAP queries.
+
+```python
+# RDAP domain query
+result = asyncwhois.rdap_domain('https://google.com')
+
+# Async RDAP domain query
+result = loop.run_until_complete(asyncwhois.aio_rdap_domain('https://google.com'))
+pprint(result.query_output)         # Raw RDAP query output as a dictionary
+pprint(result.parser_output)        # RDAP query output parsed/flattened into a WHOIS-like dictionary
+print(result.tld_extract_result)    # tldextract result (`tldextract.tldextract.ExtractResult`)
+
+```
+
+#### Using Proxies
+
+SOCKS4 and SOCKS5 proxies are supported for WHOIS and RDAP queries.
+
+```python
+tor_host = 'localhost'
+tor_port = 9050
+
+# WHOIS Queries with Proxy
+result = asyncwhois.whois_domain(
+    'bitcoin.org', proxy_url=f"socks5://{tor_host}:{tor_port}")
+# or with auth...
+tor_user = 'torpedo'
+tor_pw = 'torpw'
+result = asyncwhois.whois_ipv4(
+    '8.8.8.8', proxy_url=f"socks5://{tor_user}:{tor_pw}@{tor_host}:{tor_port}")
+
+# RDAP Queries with Proxy
+import httpx
+
+# EXTERNAL DEPENDENCY for SOCKS Proxies.
+from httpx_socks import SyncProxyTransport, AsyncProxyTransport 
+
+transport = SyncProxyTransport.from_url(f"socks5://{tor_host}:{tor_port}")
+client = httpx.Client(transport=transport)
+result = asyncwhois.rdap_ipv6('2001:4860:4860::8888', httpx_client=client)
+
+transport = AsyncProxyTransport.from_url(f"socks5://{tor_user}:{tor_pw}@{tor_host}:{tor_port}")
+async with httpx.AsyncClient(transport=transport) as client:
+    result = await asyncwhois.aio_rdap_domain('bitcoin.org', httpx_client=client)
+
+```
+
+#### Exported Functions
+
+| Function      | Description |
+| ----------- | ----------- |
+|  `whois_domain`          | WHOIS lookup for domain names     |
+|  `whois_ipv4`            | WHOIS lookup for ipv4 addresses   |
+|  `whois_ipv6`            | WHOIS lookup for ipv6 addresses   |
+|  `rdap_domain`     | RDAP lookup for domain names      |
+|  `rdap_ipv4`       | RDAP lookup for ipv4 addresses    |
+|  `rdap_ipv6`       | RDAP lookup for ipv6 addresses    |
+|  `rdap_asn`        | RDAP lookup for Autonomous System Numbers    |
+|  `aio_whois_domain`      | async counterpart to `whois_domain`      |
+|  `aio_whois_ipv4`        | async counterpart to `whois_ipv4`      |
+|  `aio_whois_ipv6`        | async counterpart to `whois_ipv6`      |
+|  `aio_rdap_domain` | async counterpart to `rdap_domain`      |
+|  `aio_rdap_ipv4`   | async counterpart to `rdap_ipv4`      |
+|  `aio_rdap_ipv6`   | async counterpart to `rdap_ipv6`      |
+|  `aio_rdap_asn`    | async counterpart to `rdap_asn`      |
 
 #### Contributions
 

@@ -6,7 +6,7 @@ import asyncwhois
 
 async def whois_handler(request):
     domain = request.match_info.get('domain', 'google.com')
-    result = await asyncwhois.aio_lookup(domain)
+    result = await asyncwhois.aio_whois_domain(domain)
     return web.Response(
         text=f'WhoIs Query Parsed:\n{result.parser_output}\nQuery Output:\n{result.query_output}'
     )

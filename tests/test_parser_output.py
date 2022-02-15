@@ -1,10 +1,10 @@
 import unittest
 import os
 
-from asyncwhois.parser import WhoIsParser
+from asyncwhois.parse_tld import DomainParser
 
 
-class TestWhoIsParsers(unittest.TestCase):
+class TestTLDParsers(unittest.TestCase):
 
     @staticmethod
     def get_txt(tld: str):
@@ -14,7 +14,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_com(self):
         query_output = self.get_txt('com')
-        parser = WhoIsParser('com')
+        parser = DomainParser('com')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -43,7 +43,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_in(self):
         query_output = self.get_txt('in')
-        parser = WhoIsParser('in')
+        parser = DomainParser('in')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -70,7 +70,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_top(self):
         query_output = self.get_txt('top')
-        parser = WhoIsParser('top')
+        parser = DomainParser('top')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -101,7 +101,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_xyz(self):
         query_output = self.get_txt('xyz')
-        parser = WhoIsParser('xyz')
+        parser = DomainParser('xyz')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -133,7 +133,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_ir(self):
         query_output = self.get_txt('ir')
-        parser = WhoIsParser('ir')
+        parser = DomainParser('ir')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -159,7 +159,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_icu(self):
         query_output = self.get_txt('icu')
-        parser = WhoIsParser('icu')
+        parser = DomainParser('icu')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -192,7 +192,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_ie(self):
         query_output = self.get_txt('ie')
-        parser = WhoIsParser('ie')
+        parser = DomainParser('ie')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -214,7 +214,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_uk(self):
         query_output = self.get_txt('uk')
-        parser = WhoIsParser('uk')
+        parser = DomainParser('uk')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -240,7 +240,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_cl(self):
         query_output = self.get_txt('cl')
-        parser = WhoIsParser('cl')
+        parser = DomainParser('cl')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -261,7 +261,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_be(self):
         query_output = self.get_txt('be')
-        parser = WhoIsParser('be')
+        parser = DomainParser('be')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -275,14 +275,14 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_de(self):
         query_output = self.get_txt('de')
-        parser = WhoIsParser('de')
+        parser = DomainParser('de')
         parser.parse(query_output)
 
         self.assertEqual(len(parser.parser_output.get('status')), 1)
 
     def test_parse_us(self):
         query_output = self.get_txt('us')
-        parser = WhoIsParser('us')
+        parser = DomainParser('us')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -315,7 +315,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parse_ar(self):
         query_output = self.get_txt('ar')
-        parser = WhoIsParser('ar')
+        parser = DomainParser('ar')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -340,7 +340,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parse_no(self):
         query_output = self.get_txt('no')
-        parser = WhoIsParser('no')
+        parser = DomainParser('no')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -360,7 +360,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_ai(self):
         query_output = self.get_txt('ai')
-        parser = WhoIsParser('ai')
+        parser = DomainParser('ai')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -393,7 +393,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_me(self):
         query_output = self.get_txt('me')
-        parser = WhoIsParser('me')
+        parser = DomainParser('me')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -422,7 +422,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_cc(self):
         query_output = self.get_txt('cc')
-        parser = WhoIsParser('cc')
+        parser = DomainParser('cc')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -455,7 +455,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_ru(self):
         query_output = self.get_txt('ru')
-        parser = WhoIsParser('ru')
+        parser = DomainParser('ru')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -471,7 +471,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_edu(self):
         query_output = self.get_txt('edu')
-        parser = WhoIsParser('edu')
+        parser = DomainParser('edu')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -501,7 +501,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_info(self):
         query_output = self.get_txt('info')
-        parser = WhoIsParser('info')
+        parser = DomainParser('info')
         parser.parse(query_output)
         created_date = parser.parser_output.get("created")
         updated_date = parser.parser_output.get("updated")
@@ -527,7 +527,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_fi(self):
         query_output = self.get_txt('fi')
-        parser = WhoIsParser('fi')
+        parser = DomainParser('fi')
         parser.parse(query_output)
         created_date = parser.parser_output.get("created")
         updated_date = parser.parser_output.get("updated")
@@ -556,7 +556,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_kz(self):
         query_output = self.get_txt('kz')
-        parser = WhoIsParser('kz')
+        parser = DomainParser('kz')
         parser.parse(query_output)
         created_date = parser.parser_output.get("created")
         updated_date = parser.parser_output.get("updated")
@@ -582,7 +582,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_si(self):
         query_output = self.get_txt('si')
-        parser = WhoIsParser('si')
+        parser = DomainParser('si')
         parser.parse(query_output)
         created_date = parser.parser_output.get("created")
         expires_date = parser.parser_output.get("expires")
@@ -601,7 +601,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_ae(self):
         query_output = self.get_txt('ae')
-        parser = WhoIsParser('ae')
+        parser = DomainParser('ae')
         parser.parse(query_output)
         # registrant
         self.assertEqual(parser.parser_output.get("registrant_name"), "Domain Administrator")
@@ -613,7 +613,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_ve(self):
         query_output = self.get_txt('ve')
-        parser = WhoIsParser('ve')
+        parser = DomainParser('ve')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -643,7 +643,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_app(self):
         query_output = self.get_txt('app')
-        parser = WhoIsParser('app')
+        parser = DomainParser('app')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -674,7 +674,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_cn(self):
         query_output = self.get_txt('cn')
-        parser = WhoIsParser('cn')
+        parser = DomainParser('cn')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -697,7 +697,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_co(self):
         query_output = self.get_txt('co')
-        parser = WhoIsParser('co')
+        parser = DomainParser('co')
         parser.parse(query_output)
         created_date = parser.parser_output.get("created")
         updated_date = parser.parser_output.get("updated")
@@ -728,7 +728,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_pl(self):
         query_output = self.get_txt('pl')
-        parser = WhoIsParser('pl')
+        parser = DomainParser('pl')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -751,7 +751,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_online(self):
         query_output = self.get_txt('online')
-        parser = WhoIsParser('online')
+        parser = DomainParser('online')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -778,7 +778,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_buzz(self):
         query_output = self.get_txt('buzz')
-        parser = WhoIsParser('buzz')
+        parser = DomainParser('buzz')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -804,7 +804,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_live(self):
         query_output = self.get_txt('live')
-        parser = WhoIsParser('live')
+        parser = DomainParser('live')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -830,7 +830,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_cat(self):
         query_output = self.get_txt('cat')
-        parser = WhoIsParser('cat')
+        parser = DomainParser('cat')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -854,7 +854,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_ma(self):
         query_output = self.get_txt('ma')
-        parser = WhoIsParser('ma')
+        parser = DomainParser('ma')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -878,7 +878,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_vg(self):
         query_output = self.get_txt('vg')
-        parser = WhoIsParser('vg')
+        parser = DomainParser('vg')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -900,7 +900,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_tk(self):
         query_output = self.get_txt('tk')
-        parser = WhoIsParser('tk')
+        parser = DomainParser('tk')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -924,7 +924,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_nl(self):
         query_output = self.get_txt('nl')
-        parser = WhoIsParser('nl')
+        parser = DomainParser('nl')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -942,7 +942,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_parser_gq(self):
         query_output = self.get_txt('gq')
-        parser = WhoIsParser('gq')
+        parser = DomainParser('gq')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -962,7 +962,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_tld_nu(self):
         query_output = self.get_txt('nu')
-        parser = WhoIsParser('nu')
+        parser = DomainParser('nu')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -986,7 +986,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_tld_is(self):
         query_output = self.get_txt('is')
-        parser = WhoIsParser('is')
+        parser = DomainParser('is')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -1005,7 +1005,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_tld_cr(self):
         query_output = self.get_txt('cr')
-        parser = WhoIsParser('cr')
+        parser = DomainParser('cr')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -1029,7 +1029,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_tld_cz(self):
         query_output = self.get_txt('cz')
-        parser = WhoIsParser('cz')
+        parser = DomainParser('cz')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -1053,7 +1053,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_tld_gg(self):
         query_output = self.get_txt('gg')
-        parser = WhoIsParser('gg')
+        parser = DomainParser('gg')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -1070,7 +1070,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_tld_ge(self):
         query_output = self.get_txt('ge')
-        parser = WhoIsParser('ge')
+        parser = DomainParser('ge')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -1091,7 +1091,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_tld_jp(self):
         query_output = self.get_txt('jp')
-        parser = WhoIsParser('jp')
+        parser = DomainParser('jp')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -1113,7 +1113,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_tld_ax(self):
         query_output = self.get_txt('ax')
-        parser = WhoIsParser('ax')
+        parser = DomainParser('ax')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")
@@ -1141,7 +1141,7 @@ class TestWhoIsParsers(unittest.TestCase):
 
     def test_tld_aw(self):
         query_output = self.get_txt('aw')
-        parser = WhoIsParser('aw')
+        parser = DomainParser('aw')
         parser.parse(query_output)
         # confirm dates
         created_date = parser.parser_output.get("created")

@@ -10,20 +10,18 @@ async def main():
         'en.wikipedia.org/wiki/Pi',
         'https://www.urbandictionary.com/define.php?term=async',
         'twitch.tv',
-        'reuters.com',
         'https://www.pcpartpicker.com',
         'https://packaging.python.org/',
-        'imgur.com',
         'https://www.amazon.co.jp',
         'github.com/explore',
-        '172.217.3.110'
+        'mango.beer'
     ]
-    tasks = []
+    futures = []
     for url in urls:
-        awaitable = asyncwhois.aio_lookup(url)
-        tasks.append(awaitable)
+        future = asyncwhois.whois_domain(url)
+        futures.append(future)
 
-    await asyncio.gather(*tasks)
+    whois_data = await asyncio.gather(*futures)
 
 
 if __name__ == '__main__':
