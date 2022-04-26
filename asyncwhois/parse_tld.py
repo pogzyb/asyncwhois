@@ -84,7 +84,8 @@ class DomainParser:
         'domain name not known',
         'no object found',
         'available for re-registration',
-        'object does not exist'
+        'object does not exist',
+        'domain you requested is not known',
     ]
 
     def __init__(self, tld: str):
