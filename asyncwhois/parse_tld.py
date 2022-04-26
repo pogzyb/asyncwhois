@@ -82,7 +82,9 @@ class DomainParser:
         'no entries found',
         'invalid query',
         'domain name not known',
-        'no object found'
+        'no object found',
+        'available for re-registration',
+        'object does not exist'
     ]
 
     def __init__(self, tld: str):
@@ -1147,11 +1149,53 @@ class RegexTK(TLDParser):
         TLDBaseKeys.REGISTRANT_STATE: r'(?<=Owner contact)[\s\S]*?State:(.*)',
         TLDBaseKeys.REGISTRANT_CITY: r'(?<=Owner contact)[\s\S]*?City:(.*)',
         TLDBaseKeys.REGISTRANT_COUNTRY: r'(?<=Owner contact)[\s\S]*?Country:(.*)',
+        TLDBaseKeys.REGISTRANT_EMAIL: r'(?<=Owner contact)[\s\S]*?E-mail:(.*)',
+        TLDBaseKeys.REGISTRANT_FAX: r'(?<=Owner contact)[\s\S]*?Fax:(.*)',
+        TLDBaseKeys.REGISTRANT_PHONE: r'(?<=Owner contact)[\s\S]*?Phone:(.*)',
+        
+        TLDBaseKeys.ADMIN_ORGANIZATION: r'(?<=Admin contact)[\s\S]*?Organization:(.*)',
+        TLDBaseKeys.ADMIN_NAME: r'(?<=Admin contact)[\s\S]*?Name:(.*)',
+        TLDBaseKeys.ADMIN_ADDRESS: r'(?<=Admin contact)[\s\S]*?Address:(.*)',
+        TLDBaseKeys.ADMIN_STATE: r'(?<=Admin contact)[\s\S]*?State:(.*)',
+        TLDBaseKeys.ADMIN_CITY: r'(?<=Admin contact)[\s\S]*?City:(.*)',
+        TLDBaseKeys.ADMIN_COUNTRY: r'(?<=Admin contact)[\s\S]*?Country:(.*)',
+        TLDBaseKeys.ADMIN_EMAIL: r'(?<=Admin contact)[\s\S]*?E-mail:(.*)',
+        TLDBaseKeys.ADMIN_FAX: r'(?<=Admin contact)[\s\S]*?Fax:(.*)',
+        TLDBaseKeys.ADMIN_PHONE: r'(?<=Admin contact)[\s\S]*?Phone:(.*)',
+       
+        TLDBaseKeys.BILLING_ORGANIZATION: r'(?<=Billing contact)[\s\S]*?Organization:(.*)',
+        TLDBaseKeys.BILLING_NAME: r'(?<=Billing contact)[\s\S]*?Name:(.*)',
+        TLDBaseKeys.BILLING_ADDRESS: r'(?<=Billing contact)[\s\S]*?Address:(.*)',
+        TLDBaseKeys.BILLING_STATE: r'(?<=Billing contact)[\s\S]*?State:(.*)',
+        TLDBaseKeys.BILLING_CITY: r'(?<=Billing contact)[\s\S]*?City:(.*)',
+        TLDBaseKeys.BILLING_COUNTRY: r'(?<=Billing contact)[\s\S]*?Country:(.*)',
+        TLDBaseKeys.BILLING_EMAIL: r'(?<=Billing contact)[\s\S]*?E-mail:(.*)',
+        TLDBaseKeys.BILLING_FAX: r'(?<=Billing contact)[\s\S]*?Fax:(.*)',
+        TLDBaseKeys.BILLING_PHONE: r'(?<=Billing contact)[\s\S]*?Phone:(.*)',
+
+        TLDBaseKeys.TECH_ORGANIZATION: r'(?<=Tech contact)[\s\S]*?Organization:(.*)',
+        TLDBaseKeys.TECH_NAME: r'(?<=Tech contact)[\s\S]*?Name:(.*)',
+        TLDBaseKeys.TECH_ADDRESS: r'(?<=Tech contact)[\s\S]*?Address:(.*)',
+        TLDBaseKeys.TECH_STATE: r'(?<=Tech contact)[\s\S]*?State:(.*)',
+        TLDBaseKeys.TECH_CITY: r'(?<=Tech contact)[\s\S]*?City:(.*)',
+        TLDBaseKeys.TECH_COUNTRY: r'(?<=Tech contact)[\s\S]*?Country:(.*)',
+        TLDBaseKeys.TECH_EMAIL: r'(?<=Tech contact)[\s\S]*?E-mail:(.*)',
+        TLDBaseKeys.TECH_FAX: r'(?<=Tech contact)[\s\S]*?Fax:(.*)',
+        TLDBaseKeys.TECH_PHONE: r'(?<=Tech contact)[\s\S]*?Phone:(.*)',
     }
 
     def __init__(self):
         super().__init__()
         self.update_reg_expressions(self._tk_expressions)
+
+    @staticmethod
+    def _parse_date(date_string: str) -> datetime.datetime:
+        date_string = date_string.rstrip()
+        try:
+            # .TK date format conflicts with "%d/%m/%Y" date format in `BaseParser._parse_date`
+            return datetime.datetime.strptime(date_string, '%m/%d/%Y') 
+        except ValueError:
+            return date_string or None
 
     def parse(self, blob: str) -> Dict[str, Any]:
         parsed_output = super().parse(blob)
@@ -1161,19 +1205,23 @@ class RegexTK(TLDParser):
         # for this one, which is '%m/%d/%Y', so this date format needs to be parsed separately here
         created_match = re.search(r'Domain registered: *(.+)', blob, re.IGNORECASE)
         if created_match:
-            parsed_output[TLDBaseKeys.CREATED] = datetime.datetime.strptime(created_match.group(1), '%m/%d/%Y')
+            parsed_output[TLDBaseKeys.CREATED] = self._parse_date(created_match.group(1))
         expires_match = re.search(r'Record will expire on: *(.+)', blob, re.IGNORECASE)
         if expires_match:
-            parsed_output[TLDBaseKeys.EXPIRES] = datetime.datetime.strptime(expires_match.group(1), '%m/%d/%Y')
-        # split domain and status
-        domain_name_match = re.search(f'Domain name:(?:.*?)*(.+)Owner contact:', blob, re.IGNORECASE | re.DOTALL)
+            parsed_output[TLDBaseKeys.EXPIRES] = self._parse_date(expires_match.group(1))
+        # Check if "Status" is inline with Domain Name. For example: 
+        # Domain Name:
+        #   GOOGLE.TK is Active
+        #   -- OR --
+        #   GOOGLE.TK
+        domain_name_match = re.search(r'Domain name:\n*(.+)\n\n', blob, re.IGNORECASE)
         if domain_name_match:
-            domain_and_status = domain_name_match.group(1).split(' is ')
-            if len(domain_and_status) > 1:
-                parsed_output[TLDBaseKeys.DOMAIN_NAME] = self._process(domain_and_status[0])
-                parsed_output[TLDBaseKeys.STATUS] = [self._process(domain_and_status[1])]
+            if ' is ' in domain_name_match.group(1):
+                domain_name, status = domain_name_match.group(1).split(' is ')
+                parsed_output[TLDBaseKeys.DOMAIN_NAME] = self._process(domain_name.replace('\n', ''))
+                parsed_output[TLDBaseKeys.STATUS] = [self._process(status.replace('\n', ''))]
             else:
-                parsed_output[TLDBaseKeys.DOMAIN_NAME] = domain_and_status
+                parsed_output[TLDBaseKeys.DOMAIN_NAME] = self._process(domain_name_match.group(1).replace('\n', ''))
         return parsed_output
 
 
