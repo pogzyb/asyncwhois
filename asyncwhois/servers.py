@@ -297,7 +297,7 @@ class CountryCodeTLD:
     FM = 'whois.nic.fm'
     FO = 'whois.nic.fo'
     FR = 'whois.nic.fr'
-    GA = None
+    GA = 'GA.whois-servers.net'
     GB = None
     GD = 'whois.nic.gd'
     GE = 'whois.nic.ge'
