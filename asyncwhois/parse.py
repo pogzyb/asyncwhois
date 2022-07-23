@@ -168,6 +168,15 @@ class BaseParser:
         """
         self.reg_expressions.update(expressions_update)
 
+    @staticmethod
+    def _parse_date_mdY(date_string: str) -> datetime:
+        date_string = date_string.rstrip()
+        try:
+            # This date format conflicts with "%d/%m/%Y" date format in `KNOWN_DATE_FORMATS`
+            return datetime.strptime(date_string, '%m/%d/%Y')
+        except ValueError:
+            return date_string or None
+
     def parse(self, blob: str) -> Dict[Union[IPBaseKeys, TLDBaseKeys], Any]:
         """
         Iterates over the `reg_expressions` dictionary attempting to use each regex to extract values
