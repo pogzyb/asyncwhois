@@ -122,6 +122,7 @@ class DomainParser:
             'by': RegexBY(),
             'cc': RegexCC(),
             'ch': RegexCH(),
+            'ci': RegexCI(),
             'cl': RegexCL(),
             'cn': RegexCN(),
             'cr': RegexCR(),
@@ -288,6 +289,7 @@ class RegexEE(TLDParser):
 
 class RegexFR(TLDParser):
     _fr_expressions = {
+        TLDBaseKeys.DOMAIN_NAME: r'domain: *(.+)',
         TLDBaseKeys.CREATED: r'created: (\d{4}-\d{2}-\d{2})',
         TLDBaseKeys.UPDATED: r'last-update: (\d{4}-\d{2}-\d{2})',
         TLDBaseKeys.EXPIRES: r'Expiry Date: (\d{4}-\d{2}-\d{2})',
@@ -1543,3 +1545,52 @@ class RegexGA(TLDParser):
             output[TLDBaseKeys.EXPIRES] = self._parse_date_mdY(expires)
 
         return output
+
+
+class RegexCI(TLDParser):
+
+    _ci_expressions = {
+        TLDBaseKeys.REGISTRANT_NAME: r'RegistrantName: *(.+)',
+        TLDBaseKeys.REGISTRANT_ORGANIZATION: r'RegistrantOrganization: *(.+)',
+        TLDBaseKeys.REGISTRANT_ADDRESS: r'RegistrantStreet: *(.+)',
+        TLDBaseKeys.REGISTRANT_CITY: r'RegistrantCity: *(.+)',
+        TLDBaseKeys.REGISTRANT_ZIPCODE: r'RegistrantPostal Code: *(.+)',
+        TLDBaseKeys.REGISTRANT_COUNTRY: r'RegistrantCountry: *(.+)',
+        TLDBaseKeys.REGISTRANT_EMAIL: r'RegistrantEmail: *(.+)',
+
+        TLDBaseKeys.STATUS: r'Domain status: *(.+)',
+
+        TLDBaseKeys.ADMIN_NAME: r'AdminName: (.+)',
+        TLDBaseKeys.ADMIN_ORGANIZATION: r'AdminOrganization: (.+)',
+        TLDBaseKeys.ADMIN_CITY: r'AdminCity: (.*)',
+        TLDBaseKeys.ADMIN_ADDRESS: r'AdminStreet: (.*)',
+        TLDBaseKeys.ADMIN_ZIPCODE: r'AdminPostal Code: (.*)',
+        TLDBaseKeys.ADMIN_COUNTRY: r'AdminCountry: (.+)',
+        TLDBaseKeys.ADMIN_PHONE: r'AdminPhone: (.+)',
+        TLDBaseKeys.ADMIN_FAX: r'AdminFax: (.+)',
+        TLDBaseKeys.ADMIN_EMAIL: r'AdminEmail: (.+)',
+
+        TLDBaseKeys.BILLING_NAME: r'BillingName: (.+)',
+        TLDBaseKeys.BILLING_ORGANIZATION: r'BillingOrganization: (.+)',
+        TLDBaseKeys.BILLING_CITY: r'BillingCity: (.*)',
+        TLDBaseKeys.BILLING_ADDRESS: r'BillingStreet: (.*)',
+        TLDBaseKeys.BILLING_ZIPCODE: r'BillingPostal Code: (.*)',
+        TLDBaseKeys.BILLING_COUNTRY: r'BillingCountry: (.+)',
+        TLDBaseKeys.BILLING_PHONE: r'BillingPhone: (.+)',
+        TLDBaseKeys.BILLING_FAX: r'BillingFax: (.+)',
+        TLDBaseKeys.BILLING_EMAIL: r'BillingEmail: (.+)',
+
+        TLDBaseKeys.TECH_NAME: r'TechName: (.+)',
+        TLDBaseKeys.TECH_ORGANIZATION: r'TechOrganization: (.+)',
+        TLDBaseKeys.TECH_CITY: r'TechCity: (.*)',
+        TLDBaseKeys.TECH_ADDRESS: r'TechStreet: (.*)',
+        TLDBaseKeys.TECH_ZIPCODE: r'TechPostal Code: (.*)',
+        TLDBaseKeys.TECH_COUNTRY: r'TechCountry: (.+)',
+        TLDBaseKeys.TECH_PHONE: r'TechPhone: (.+)',
+        TLDBaseKeys.TECH_FAX: r'TechFax: (.+)',
+        TLDBaseKeys.TECH_EMAIL: r'TechEmail: (.+)',
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.update_reg_expressions(self._ci_expressions)
