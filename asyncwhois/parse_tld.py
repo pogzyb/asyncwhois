@@ -122,6 +122,7 @@ class DomainParser:
             'by': RegexBY(),
             'cc': RegexCC(),
             'ch': RegexCH(),
+            'ci': RegexCI(),
             'cl': RegexCL(),
             'cn': RegexCN(),
             'cr': RegexCR(),
@@ -133,6 +134,7 @@ class DomainParser:
             'eu': RegexEU(),
             'fi': RegexFI(),
             'fr': RegexFR(),
+            'ga': RegexGA(),
             'ge': RegexGE(),
             'gg': RegexGG(),
             'gq': RegexGQ(),
@@ -175,6 +177,7 @@ class DomainParser:
             'tw': RegexTW(),
             'ua': RegexUA(),
             'uk': RegexUK(),
+            'uz': RegexUZ(),
             've': RegexVE()
         }
         # The TLDParser can handle all "Generic" and some "Country-Code" TLDs.
@@ -286,6 +289,7 @@ class RegexEE(TLDParser):
 
 class RegexFR(TLDParser):
     _fr_expressions = {
+        TLDBaseKeys.DOMAIN_NAME: r'domain: *(.+)',
         TLDBaseKeys.CREATED: r'created: (\d{4}-\d{2}-\d{2})',
         TLDBaseKeys.UPDATED: r'last-update: (\d{4}-\d{2}-\d{2})',
         TLDBaseKeys.EXPIRES: r'Expiry Date: (\d{4}-\d{2}-\d{2})',
@@ -1189,15 +1193,6 @@ class RegexTK(TLDParser):
         super().__init__()
         self.update_reg_expressions(self._tk_expressions)
 
-    @staticmethod
-    def _parse_date(date_string: str) -> datetime.datetime:
-        date_string = date_string.rstrip()
-        try:
-            # .TK date format conflicts with "%d/%m/%Y" date format in `BaseParser._parse_date`
-            return datetime.datetime.strptime(date_string, '%m/%d/%Y') 
-        except ValueError:
-            return date_string or None
-
     def parse(self, blob: str) -> Dict[str, Any]:
         parsed_output = super().parse(blob)
         # handle multiline nameservers
@@ -1206,10 +1201,10 @@ class RegexTK(TLDParser):
         # for this one, which is '%m/%d/%Y', so this date format needs to be parsed separately here
         created_match = re.search(r'Domain registered: *(.+)', blob, re.IGNORECASE)
         if created_match:
-            parsed_output[TLDBaseKeys.CREATED] = self._parse_date(created_match.group(1))
+            parsed_output[TLDBaseKeys.CREATED] = self._parse_date_mdY(created_match.group(1))
         expires_match = re.search(r'Record will expire on: *(.+)', blob, re.IGNORECASE)
         if expires_match:
-            parsed_output[TLDBaseKeys.EXPIRES] = self._parse_date(expires_match.group(1))
+            parsed_output[TLDBaseKeys.EXPIRES] = self._parse_date_mdY(expires_match.group(1))
         # Check if "Status" is inline with Domain Name. For example: 
         # Domain Name:
         #   GOOGLE.TK is Active
@@ -1468,3 +1463,134 @@ class RegexOM(TLDParser):
     def __init__(self):
         super().__init__()
         self.update_reg_expressions(self._om_expressions)
+
+
+class RegexUZ(TLDParser):
+    _uz_expressions = {
+        TLDBaseKeys.REGISTRANT_NAME: r'Registrant:\s+([A-Za-z0-9\.\s]+\n)',
+        TLDBaseKeys.REGISTRANT_EMAIL: r'Contact with Registrant: *(.+)',
+        TLDBaseKeys.ADMIN_NAME: r'Administrative Contact:\s+([A-Za-z0-9\.\s]+\n)',
+        TLDBaseKeys.BILLING_NAME: r'Billing Contact:\s+([A-Za-z0-9\.\s]+\n)',
+        TLDBaseKeys.TECH_NAME: r'Technical Contact:\s+([A-Za-z0-9\.\s]+\n)',
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.update_reg_expressions(self._uz_expressions)
+
+    def parse(self, blob: str) -> Dict[str, Any]:
+        output = super().parse(blob)
+        output[TLDBaseKeys.NAME_SERVERS] = self.find_multiline_match('Domain servers in listed order:', blob)
+        return output
+
+
+class RegexGA(TLDParser):
+    _ga_expressions = {
+        TLDBaseKeys.DOMAIN_NAME: r'Domain name:\n*(.+) is',
+        TLDBaseKeys.STATUS: r'Domain name:\n*.+ is (.+)',
+        TLDBaseKeys.CREATED: r'Domain registered: *(.+)',
+        TLDBaseKeys.EXPIRES: r'Record will expire on: *(.+)',
+        TLDBaseKeys.REGISTRANT_ORGANIZATION: r'(?<=Owner contact)[\s\S]*?Organization:(.*)',
+        TLDBaseKeys.REGISTRANT_NAME: r'(?<=Owner contact)[\s\S]*?Name:(.*)',
+        TLDBaseKeys.REGISTRANT_ADDRESS: r'(?<=Owner contact)[\s\S]*?Address:(.*)',
+        TLDBaseKeys.REGISTRANT_STATE: r'(?<=Owner contact)[\s\S]*?State:(.*)',
+        TLDBaseKeys.REGISTRANT_CITY: r'(?<=Owner contact)[\s\S]*?City:(.*)',
+        TLDBaseKeys.REGISTRANT_COUNTRY: r'(?<=Owner contact)[\s\S]*?Country:(.*)',
+        TLDBaseKeys.REGISTRANT_EMAIL: r'(?<=Owner contact)[\s\S]*?Phone:(.*)',
+        TLDBaseKeys.REGISTRANT_FAX: r'(?<=Owner contact)[\s\S]*?Fax:(.*)',
+        TLDBaseKeys.REGISTRANT_PHONE: r'(?<=Owner contact)[\s\S]*?Phone:(.*)',
+        TLDBaseKeys.ADMIN_ORGANIZATION: r'(?<=Admin contact)[\s\S]*?Organization:(.*)',
+        TLDBaseKeys.ADMIN_NAME: r'(?<=Admin contact)[\s\S]*?Name:(.*)',
+        TLDBaseKeys.ADMIN_ADDRESS: r'(?<=Admin contact)[\s\S]*?Address:(.*)',
+        TLDBaseKeys.ADMIN_STATE: r'(?<=Admin contact)[\s\S]*?State:(.*)',
+        TLDBaseKeys.ADMIN_CITY: r'(?<=Admin contact)[\s\S]*?City:(.*)',
+        TLDBaseKeys.ADMIN_COUNTRY: r'(?<=Admin contact)[\s\S]*?Country:(.*)',
+        TLDBaseKeys.ADMIN_EMAIL: r'(?<=Admin contact)[\s\S]*?Phone:(.*)',
+        TLDBaseKeys.ADMIN_FAX: r'(?<=Admin contact)[\s\S]*?Fax:(.*)',
+        TLDBaseKeys.ADMIN_PHONE: r'(?<=Admin contact)[\s\S]*?Phone:(.*)',
+        TLDBaseKeys.BILLING_ORGANIZATION: r'(?<=Billing contact)[\s\S]*?Organization:(.*)',
+        TLDBaseKeys.BILLING_NAME: r'(?<=Billing contact)[\s\S]*?Name:(.*)',
+        TLDBaseKeys.BILLING_ADDRESS: r'(?<=Billing contact)[\s\S]*?Address:(.*)',
+        TLDBaseKeys.BILLING_STATE: r'(?<=Billing contact)[\s\S]*?State:(.*)',
+        TLDBaseKeys.BILLING_CITY: r'(?<=Billing contact)[\s\S]*?City:(.*)',
+        TLDBaseKeys.BILLING_COUNTRY: r'(?<=Billing contact)[\s\S]*?Country:(.*)',
+        TLDBaseKeys.BILLING_EMAIL: r'(?<=Billing contact)[\s\S]*?Phone:(.*)',
+        TLDBaseKeys.BILLING_FAX: r'(?<=Billing contact)[\s\S]*?Fax:(.*)',
+        TLDBaseKeys.BILLING_PHONE: r'(?<=Billing contact)[\s\S]*?Phone:(.*)',
+        TLDBaseKeys.TECH_ORGANIZATION: r'(?<=Tech contact)[\s\S]*?Organization:(.*)',
+        TLDBaseKeys.TECH_NAME: r'(?<=Tech contact)[\s\S]*?Name:(.*)',
+        TLDBaseKeys.TECH_ADDRESS: r'(?<=Tech contact)[\s\S]*?Address:(.*)',
+        TLDBaseKeys.TECH_STATE: r'(?<=Tech contact)[\s\S]*?State:(.*)',
+        TLDBaseKeys.TECH_CITY: r'(?<=Tech contact)[\s\S]*?City:(.*)',
+        TLDBaseKeys.TECH_COUNTRY: r'(?<=Tech contact)[\s\S]*?Country:(.*)',
+        TLDBaseKeys.TECH_EMAIL: r'(?<=Tech contact)[\s\S]*?Phone:(.*)',
+        TLDBaseKeys.TECH_FAX: r'(?<=Tech contact)[\s\S]*?Fax:(.*)',
+        TLDBaseKeys.TECH_PHONE: r'(?<=Tech contact)[\s\S]*?Phone:(.*)',
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.update_reg_expressions(self._ga_expressions)
+
+    def parse(self, blob: str) -> Dict[str, Any]:
+        output = super().parse(blob)
+        output[TLDBaseKeys.NAME_SERVERS] = self.find_multiline_match('Domain Nameservers:', blob)
+        # date format is m/d/Y
+        created = output.get(TLDBaseKeys.CREATED)
+        if created:
+            output[TLDBaseKeys.CREATED] = self._parse_date_mdY(created)
+
+        expires = output.get(TLDBaseKeys.EXPIRES)
+        if expires:
+            output[TLDBaseKeys.EXPIRES] = self._parse_date_mdY(expires)
+
+        return output
+
+
+class RegexCI(TLDParser):
+
+    _ci_expressions = {
+        TLDBaseKeys.REGISTRANT_NAME: r'RegistrantName: *(.+)',
+        TLDBaseKeys.REGISTRANT_ORGANIZATION: r'RegistrantOrganization: *(.+)',
+        TLDBaseKeys.REGISTRANT_ADDRESS: r'RegistrantStreet: *(.+)',
+        TLDBaseKeys.REGISTRANT_CITY: r'RegistrantCity: *(.+)',
+        TLDBaseKeys.REGISTRANT_ZIPCODE: r'RegistrantPostal Code: *(.+)',
+        TLDBaseKeys.REGISTRANT_COUNTRY: r'RegistrantCountry: *(.+)',
+        TLDBaseKeys.REGISTRANT_EMAIL: r'RegistrantEmail: *(.+)',
+
+        TLDBaseKeys.STATUS: r'Domain status: *(.+)',
+
+        TLDBaseKeys.ADMIN_NAME: r'AdminName: (.+)',
+        TLDBaseKeys.ADMIN_ORGANIZATION: r'AdminOrganization: (.+)',
+        TLDBaseKeys.ADMIN_CITY: r'AdminCity: (.*)',
+        TLDBaseKeys.ADMIN_ADDRESS: r'AdminStreet: (.*)',
+        TLDBaseKeys.ADMIN_ZIPCODE: r'AdminPostal Code: (.*)',
+        TLDBaseKeys.ADMIN_COUNTRY: r'AdminCountry: (.+)',
+        TLDBaseKeys.ADMIN_PHONE: r'AdminPhone: (.+)',
+        TLDBaseKeys.ADMIN_FAX: r'AdminFax: (.+)',
+        TLDBaseKeys.ADMIN_EMAIL: r'AdminEmail: (.+)',
+
+        TLDBaseKeys.BILLING_NAME: r'BillingName: (.+)',
+        TLDBaseKeys.BILLING_ORGANIZATION: r'BillingOrganization: (.+)',
+        TLDBaseKeys.BILLING_CITY: r'BillingCity: (.*)',
+        TLDBaseKeys.BILLING_ADDRESS: r'BillingStreet: (.*)',
+        TLDBaseKeys.BILLING_ZIPCODE: r'BillingPostal Code: (.*)',
+        TLDBaseKeys.BILLING_COUNTRY: r'BillingCountry: (.+)',
+        TLDBaseKeys.BILLING_PHONE: r'BillingPhone: (.+)',
+        TLDBaseKeys.BILLING_FAX: r'BillingFax: (.+)',
+        TLDBaseKeys.BILLING_EMAIL: r'BillingEmail: (.+)',
+
+        TLDBaseKeys.TECH_NAME: r'TechName: (.+)',
+        TLDBaseKeys.TECH_ORGANIZATION: r'TechOrganization: (.+)',
+        TLDBaseKeys.TECH_CITY: r'TechCity: (.*)',
+        TLDBaseKeys.TECH_ADDRESS: r'TechStreet: (.*)',
+        TLDBaseKeys.TECH_ZIPCODE: r'TechPostal Code: (.*)',
+        TLDBaseKeys.TECH_COUNTRY: r'TechCountry: (.+)',
+        TLDBaseKeys.TECH_PHONE: r'TechPhone: (.+)',
+        TLDBaseKeys.TECH_FAX: r'TechFax: (.+)',
+        TLDBaseKeys.TECH_EMAIL: r'TechEmail: (.+)',
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.update_reg_expressions(self._ci_expressions)
