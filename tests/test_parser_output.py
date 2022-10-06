@@ -8,7 +8,7 @@ class TestTLDParsers(unittest.TestCase):
 
     @staticmethod
     def get_txt(tld: str):
-        with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), f"samples/tld_{tld}.txt")) as txt_input:
+        with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), f"samples/tld_{tld}.txt"), encoding='utf-8') as txt_input:
             query_output = txt_input.read()
         return query_output
 
