@@ -40,6 +40,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3 :: Only",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Software Development",
@@ -50,5 +51,4 @@ setuptools.setup(
     packages=["asyncwhois"],
     package_dir={"asyncwhois": "asyncwhois"},
     python_requires=">=3.6",
-    include_package_data=True
 )
