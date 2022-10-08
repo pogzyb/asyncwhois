@@ -1,0 +1,15 @@
+name: Lint
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Check code style with black, defaults to options "--check --diff"
+      - name: Check code style with black
+        uses: psf/black@stable
+
