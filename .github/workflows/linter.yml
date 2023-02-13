@@ -12,4 +12,4 @@ jobs:
       # Check code style with black, defaults to options "--check --diff"
       - name: Check code style with black
         uses: psf/black@stable
-
+        run: black --include asyncwhois/
