@@ -12,7 +12,7 @@ def get_version(location: str) -> str:
     with open((base_dir / location).absolute().resolve()) as file:
         for line in file.readlines():
             if line.startswith('__version__'):
-                return line.split(' = ')[-1].strip().replace("'", "")
+                return line.split(' = ')[-1].strip().replace("\"", "")
         else:
             raise RuntimeError('Unable to find version string.')
 

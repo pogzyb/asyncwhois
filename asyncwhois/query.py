@@ -4,6 +4,7 @@ import socket
 import sys
 from typing import Tuple, Generator
 from contextlib import contextmanager
+
 # different installs for async contextmanager based on python version
 if sys.version_info < (3, 7):
     from async_generator import asynccontextmanager
@@ -27,7 +28,7 @@ class Query:
         server: str = None,
         authoritative_only: bool = True,
         proxy_url: str = None,
-        timeout: int = 10
+        timeout: int = 10,
     ):
         self.server = server
         self.authoritative_only = authoritative_only
@@ -47,9 +48,7 @@ class Query:
 
     @contextmanager
     def _create_connection(
-        self,
-        address: Tuple[str, int],
-        proxy_url: str = None
+        self, address: Tuple[str, int], proxy_url: str = None
     ) -> Generator[socket.socket, None, None]:
         s = None
         try:
@@ -68,9 +67,7 @@ class Query:
 
     @asynccontextmanager
     async def _aio_create_connection(
-        self,
-        address: Tuple[str, int],
-        proxy_url: str = None
+        self, address: Tuple[str, int], proxy_url: str = None
     ) -> Generator[Tuple[asyncio.StreamReader, asyncio.StreamWriter], None, None]:
         # init
         reader, writer = None, None
@@ -80,10 +77,7 @@ class Query:
             # sock is a standard python socket in blocking mode
             sock = await proxy.connect(*address)
             # pass it to asyncio
-            s = asyncio.open_connection(
-                host=None,
-                port=None,
-                sock=sock)
+            s = asyncio.open_connection(host=None, port=None, sock=sock)
         else:
             # otherwise use asyncio to open the connection
             s = asyncio.open_connection(*address)
@@ -110,9 +104,7 @@ class Query:
 
     @staticmethod
     async def _aio_send_and_recv(
-        reader: asyncio.StreamReader,
-        writer: asyncio.StreamWriter,
-        data: str
+        reader: asyncio.StreamReader, writer: asyncio.StreamWriter, data: str
     ) -> str:
         writer.write(data.encode())
         result = ""
@@ -144,13 +136,17 @@ class Query:
             whois_server = whois_server.lower()
             if whois_server and whois_server != server:
                 # recursive call to find more authoritative server
-                query_output = self._do_query(whois_server, data, self.whois_server_regex)
+                query_output = self._do_query(
+                    whois_server, data, self.whois_server_regex
+                )
         # return the WHOIS query output
         return query_output
 
     async def _aio_do_query(self, server: str, data: str, regex: str):
         # connect to whois://<server>:43
-        async with self._aio_create_connection((server, self.whois_port), self.proxy_url) as r_and_w:
+        async with self._aio_create_connection(
+            (server, self.whois_port), self.proxy_url
+        ) as r_and_w:
             # socket reader and writer
             reader, writer = r_and_w
             # submit domain and receive raw query output
@@ -163,20 +159,21 @@ class Query:
             whois_server = whois_server.lower()
             if whois_server and whois_server != server:
                 # recursive call to find the authoritative server
-                query_output = await self._aio_do_query(whois_server, data, self.whois_server_regex)
+                query_output = await self._aio_do_query(
+                    whois_server, data, self.whois_server_regex
+                )
         # return the WHOIS query output
         return query_output
 
 
 class DomainQuery(Query):
-
     def __init__(
         self,
         domain: str,
         server: str = None,
         authoritative_only: bool = True,
         proxy_url: str = None,
-        timeout: int = 10
+        timeout: int = 10,
     ):
         super().__init__(server, authoritative_only, proxy_url, timeout)
         self.domain = domain
@@ -188,7 +185,7 @@ class DomainQuery(Query):
         server: str = None,
         authoritative_only: bool = True,
         proxy_url: str = None,
-        timeout: int = 10
+        timeout: int = 10,
     ):
         _self = cls(domain, server, authoritative_only, proxy_url, timeout)
         data = domain + "\r\n"
@@ -208,7 +205,7 @@ class DomainQuery(Query):
         server: str = None,
         authoritative_only: bool = True,
         proxy_url: str = None,
-        timeout: int = 10
+        timeout: int = 10,
     ):
         _self = cls(domain, server, authoritative_only, proxy_url, timeout)
         data = domain + "\r\n"
@@ -223,14 +220,13 @@ class DomainQuery(Query):
 
 
 class NumberQuery(Query):
-
     def __init__(
         self,
         ip: str,  # ipv4 or ipv6
         server: str = None,
         authoritative_only: bool = True,
         proxy_url: str = None,
-        timeout: int = 10
+        timeout: int = 10,
     ):
         super().__init__(server, authoritative_only, proxy_url, timeout)
         self.whois_server_regex = r"ReferralServer: *whois://(.+)"
@@ -243,7 +239,7 @@ class NumberQuery(Query):
         server: str = None,
         authoritative_only: bool = False,
         proxy_url: str = None,
-        timeout: int = 10
+        timeout: int = 10,
     ):
         _self = cls(ip, server, authoritative_only, proxy_url, timeout)
         data = ip + "\r\n"
@@ -260,7 +256,7 @@ class NumberQuery(Query):
         server: str = None,
         authoritative_only: bool = False,
         proxy_url: str = None,
-        timeout: int = 10
+        timeout: int = 10,
     ):
         _self = cls(ip, server, authoritative_only, proxy_url, timeout)
         data = ip + "\r\n"

@@ -3,6 +3,7 @@
 [![PyPI version](https://badge.fury.io/py/asyncwhois.svg)](https://badge.fury.io/py/asyncwhois)
 ![build-workflow](https://github.com/pogzyb/asyncwhois/actions/workflows/build-and-test.yml/badge.svg)
 [![codecov](https://codecov.io/gh/pogzyb/asyncwhois/branch/master/graph/badge.svg?token=Q4xtgezXGX)](https://codecov.io/gh/pogzyb/asyncwhois)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 `asyncwhois` | Async-friendly Python library for WHOIS and RDAP queries.
 

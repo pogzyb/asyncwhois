@@ -1,9 +1,9 @@
-import asynctest
+import unittest
 
 from asyncwhois.pywhois import DomainLookup
 
 
-class TestDomainLookup(asynctest.TestCase):
+class TestDomainLookup(unittest.TestCase):
 
     def setUp(self) -> None:
         self.fake_domain = "some-domain-somewhere-out-there.co.uk"
