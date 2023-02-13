@@ -4,29 +4,29 @@ from typing import Any, Optional, Union
 from .pywhois import DomainLookup, NumberLookup, ASNLookup
 
 __all__ = [
-    'aio_whois_domain',
-    'aio_whois_ipv4',
-    'aio_whois_ipv6',
-    'aio_rdap_domain',
-    'aio_rdap_ipv4',
-    'aio_rdap_ipv6',
-    'aio_rdap_asn',
-    'rdap_domain',
-    'rdap_ipv4',
-    'rdap_ipv6',
-    'rdap_asn',
-    'whois_domain',
-    'whois_ipv4',
-    'whois_ipv6',
+    "aio_whois_domain",
+    "aio_whois_ipv4",
+    "aio_whois_ipv6",
+    "aio_rdap_domain",
+    "aio_rdap_ipv4",
+    "aio_rdap_ipv6",
+    "aio_rdap_asn",
+    "rdap_domain",
+    "rdap_ipv4",
+    "rdap_ipv6",
+    "rdap_asn",
+    "whois_domain",
+    "whois_ipv4",
+    "whois_ipv6",
 ]
-__version__ = '1.0.1'
+__version__ = "1.0.1"
 
 
 def whois_domain(
     domain: str,
     authoritative_only: bool = False,
     proxy_url: str = None,
-    timeout: int = 10
+    timeout: int = 10,
 ) -> DomainLookup:
     """
     Performs domain lookups with WHOIS.
@@ -47,7 +47,7 @@ async def aio_whois_domain(
     domain: str,
     authoritative_only: bool = False,
     proxy_url: str = None,
-    timeout: int = 10
+    timeout: int = 10,
 ) -> DomainLookup:
     """
     Performs asynchronous domain lookups with WHOIS.
@@ -60,15 +60,13 @@ async def aio_whois_domain(
     :param timeout: Connection timeout. Default is 10 seconds.
     :return: instance of DomainLookup
     """
-    result = await DomainLookup.aio_whois_domain(domain, authoritative_only,
-                                                  proxy_url, timeout)
+    result = await DomainLookup.aio_whois_domain(
+        domain, authoritative_only, proxy_url, timeout
+    )
     return result
 
 
-def rdap_domain(
-    domain: str,
-    httpx_client: Optional[Any] = None
-) -> DomainLookup:
+def rdap_domain(domain: str, httpx_client: Optional[Any] = None) -> DomainLookup:
     """
     Performs an RDAP query for the given domain.
     Finds the authoritative RDAP server and parses the response from that server.
@@ -83,8 +81,7 @@ def rdap_domain(
 
 
 async def aio_rdap_domain(
-    domain: str,
-    httpx_client: Optional[Any] = None
+    domain: str, httpx_client: Optional[Any] = None
 ) -> DomainLookup:
     """
     Performs an async RDAP query for the given domain name.
@@ -101,7 +98,7 @@ def whois_ipv4(
     ipv4: Union[IPv4Address, str],
     authoritative_only: bool = False,
     proxy_url: str = None,
-    timeout: int = 10
+    timeout: int = 10,
 ) -> NumberLookup:
     """
     Performs a WHOIS query for the given IPv4 address.
@@ -122,7 +119,7 @@ async def aio_whois_ipv4(
     ipv4: Union[IPv4Address, str],
     authoritative_only: bool = False,
     proxy_url: str = None,
-    timeout: int = 10
+    timeout: int = 10,
 ) -> NumberLookup:
     """
     Performs an async WHOIS query for the given IPv4 address.
@@ -135,13 +132,14 @@ async def aio_whois_ipv4(
     :param timeout: Connection timeout. Default is 10 seconds.
     :return: instance of NumberLookup
     """
-    result = await NumberLookup.aio_whois_ipv4(ipv4, authoritative_only, proxy_url, timeout)
+    result = await NumberLookup.aio_whois_ipv4(
+        ipv4, authoritative_only, proxy_url, timeout
+    )
     return result
 
 
 def rdap_ipv4(
-    ipv4: Union[IPv4Address, str],
-    httpx_client: Optional[Any] = None
+    ipv4: Union[IPv4Address, str], httpx_client: Optional[Any] = None
 ) -> NumberLookup:
     """
     Performs an RDAP query for the given IPv4 address.
@@ -155,8 +153,7 @@ def rdap_ipv4(
 
 
 async def aio_rdap_ipv4(
-    ipv4: Union[IPv4Address, str],
-    httpx_client: Optional[Any] = None
+    ipv4: Union[IPv4Address, str], httpx_client: Optional[Any] = None
 ) -> NumberLookup:
     """
     Performs an async RDAP query for the given IPv6 address.
@@ -173,7 +170,7 @@ def whois_ipv6(
     ipv6: Union[IPv6Address, str],
     authoritative_only: bool = False,
     proxy_url: str = None,
-    timeout: int = 10
+    timeout: int = 10,
 ) -> NumberLookup:
     """
     Performs a WHOIS query for the given IPv6 address.
@@ -194,7 +191,7 @@ async def aio_whois_ipv6(
     ipv6: Union[IPv6Address, str],
     authoritative_only: bool = False,
     proxy_url: str = None,
-    timeout: int = 10
+    timeout: int = 10,
 ) -> NumberLookup:
     """
     Performs an async WHOIS query for the given IPv6 address.
@@ -207,13 +204,14 @@ async def aio_whois_ipv6(
     :param timeout: Connection timeout. Default is 10 seconds.
     :return: instance of NumberLookup
     """
-    result = await NumberLookup.aio_whois_ipv6(ipv6, authoritative_only, proxy_url, timeout)
+    result = await NumberLookup.aio_whois_ipv6(
+        ipv6, authoritative_only, proxy_url, timeout
+    )
     return result
 
 
 def rdap_ipv6(
-    ipv6: Union[IPv6Address, str],
-    httpx_client: Optional[Any] = None
+    ipv6: Union[IPv6Address, str], httpx_client: Optional[Any] = None
 ) -> NumberLookup:
     """
     Performs an RDAP query for the given IPv6 address.
@@ -227,8 +225,7 @@ def rdap_ipv6(
 
 
 async def aio_rdap_ipv6(
-    ipv6: Union[IPv6Address, str],
-    httpx_client: Optional[Any] = None
+    ipv6: Union[IPv6Address, str], httpx_client: Optional[Any] = None
 ) -> NumberLookup:
     """
     Performs an async RDAP query for the given IPv6 address.
@@ -241,10 +238,7 @@ async def aio_rdap_ipv6(
     return result
 
 
-def rdap_asn(
-    asn: int,
-    httpx_client: Optional[Any] = None
-) -> ASNLookup:
+def rdap_asn(asn: int, httpx_client: Optional[Any] = None) -> ASNLookup:
     """
     Performs an RDAP query for the given Autonomous System Number.
 
@@ -256,10 +250,7 @@ def rdap_asn(
     return result
 
 
-async def aio_rdap_asn(
-    asn: int,
-    httpx_client: Optional[Any] = None
-) -> ASNLookup:
+async def aio_rdap_asn(asn: int, httpx_client: Optional[Any] = None) -> ASNLookup:
     """
     Performs an async RDAP query for the given Autonomous System Number.
 

@@ -11,7 +11,6 @@ from .servers import CountryCodeTLD, GenericTLD, SponsoredTLD, IPv4Allocations
 
 
 class Lookup:
-
     def __init__(self):
         self._query = None
         self._parser = None
@@ -37,38 +36,33 @@ class Lookup:
 
 
 class DomainLookup(Lookup):
-
     def __init__(self):
         super().__init__()
         self._tld_extract = None
 
     @staticmethod
     def _get_server_name(tld: str) -> Union[str, None]:
-        tld_converted = tld.upper().replace('-', '_')
+        tld_converted = tld.upper().replace("-", "_")
         for servers in [CountryCodeTLD, GenericTLD, SponsoredTLD]:
             if hasattr(servers, tld_converted):
                 server = getattr(servers, tld_converted)
                 return server
-        return None 
-    
+        return None
+
     def _get_top_level_domain(self, domain: str):
         self._tld_extract = tldextract.extract(domain)
         top_level_domain = self._tld_extract.suffix
-        if '.' in top_level_domain:
-            top_level_domain = top_level_domain.split('.')[-1]
+        if "." in top_level_domain:
+            top_level_domain = top_level_domain.split(".")[-1]
         return top_level_domain
-        
+
     @property
     def tld_extract_result(self) -> tldextract.tldextract.ExtractResult:
         return self._tld_extract
 
     @classmethod
     def whois_domain(
-        cls,
-        domain: str,
-        authoritative_only: bool,
-        proxy_url: str,
-        timeout: int
+        cls, domain: str, authoritative_only: bool, proxy_url: str, timeout: int
     ):
         _self = cls()
         # get TLD
@@ -78,8 +72,10 @@ class DomainLookup(Lookup):
         # get the WHOIS server associated with this TLD
         server = _self._get_server_name(top_level_domain)
         # submit the WHOIS query to the server
-        hostname = _self.tld_extract_result.domain + '.' + top_level_domain
-        query = DomainQuery.new(hostname, server, authoritative_only, proxy_url, timeout)
+        hostname = _self.tld_extract_result.domain + "." + top_level_domain
+        query = DomainQuery.new(
+            hostname, server, authoritative_only, proxy_url, timeout
+        )
         # parse the raw text output from the WHOIS server
         parser.parse(query.query_output)
         _self._query = query
@@ -88,11 +84,7 @@ class DomainLookup(Lookup):
 
     @classmethod
     async def aio_whois_domain(
-        cls,
-        domain: str,
-        authoritative_only: bool,
-        proxy_url: str,
-        timeout: int
+        cls, domain: str, authoritative_only: bool, proxy_url: str, timeout: int
     ):
         _self = cls()
         # get TLD
@@ -102,8 +94,10 @@ class DomainLookup(Lookup):
         # get the WHOIS server associated with this TLD
         server = _self._get_server_name(top_level_domain)
         # submit the WHOIS query to the server
-        hostname = _self.tld_extract_result.domain + '.' + top_level_domain
-        query = await DomainQuery.new_aio(hostname, server, authoritative_only, proxy_url, timeout)
+        hostname = _self.tld_extract_result.domain + "." + top_level_domain
+        query = await DomainQuery.new_aio(
+            hostname, server, authoritative_only, proxy_url, timeout
+        )
         # parse the raw text output from the WHOIS server
         parser.parse(query.query_output)
         _self._query = query
@@ -111,11 +105,7 @@ class DomainLookup(Lookup):
         return _self
 
     @classmethod
-    def rdap_domain(
-        cls,
-        domain: str,
-        httpx_client: Any = None
-    ):
+    def rdap_domain(cls, domain: str, httpx_client: Any = None):
         """
         Performs an RDAP query using the `whodap` project.
         Stores the resulting RDAP output into "query_output" and a WHOIS friendly
@@ -130,23 +120,22 @@ class DomainLookup(Lookup):
         response = whodap.lookup_domain(
             domain=_self.tld_extract_result.domain,
             tld=top_level_domain,
-            httpx_client=httpx_client)
+            httpx_client=httpx_client,
+        )
         _self._query = response.to_dict()
         # date keys are mismatched between projects; change these keys to the asyncwhois set.
         whois_dict = response.to_whois_dict()
-        for a_key, b_key in [(TLDBaseKeys.EXPIRES, 'expires_date'),
-                             (TLDBaseKeys.UPDATED, 'updated_date'),
-                             (TLDBaseKeys.CREATED, 'created_date')]:
+        for a_key, b_key in [
+            (TLDBaseKeys.EXPIRES, "expires_date"),
+            (TLDBaseKeys.UPDATED, "updated_date"),
+            (TLDBaseKeys.CREATED, "created_date"),
+        ]:
             whois_dict[a_key] = whois_dict.pop(b_key)
         _self._parser = whois_dict
         return _self
 
     @classmethod
-    async def aio_rdap_domain(
-        cls,
-        domain: str,
-        httpx_client: Any = None
-    ):
+    async def aio_rdap_domain(cls, domain: str, httpx_client: Any = None):
         """
         Performs an async RDAP query using the `whodap` project.
         Stores the resulting RDAP output into "query_output" and a WHOIS friendly
@@ -161,20 +150,22 @@ class DomainLookup(Lookup):
         response = await whodap.aio_lookup_domain(
             domain=_self.tld_extract_result.domain,
             tld=top_level_domain,
-            httpx_client=httpx_client)
+            httpx_client=httpx_client,
+        )
         _self._query = response.to_dict()
         whois_dict = response.to_whois_dict()
         # date keys are mismatched between projects; change these keys to the asyncwhois set.
-        for a_key, b_key in [(TLDBaseKeys.EXPIRES, 'expires_date'),
-                             (TLDBaseKeys.UPDATED, 'updated_date'),
-                             (TLDBaseKeys.CREATED, 'created_date')]:
+        for a_key, b_key in [
+            (TLDBaseKeys.EXPIRES, "expires_date"),
+            (TLDBaseKeys.UPDATED, "updated_date"),
+            (TLDBaseKeys.CREATED, "created_date"),
+        ]:
             whois_dict[a_key] = whois_dict.pop(b_key)
         _self._parser = whois_dict
         return _self
 
 
 class NumberLookup(Lookup):
-
     def __init__(self):
         super().__init__()
         self._ip = None
@@ -203,7 +194,7 @@ class NumberLookup(Lookup):
         ipv4: Union[str, ipaddress.IPv4Address],
         authoritative_only: bool,
         proxy_url: str,
-        timeout: int
+        timeout: int,
     ):
         _self = cls()
         if not isinstance(ipv4, ipaddress.IPv4Address):
@@ -213,7 +204,9 @@ class NumberLookup(Lookup):
         _, server = IPv4Allocations().get_servers(_self._ip)
         ip_string = str(_self._ip)
         # run the query
-        query = NumberQuery.new(ip_string, server, authoritative_only, proxy_url, timeout)
+        query = NumberQuery.new(
+            ip_string, server, authoritative_only, proxy_url, timeout
+        )
         # parse the raw text output from the WHOIS server
         parser = NumberParser(query.authoritative_server)
         parser.parse(query.query_output)
@@ -227,7 +220,7 @@ class NumberLookup(Lookup):
         ipv4: Union[str, ipaddress.IPv4Address],
         authoritative_only: bool,
         proxy_url: str,
-        timeout: int
+        timeout: int,
     ):
         _self = cls()
         if not isinstance(ipv4, ipaddress.IPv4Address):
@@ -237,7 +230,9 @@ class NumberLookup(Lookup):
         _, server = IPv4Allocations().get_servers(_self._ip)
         ip_string = str(_self._ip)
         # run the query
-        query = await NumberQuery.new_aio(ip_string, server, authoritative_only, proxy_url, timeout)
+        query = await NumberQuery.new_aio(
+            ip_string, server, authoritative_only, proxy_url, timeout
+        )
         # parse the raw text output from the WHOIS server
         parser = NumberParser(query.authoritative_server)
         parser.parse(query.query_output)
@@ -247,9 +242,7 @@ class NumberLookup(Lookup):
 
     @classmethod
     def rdap_ipv4(
-        cls,
-        ipv4: Union[str, ipaddress.IPv4Address],
-        httpx_client: Any = None
+        cls, ipv4: Union[str, ipaddress.IPv4Address], httpx_client: Any = None
     ):
         _self = cls()
         response = whodap.lookup_ipv4(ipv4, httpx_client)
@@ -259,9 +252,7 @@ class NumberLookup(Lookup):
 
     @classmethod
     async def aio_rdap_ipv4(
-        cls,
-        ipv4: Union[str, ipaddress.IPv4Address],
-        httpx_client: Any = None
+        cls, ipv4: Union[str, ipaddress.IPv4Address], httpx_client: Any = None
     ):
         _self = cls()
         response = await whodap.aio_lookup_ipv4(ipv4, httpx_client)
@@ -275,7 +266,7 @@ class NumberLookup(Lookup):
         ipv6: Union[str, ipaddress.IPv6Address],
         authoritative_only: bool,
         proxy_url: str,
-        timeout: int
+        timeout: int,
     ):
         _self = cls()
         if not isinstance(ipv6, ipaddress.IPv6Address):
@@ -296,14 +287,16 @@ class NumberLookup(Lookup):
         ipv6: Union[str, ipaddress.IPv6Address],
         authoritative_only: bool,
         proxy_url: str,
-        timeout: int
+        timeout: int,
     ):
         _self = cls()
         if not isinstance(ipv6, ipaddress.IPv4Address):
             _self._ip = _self.convert_to_ip(ipv6)
         ip_string = str(_self._ip)
         # run the query
-        query = await NumberQuery.new_aio(ip_string, None, authoritative_only, proxy_url, timeout)
+        query = await NumberQuery.new_aio(
+            ip_string, None, authoritative_only, proxy_url, timeout
+        )
         # parse the raw text output from the WHOIS server
         parser = NumberParser(query.authoritative_server)
         parser.parse(query.query_output)
@@ -313,9 +306,7 @@ class NumberLookup(Lookup):
 
     @classmethod
     def rdap_ipv6(
-        cls,
-        ipv6: Union[str, ipaddress.IPv6Address],
-        httpx_client: Any = None
+        cls, ipv6: Union[str, ipaddress.IPv6Address], httpx_client: Any = None
     ):
         _self = cls()
         response = whodap.lookup_ipv6(ipv6, httpx_client)
@@ -325,9 +316,7 @@ class NumberLookup(Lookup):
 
     @classmethod
     async def aio_rdap_ipv6(
-        cls,
-        ipv6: Union[str, ipaddress.IPv6Address],
-        httpx_client: Any = None
+        cls, ipv6: Union[str, ipaddress.IPv6Address], httpx_client: Any = None
     ):
         _self = cls()
         response = await whodap.aio_lookup_ipv6(ipv6, httpx_client)
@@ -337,17 +326,12 @@ class NumberLookup(Lookup):
 
 
 class ASNLookup(Lookup):
-
     def __init__(self):
         super().__init__()
         self.asn: int = None
 
     @classmethod
-    def rdap_asn(
-        cls,
-        asn: int,
-        httpx_client: Any = None
-    ):
+    def rdap_asn(cls, asn: int, httpx_client: Any = None):
         _self = cls()
         response = whodap.lookup_asn(asn, httpx_client)
         _self._query = response.to_dict()
@@ -355,11 +339,7 @@ class ASNLookup(Lookup):
         return _self
 
     @classmethod
-    async def aio_rdap_asn(
-        cls,
-        asn: int,
-        httpx_client: Any = None
-    ):
+    async def aio_rdap_asn(cls, asn: int, httpx_client: Any = None):
         _self = cls()
         response = await whodap.aio_lookup_asn(asn, httpx_client)
         _self._query = response.to_dict()

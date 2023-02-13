@@ -1,5 +1,3 @@
-
-
 class WhoIsError(Exception):
     pass
 
