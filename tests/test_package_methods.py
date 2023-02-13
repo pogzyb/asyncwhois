@@ -1,31 +1,62 @@
-import asynctest
+import asyncio
+import sys
 import unittest.mock as mock
-import asynctest.mock as aio_mock
 
 import asyncwhois
+import pytest
 
 
-class TestExportedFunctions(asynctest.TestCase):
+test_domain_name = 'amazon.com'
+mock_query_data = {
+    'parser_output': {'domain_name': test_domain_name},
+    'query_output': 'Domain Name: amazon.com'
+}
 
-    @aio_mock.patch('asyncwhois.pywhois.DomainLookup.aio_whois_domain')
-    async def test_aio_lookup(self, mock_whois_call):
-        mock_query_data = {'parser_output': {'domain_name': 'amazon.com'}, 'query_output': 'Domain Name: amazon.com'}
-        mock_whois_call.return_value = mock.Mock(query_output=mock_query_data.get('query_output'),
-                                                 parser_output=mock_query_data.get('parser_output'))
-        test_domain = "amazon.com"
-        w = await asyncwhois.aio_whois_domain(test_domain)
-        mock_whois_call.assert_called_once()
-        self.assertIn(f"domain name: {test_domain}", w.query_output.lower())
-        self.assertEqual(w.parser_output.get('domain_name').lower(), test_domain)
 
-    @mock.patch('asyncwhois.pywhois.DomainLookup.whois_domain')
-    def test_lookup(self, mock_whois_call):
-        mock_query_data = {'parser_output': {'domain_name': 'elastic.co'}, 'query_output': 'Domain Name: elastic.co'}
-        mock_whois_call.return_value = mock.Mock(query_output=mock_query_data.get('query_output'),
-                                                 parser_output=mock_query_data.get('parser_output'))
-        test_domain = "elastic.co"
-        w = asyncwhois.whois_domain(test_domain)
-        mock_whois_call.assert_called_once()
-        self.assertIn(f"domain name: {test_domain}", w.query_output.lower())
-        self.assertEqual(w.parser_output.get('domain_name').lower(), test_domain)
+if sys.version_info < (3, 8):
+    @pytest.fixture()
+    def mock_aio_whois_domain(mocker):
+        future = asyncio.Future()
+        future.set_result(mock.Mock(
+            query_output=mock_query_data.get('query_output'),
+            parser_output=mock_query_data.get('parser_output')
+        ))
+        mocker.patch('asyncwhois.pywhois.DomainLookup.aio_whois_domain', return_value=future)
+        return future
+else:
+    @pytest.fixture()
+    def mock_aio_whois_domain(mocker):
+        async_mock = mock.AsyncMock(
+            return_value=mock.Mock(
+                query_output=mock_query_data.get('query_output'),
+                parser_output=mock_query_data.get('parser_output')
+            )
+        )
+        mocker.patch('asyncwhois.pywhois.DomainLookup.aio_whois_domain', side_effect=async_mock)
+        return async_mock
 
+
+@pytest.fixture()
+def mock_whois_domain(mocker):
+    mocker.patch(
+        'asyncwhois.pywhois.DomainLookup.whois_domain',
+        return_value=mock.Mock(
+            query_output=mock_query_data.get('query_output'),
+            parser_output=mock_query_data.get('parser_output')
+        )
+     )
+
+
+@pytest.mark.asyncio
+async def test_aio_lookup(mock_aio_whois_domain):
+    result = await asyncwhois.aio_whois_domain(test_domain_name)
+    assert f"domain name: {test_domain_name}" in result.query_output.lower(), \
+        f"domain name: {test_domain_name} not in {result.query_output.lower()}"
+    assert result.parser_output.get('domain_name').lower() == test_domain_name
+
+
+def test_lookup(mock_whois_domain):
+    result = asyncwhois.whois_domain(test_domain_name)
+    assert f"domain name: {test_domain_name}" in result.query_output.lower(), \
+        f"domain name: {test_domain_name} not in {result.query_output.lower()}"
+    assert result.parser_output.get('domain_name').lower() == test_domain_name
