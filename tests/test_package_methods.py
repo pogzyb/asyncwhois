@@ -3,6 +3,7 @@ import sys
 import unittest.mock as mock
 
 import asyncwhois
+from asyncwhois.servers import CountryCodeTLD
 import pytest
 
 
@@ -60,3 +61,18 @@ def test_lookup(mock_whois_domain):
     assert f"domain name: {test_domain_name}" in result.query_output.lower(), \
         f"domain name: {test_domain_name} not in {result.query_output.lower()}"
     assert result.parser_output.get('domain_name').lower() == test_domain_name
+
+
+def test_input_parameters_for_domain_query(mocker):
+    spy = mocker.spy(asyncwhois.query.DomainQuery, 'new')
+    mocker.patch(
+        'asyncwhois.query.DomainQuery._do_query',
+        return_value=mock_query_data.get('query_output')
+    )
+
+    test_subdomain_name = 'example.org.ua'
+
+    _ = asyncwhois.whois_domain(test_subdomain_name)
+    call_args = spy.call_args_list[0][0]
+    assert call_args[0] == test_subdomain_name
+    assert call_args[1] == CountryCodeTLD.UA
