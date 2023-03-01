@@ -1030,7 +1030,7 @@ class CountryCodeTLD:
     TP = None
     TR = "whois.nic.tr"
     TT = None
-    TV = "tvwhois.verisign-grs.com"
+    TV = "whois.nic.tv"
     TW = "whois.twnic.net.tw"
     TZ = "whois.tznic.or.tz"
     UA = "whois.ua"
