@@ -1,0 +1,40 @@
+% This is the Ukrainian Whois query server #P.
+% The Whois is subject to Terms of use
+% See https://hostmaster.ua/services/
+%
+% IN THE PROCESS OF DELEGATION OF A DOMAIN NAME,
+% THE REGISTRANT IS AN ENTITY WHO USES AND MANAGES A CERTAIN DOMAIN NAME,
+% AND THE REGISTRAR IS A BUSINESS ENTITY THAT PROVIDES THE REGISTRANT
+% WITH THE SERVICES NECESSARY FOR THE TECHNICAL MAINTENANCE OF THE REGISTRATION AND OPERATION OF THE DOMAIN NAME.
+% FOR INFORMATION ABOUT THE REGISTRANT OF THE DOMAIN NAME, YOU SHOULD CONTACT THE REGISTRAR.
+
+% The object shown below is NOT in the UAEPP database.
+% It has been obtained by querying a remote server:
+% (whois.lviv.ua) at port 43.
+%
+% REDIRECT BEGIN
+
+Domain Name: example.lviv.ua
+Domain ID: XXXXX-LVIV
+WHOIS Server: whois.uar.net
+Updated Date: 2021-10-17T07:34:03.193Z
+Creation Date: 2018-11-25T22:00:00.0Z
+Registry Expiry Date: 2023-10-16T21:00:00.0Z
+Domain Status: clientTransferProhibited https://icann.org/epp#clientTransferProhibited
+Registrar: ua.imena
+Registrar Abuse Phone: +380.442010102
+Registrar Abuse Email: abuse@imena.ua
+Registrar URL: http://www.imena.ua
+Registrar Address: Internet Invest Ltd  Ukraine 01033 Kyiv Gaydara str., h 50, 4th floor
+Registrar Country: UA
+Registrar Fax: +380.442010100
+Name Server: mia.ns.cloudflare.com
+Name Server: oswald.ns.cloudflare.com
+>>> Last update of WHOIS database: 2023-03-01T19:36:02.375Z <<<
+
+TERMS OF USE: You are not authorized to access or query our WHOIS database through the use of electronic processes that are high-volume and automated.  This WHOIS database is provided by as a service to the internet community.
+
+The data is for information purposes only. We do not guarantee its accuracy. By submitting a WHOIS query, you agree to abide by the following terms of use: You agree that you may use this Data only for lawful purposes and that under no circumstances will you use this Data to: (1) allow, enable, or otherwise support the transmission of mass unsolicited, commercial advertising or solicitations via e-mail, telephone, or facsimile; or (2) enable high volume, automated, electronic processes that apply to UARNet, it's members (or UARNet or member computer systems). The compilation, repackaging, dissemination or other use of this Data is expressly prohibited.
+
+
+% REDIRECT END

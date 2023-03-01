@@ -969,16 +969,16 @@ class RegexUA(TLDParser):
     _ua_expressions = {
         TLDBaseKeys.DOMAIN_NAME: r"domain: *(.+)",
         TLDBaseKeys.STATUS: r"status: *(.+)",
-        TLDBaseKeys.REGISTRAR: r"(?<=Registrar:)[\s\W\w]*?organization-loc:(.*)",
+        TLDBaseKeys.REGISTRAR: r"(?:Registrar: |(?<=Registrar:)[\s\W\w]*?organization-loc: )(.*)",
         TLDBaseKeys.REGISTRANT_NAME: r"(?<=Registrant:)[\s\W\w]*?organization-loc:(.*)",
         TLDBaseKeys.REGISTRANT_COUNTRY: r"(?<=Registrant:)[\s\W\w]*?country-loc:(.*)",
         TLDBaseKeys.REGISTRANT_CITY: r"(?<=Registrant:)[\s\W\w]*?(?:address\-loc:\s+.*\n){2}address-loc:\s+(.*)\n",
         TLDBaseKeys.REGISTRANT_STATE: r"(?<=Registrant:)[\s\W\w]*?(?:address\-loc:\s+.*\n){1}address-loc:\s+(.*)\n",
         TLDBaseKeys.REGISTRANT_ADDRESS: r"(?<=Registrant:)[\s\W\w]*?address-loc:\s+(.*)\n",
         TLDBaseKeys.REGISTRANT_ZIPCODE: r"(?<=Registrant:)[\s\W\w]*?postal-code-loc:(.*)",
-        TLDBaseKeys.UPDATED: "modified: *(.+)",
-        TLDBaseKeys.CREATED: "created: (.+)",
-        TLDBaseKeys.EXPIRES: "expires: (.+)",
+        TLDBaseKeys.UPDATED: "(?:Updated Date: |modified: )(.+)",
+        TLDBaseKeys.CREATED: "(?:Creation Date: |created: )(.+)",
+        TLDBaseKeys.EXPIRES: "(?:Registry Expiry Date: |expires: )(.+)",
         TLDBaseKeys.NAME_SERVERS: "nserver: *(.+)",
     }
 

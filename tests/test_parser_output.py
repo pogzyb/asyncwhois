@@ -313,6 +313,26 @@ class TestTLDParsers(unittest.TestCase):
         self.assertEqual(len(parser.parser_output.get("name_servers")), 4)
         self.assertEqual(len(parser.parser_output.get("status")), 7)
 
+    def test_parse_ua1(self):
+        query_output = self.get_txt('ua1')
+        parser = DomainParser('ua')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        updated_date = parser.parser_output.get("updated")
+        expires_date = parser.parser_output.get("expires")
+        self.assertEqual(created_date.year, 2018)
+        self.assertEqual(updated_date.year, 2021)
+        self.assertEqual(expires_date.year, 2023)
+        self.assertEqual(created_date.month, 11)
+        self.assertEqual(updated_date.month, 10)
+        self.assertEqual(expires_date.month, 10)
+        self.assertEqual(created_date.day, 25)
+        self.assertEqual(updated_date.day, 17)
+        self.assertEqual(expires_date.day, 16)
+        # registrar
+        self.assertEqual(parser.parser_output.get("registrar"), "ua.imena")
+
     def test_parse_us(self):
         query_output = self.get_txt('us')
         parser = DomainParser('us')
