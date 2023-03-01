@@ -280,6 +280,39 @@ class TestTLDParsers(unittest.TestCase):
 
         self.assertEqual(len(parser.parser_output.get('status')), 1)
 
+    def test_parse_ua(self):
+        query_output = self.get_txt('ua')
+        parser = DomainParser('ua')
+        parser.parse(query_output)
+        # confirm dates
+        created_date = parser.parser_output.get("created")
+        updated_date = parser.parser_output.get("updated")
+        expires_date = parser.parser_output.get("expires")
+        self.assertEqual(created_date.year, 2002)
+        self.assertEqual(updated_date.year, 2022)
+        self.assertEqual(expires_date.year, 2023)
+        self.assertEqual(created_date.month, 12)
+        self.assertEqual(updated_date.month, 11)
+        self.assertEqual(expires_date.month, 12)
+        self.assertEqual(created_date.day, 4)
+        self.assertEqual(updated_date.day, 2)
+        self.assertEqual(expires_date.day, 4)
+        # geo
+        self.assertEqual(parser.parser_output.get("registrant_state"), "CA")
+        self.assertEqual(parser.parser_output.get("registrant_city"), "Mountain View")
+        self.assertEqual(parser.parser_output.get("registrant_country"), "US")
+        self.assertEqual(parser.parser_output.get("registrant_zipcode"), "94043")
+        self.assertEqual(parser.parser_output.get("registrant_address"), "1600 Amphitheatre Parkway")
+        # registrar
+        self.assertEqual(parser.parser_output.get("registrar"), "MarkMonitor Inc.")
+        # registrant
+        self.assertEqual(parser.parser_output.get("registrant_organization"), None)
+        self.assertEqual(parser.parser_output.get("registrant_name"), "Google LLC")
+        # misc
+        self.assertEqual(parser.parser_output.get("dnssec"), None)
+        self.assertEqual(len(parser.parser_output.get("name_servers")), 4)
+        self.assertEqual(len(parser.parser_output.get("status")), 7)
+
     def test_parse_us(self):
         query_output = self.get_txt('us')
         parser = DomainParser('us')

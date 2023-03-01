@@ -1,6 +1,6 @@
-import datetime
+from datetime import datetime
 import re
-from typing import Dict, Any
+from typing import Dict, Any, Union
 
 from .parse import BaseParser, TLDBaseKeys
 from .errors import NotFoundError
@@ -982,9 +982,55 @@ class RegexUA(TLDParser):
         TLDBaseKeys.NAME_SERVERS: "nserver: *(.+)",
     }
 
+    KNOWN_DATE_FORMATS = [
+        "%Y-%m-%d %H:%M:%S%z",
+   ]
+
     def __init__(self):
         super().__init__()
         self.update_reg_expressions(self._ua_expressions)
+
+    @staticmethod
+    def _fix_timezone(date_string: str) -> str:
+        """
+        Fix timezone format for datetime.strptime
+
+        :param date_string: date string
+        :return: fixed date string
+        
+        >>> RegexUA._fix_timezone("2023-02-17 14:22:06+02")
+        '2023-02-17 14:22:06+0200'
+        >>> 
+        >>> RegexUA._fix_timezone("2023-02-17 14:22:06+2")
+        '2023-02-17 14:22:06+0200'
+        >>> 
+        >>> RegexUA._fix_timezone("2023-02-17 14:22:06+0200")
+        '2023-02-17 14:22:06+0200'
+        >>> 
+
+        """
+        if "+" in date_string:
+            date_time, timezone = date_string.split("+")
+            if timezone.isdigit() and len(timezone) <= 2:
+                date_string = f"{date_time}+{int(timezone):02d}00"
+
+        return date_string
+
+    @staticmethod
+    def _parse_date(date_string: str) -> Union[datetime, str]:
+        date = TLDParser._parse_date(date_string)
+        if isinstance(date, datetime):
+            return date
+
+        date_string = RegexUA._fix_timezone(date_string)
+        for date_format in RegexUA.KNOWN_DATE_FORMATS:
+            try:
+                date = datetime.strptime(date_string, date_format)
+                return date
+            except ValueError:
+                pass
+
+        return date_string
 
 
 class RegexCN(TLDParser):
@@ -1383,7 +1429,7 @@ class RegexGG(TLDParser):
         )  # looks like 30th April 2003; need to remove day suffix
         if created_match and isinstance(created_match, str):
             date_string = re.sub(r"(\d)(st|nd|rd|th)", r"\1", created_match)
-            parsed_output[TLDBaseKeys.CREATED] = datetime.datetime.strptime(
+            parsed_output[TLDBaseKeys.CREATED] = datetime.strptime(
                 date_string, "%d %B %Y"
             )
         # handle multiline nameservers and statuses
@@ -1487,11 +1533,11 @@ class RegexML(TLDParser):
                     )
         date_format = "%m/%d/%Y"  # example: 05/28/2013
         if parsed_output.get(TLDBaseKeys.EXPIRES):
-            parsed_output[TLDBaseKeys.EXPIRES] = datetime.datetime.strptime(
+            parsed_output[TLDBaseKeys.EXPIRES] = datetime.strptime(
                 parsed_output.get(TLDBaseKeys.EXPIRES), date_format
             )
         if parsed_output.get(TLDBaseKeys.CREATED):
-            parsed_output[TLDBaseKeys.CREATED] = datetime.datetime.strptime(
+            parsed_output[TLDBaseKeys.CREATED] = datetime.strptime(
                 parsed_output.get(TLDBaseKeys.CREATED), date_format
             )
         return parsed_output
