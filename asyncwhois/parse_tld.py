@@ -667,7 +667,7 @@ class RegexMX(TLDParser):
         TLDBaseKeys.CREATED: r"Created On: *(.+)",
         TLDBaseKeys.UPDATED: r"Last Updated On: *(.+)",
         TLDBaseKeys.EXPIRES: r"Expiration Date: *(.+)",
-        TLDBaseKeys.REGISTRAR: "Registrar:\s*(.+)",
+        TLDBaseKeys.REGISTRAR: r"Registrar:\s*(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"(?<=Registrant)[\s\S]*?Name:(.*)",
         TLDBaseKeys.REGISTRANT_CITY: r"(?<=Registrant)[\s\S]*?City:(.*)",
         TLDBaseKeys.REGISTRANT_STATE: r"(?<=Registrant)[\s\S]*?State:(.*)",
