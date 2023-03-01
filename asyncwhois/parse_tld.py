@@ -411,6 +411,7 @@ class RegexJP(TLDParser):
     _jp_expressions = {
         TLDBaseKeys.DOMAIN_NAME: r"\[Domain Name\] *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"\[Registrant\] *(.+)",
+        TLDBaseKeys.REGISTRANT_ORGANIZATION: r"\[Organization\] *(.+)",
         TLDBaseKeys.CREATED: r"\[登録年月日\] *(.+)",
         TLDBaseKeys.EXPIRES: r"\[(?:有効限|有効期限)\]*(.+)",
         TLDBaseKeys.STATUS: r"\[状態\] *(.+)",
@@ -420,11 +421,21 @@ class RegexJP(TLDParser):
 
     def __init__(self):
         super().__init__()
-
         self.update_reg_expressions(self._jp_expressions)
 
     def parse(self, blob: str) -> Dict[str, Any]:
         parsed_output = super().parse(blob)
+        # check for domain in japanese
+        if not parsed_output.get(TLDBaseKeys.DOMAIN_NAME):
+            parsed_output[TLDBaseKeys.DOMAIN_NAME] = self.find_match(
+                r"\[ドメイン名\] *(.+)", blob
+            )
+        # check for name servers in japanese
+        if not parsed_output.get(TLDBaseKeys.NAME_SERVERS):
+            parsed_output[TLDBaseKeys.NAME_SERVERS] = self.find_match(
+                r"\[ネームサーバ\] *(.+)", blob, many=True
+            )
+        # check for address
         address_match = re.search(
             r"\[Postal Address\]([^\[|.]+)\[\w+\](.+)", blob, re.DOTALL
         )
