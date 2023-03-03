@@ -995,7 +995,7 @@ class RegexUA(TLDParser):
 
     KNOWN_DATE_FORMATS = [
         "%Y-%m-%d %H:%M:%S%z",
-   ]
+    ]
 
     def __init__(self):
         super().__init__()
@@ -1008,16 +1008,16 @@ class RegexUA(TLDParser):
 
         :param date_string: date string
         :return: fixed date string
-        
+
         >>> RegexUA._fix_timezone("2023-02-17 14:22:06+02")
         '2023-02-17 14:22:06+0200'
-        >>> 
+        >>>
         >>> RegexUA._fix_timezone("2023-02-17 14:22:06+2")
         '2023-02-17 14:22:06+0200'
-        >>> 
+        >>>
         >>> RegexUA._fix_timezone("2023-02-17 14:22:06+0200")
         '2023-02-17 14:22:06+0200'
-        >>> 
+        >>>
 
         """
         if "+" in date_string:

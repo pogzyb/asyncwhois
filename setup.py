@@ -22,7 +22,7 @@ setuptools.setup(
     version=get_version('asyncwhois/__init__.py'),
     author="Joseph Obarzanek",
     author_email="pogzyb@umich.edu",
-    description="asyncio-compatible Python module for WHOIS and RDAP queries.",
+    description="asyncio-friendly Python module for WHOIS and RDAP queries.",
     long_description=long_description,
     license="MIT",
     install_requires=[
