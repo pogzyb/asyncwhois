@@ -14,6 +14,7 @@ class TLDParser(BaseParser):
         TLDBaseKeys.UPDATED: r"Updated Date: *(.+)",
         TLDBaseKeys.EXPIRES: r"Expir\w+\sDate: *(.+)",
         TLDBaseKeys.REGISTRAR: r"Registrar: *(.+)",
+        TLDBaseKeys.REGISTRAR_IANA_ID: r"Registrar IANA ID: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"Registrant Name: *(.+)",
         TLDBaseKeys.REGISTRANT_ORGANIZATION: r"Registrant Organization: *(.+)",
         TLDBaseKeys.REGISTRANT_ADDRESS: r"Registrant Street: *(.+)",
