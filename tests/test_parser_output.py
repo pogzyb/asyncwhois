@@ -34,6 +34,7 @@ class TestTLDParsers(unittest.TestCase):
         self.assertEqual(parser.parser_output.get("registrant_country"), "US")
         # registrar
         self.assertEqual(parser.parser_output.get("registrar"), "MarkMonitor, Inc.")
+        self.assertEqual(parser.parser_output.get("registrar_iana_id"), "292")
         # registrant
         self.assertEqual(parser.parser_output.get("registrant_organization"), "Google LLC")
         # misc

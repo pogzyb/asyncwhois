@@ -58,6 +58,7 @@ class TLDBaseKeys(str, Enum):
     EXPIRES = "expires"
 
     REGISTRAR = "registrar"
+    REGISTRAR_IANA_ID = "registrar_iana_id"
 
     REGISTRANT_NAME = "registrant_name"
     REGISTRANT_ORGANIZATION = "registrant_organization"
