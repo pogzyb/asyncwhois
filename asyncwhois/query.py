@@ -64,7 +64,7 @@ class Query:
             if proxy_url:
                 proxy = Proxy.from_url(proxy_url)
                 # proxy is a standard python socket in blocking mode
-                s = proxy.connect(*address)
+                s = proxy.connect(*address, timeout=self.timeout)
             else:
                 # otherwise use socket
                 s = socket.create_connection(address, self.timeout)
@@ -83,7 +83,7 @@ class Query:
         if proxy_url:
             proxy = AsyncProxy.from_url(proxy_url)
             # sock is a standard python socket in blocking mode
-            sock = await proxy.connect(*address)
+            sock = await proxy.connect(*address, timeout=self.timeout)
             # pass it to asyncio
             s = asyncio.open_connection(host=None, port=None, sock=sock)
         else:
@@ -158,7 +158,7 @@ class Query:
             # socket reader and writer
             reader, writer = r_and_w
             # submit domain and receive raw query output
-            query_output = await self._aio_send_and_recv(reader, writer, data)
+            query_output = await asyncio.wait_for(self._aio_send_and_recv(reader, writer, data), self.timeout)
             if not self.authoritative_only:
                 # concatenate query outputs
                 self.query_chain += query_output
