@@ -19,7 +19,7 @@ __all__ = [
     "whois_ipv4",
     "whois_ipv6",
 ]
-__version__ = "1.0.4"
+__version__ = "1.0.5"
 
 
 def whois_domain(
