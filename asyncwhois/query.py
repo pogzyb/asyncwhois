@@ -144,9 +144,13 @@ class Query:
             whois_server = whois_server.lower()
             if whois_server and whois_server != server:
                 # recursive call to find more authoritative server
-                query_output = self._do_query(
+                authoritative_output = self._do_query(
                     whois_server, data, self.whois_server_regex
                 )
+                # check for empty responses; only update query_output if
+                # there was a complete response from the authoritative server
+                if authoritative_output:
+                    query_output = authoritative_output
         # return the WHOIS query output
         return query_output
 
@@ -167,9 +171,13 @@ class Query:
             whois_server = whois_server.lower()
             if whois_server and whois_server != server:
                 # recursive call to find the authoritative server
-                query_output = await self._aio_do_query(
+                authoritative_output = await self._aio_do_query(
                     whois_server, data, self.whois_server_regex
                 )
+                # check for empty responses; only update query_output if
+                # there was a complete response from the authoritative server
+                if authoritative_output:
+                    query_output = authoritative_output
         # return the WHOIS query output
         return query_output
 
