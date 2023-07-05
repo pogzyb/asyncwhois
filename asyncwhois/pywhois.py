@@ -128,9 +128,13 @@ class DomainLookup(Lookup):
         for a_key, b_key in [
             (TLDBaseKeys.EXPIRES, "expires_date"),
             (TLDBaseKeys.UPDATED, "updated_date"),
-            (TLDBaseKeys.CREATED, "created_date"),
+            (TLDBaseKeys.CREATED, "created_date")
         ]:
             whois_dict[a_key] = whois_dict.pop(b_key)
+        # reconcile abuse keys, but don't remove existing key as to not cause issues
+        # with apps currently depending on them. todo: re-standardize keys in next major release
+        whois_dict[TLDBaseKeys.REGISTRAR_ABUSE_EMAIL] = whois_dict["abuse_email"]
+        whois_dict[TLDBaseKeys.REGISTRAR_ABUSE_PHONE] = whois_dict["abuse_phone"]
         _self._parser = whois_dict
         return _self
 
@@ -161,6 +165,10 @@ class DomainLookup(Lookup):
             (TLDBaseKeys.CREATED, "created_date"),
         ]:
             whois_dict[a_key] = whois_dict.pop(b_key)
+        # reconcile abuse keys, but don't remove existing key as to not cause issues
+        # with apps currently depending on them. todo: re-standardize keys in next major release
+        whois_dict[TLDBaseKeys.REGISTRAR_ABUSE_EMAIL] = whois_dict["abuse_email"]
+        whois_dict[TLDBaseKeys.REGISTRAR_ABUSE_PHONE] = whois_dict["abuse_phone"]
         _self._parser = whois_dict
         return _self
 

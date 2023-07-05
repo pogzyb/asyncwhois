@@ -306,6 +306,8 @@ class TestTLDParsers(unittest.TestCase):
         self.assertEqual(parser.parser_output.get("registrant_address"), "1600 Amphitheatre Parkway")
         # registrar
         self.assertEqual(parser.parser_output.get("registrar"), "MarkMonitor Inc.")
+        self.assertEqual(parser.parser_output.get("registrar_url"), "http://markmonitor.com")
+        self.assertEqual(parser.parser_output.get("registrar_abuse_email"), "abusecomplaints@markmonitor.com")
         # registrant
         self.assertEqual(parser.parser_output.get("registrant_organization"), None)
         self.assertEqual(parser.parser_output.get("registrant_name"), "Google LLC")
@@ -522,6 +524,7 @@ class TestTLDParsers(unittest.TestCase):
         self.assertEqual(expires_date.day, 4)
         # registrant
         self.assertEqual(parser.parser_output.get("registrant_organization"), "Google LLC")
+        self.assertEqual(parser.parser_output.get("admin_email"), "https://www.nic.ru/whois")
 
     def test_parser_edu(self):
         query_output = self.get_txt('edu')
@@ -991,6 +994,7 @@ class TestTLDParsers(unittest.TestCase):
         self.assertEqual(updated_date.day, 30)
         # registrar
         self.assertEqual(parser.parser_output.get("registrar"), "MarkMonitor Inc.")
+        self.assertEqual(parser.parser_output.get("registrar"), "MarkMonitor Inc.")
         self.assertEqual(len(parser.parser_output.get("name_servers")), 4)
         self.assertEqual(len(parser.parser_output.get("status")), 1)
 
@@ -1188,6 +1192,7 @@ class TestTLDParsers(unittest.TestCase):
         self.assertEqual(parser.parser_output.get("registrant_address"), "Kreuzstr.60, 40210, Duesseldorf")
         # registrar
         self.assertEqual(parser.parser_output.get("registrar"), "xTom")
+        self.assertEqual(parser.parser_output.get("registrar_url"), "https://xtom.com/")
         # misc
         self.assertEqual(len(parser.parser_output.get("name_servers")), 2)
         self.assertEqual(len(parser.parser_output.get("status")), 1)
