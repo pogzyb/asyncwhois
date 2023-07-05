@@ -59,6 +59,9 @@ class TLDBaseKeys(str, Enum):
 
     REGISTRAR = "registrar"
     REGISTRAR_IANA_ID = "registrar_iana_id"
+    REGISTRAR_URL = "registrar_url"
+    REGISTRAR_ABUSE_EMAIL = "registrar_abuse_email"
+    REGISTRAR_ABUSE_PHONE = "registrar_abuse_phone"
 
     REGISTRANT_NAME = "registrant_name"
     REGISTRANT_ORGANIZATION = "registrant_organization"
