@@ -15,6 +15,9 @@ class TLDParser(BaseParser):
         TLDBaseKeys.EXPIRES: r"Expir\w+\sDate: *(.+)",
         TLDBaseKeys.REGISTRAR: r"Registrar: *(.+)",
         TLDBaseKeys.REGISTRAR_IANA_ID: r"Registrar IANA ID: *(.+)",
+        TLDBaseKeys.REGISTRAR_URL: r"Registrar URL: *(.+)",
+        TLDBaseKeys.REGISTRAR_ABUSE_EMAIL: r"Registrar Abuse Contact Email: *(.+)",
+        TLDBaseKeys.REGISTRAR_ABUSE_PHONE: r"Registrar Abuse Contact Phone: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"Registrant Name: *(.+)",
         TLDBaseKeys.REGISTRANT_ORGANIZATION: r"Registrant Organization: *(.+)",
         TLDBaseKeys.REGISTRANT_ADDRESS: r"Registrant Street: *(.+)",
@@ -116,7 +119,6 @@ class DomainParser:
             "by": RegexBY(),
             "cc": RegexCC(),
             "ch": RegexCH(),
-            "ci": RegexCI(),
             "cl": RegexCL(),
             "cn": RegexCN(),
             "cr": RegexCR(),
@@ -193,6 +195,7 @@ class RegexRU(TLDParser):
         TLDBaseKeys.REGISTRANT_ORGANIZATION: r"org: *(.+)",
         TLDBaseKeys.STATUS: r"state: *(.+)",
         TLDBaseKeys.NAME_SERVERS: r"nserver: *(.+)",
+        TLDBaseKeys.ADMIN_EMAIL: r"admin-contact: *(.+)"
     }
 
     def __init__(self):
@@ -248,6 +251,7 @@ class RegexRO(TLDParser):
         TLDBaseKeys.CREATED: r"Registered On: *(.+)",
         TLDBaseKeys.EXPIRES: r"Expires On: *(.+)",
         TLDBaseKeys.NAME_SERVERS: r"Nameserver: *(.+)",
+        TLDBaseKeys.REGISTRAR_URL: r"Referral URL: *(.+)"
     }
 
     def __init__(self):
@@ -259,6 +263,7 @@ class RegexPE(TLDParser):
     _pe_expressions = {
         TLDBaseKeys.REGISTRANT_NAME: r"Registrant name: *(.+)",
         TLDBaseKeys.REGISTRAR: r"Sponsoring Registrar: *(.+)",
+        TLDBaseKeys.ADMIN_EMAIL: r"Admin Email: *(.+)",
         TLDBaseKeys.DNSSEC: r"DNSSEC: *(.+)",
         TLDBaseKeys.NAME_SERVERS: r"Name server: *(.+)",
         TLDBaseKeys.STATUS: r"Domain Status: *(.+)",
@@ -276,7 +281,9 @@ class RegexEE(TLDParser):
         TLDBaseKeys.CREATED: r"registered: *([^\n\r]+)",
         TLDBaseKeys.UPDATED: r"changed: *([^\n\r]+)",
         TLDBaseKeys.EXPIRES: r"expire: *([^\n\r]+)",
-        TLDBaseKeys.REGISTRAR: r"Registrar: *[\n\r]+\s*name: *([^\n\r]+)",
+        TLDBaseKeys.REGISTRAR: r"(?<=Registrar)[\s\S]*?name: *(.+)",
+        TLDBaseKeys.REGISTRAR_URL: r"(?<=Registrar)[\s\S]*?phone: *(.+)",
+        TLDBaseKeys.REGISTRAR_ABUSE_PHONE: r"Registrar: *[\n\r]+\s*name:*.+[\n\r]+\s*url:.+[\n\r]+\s*phone: *(.+)",
         TLDBaseKeys.NAME_SERVERS: r"nserver: *(.*)",
         TLDBaseKeys.REGISTRANT_COUNTRY: r"country: *(.+)",
     }
@@ -293,6 +300,7 @@ class RegexFR(TLDParser):
         TLDBaseKeys.UPDATED: r"last-update: (\d{4}-\d{2}-\d{2})",
         TLDBaseKeys.EXPIRES: r"Expiry Date: (\d{4}-\d{2}-\d{2})",
         TLDBaseKeys.NAME_SERVERS: r"nserver: *(.+)",
+        TLDBaseKeys.REGISTRAR: r"registrar: *(.+)"
     }
 
     def __init__(self):
@@ -321,6 +329,8 @@ class RegexKR(TLDParser):
         TLDBaseKeys.UPDATED: r"Last Updated Date *: (\d{4}\.\s\d{2}\.\s\d{2}\.)",
         TLDBaseKeys.EXPIRES: r"Expiration Date *: (\d{4}\.\s\d{2}\.\s\d{2}\.)",
         TLDBaseKeys.REGISTRANT_NAME: r"Registrant *: (.+)",
+        TLDBaseKeys.ADMIN_EMAIL: r"Administrative Contact(AC) *: *(.+)",
+        TLDBaseKeys.ADMIN_NAME: r"AC E-Mail *: *(.+)",
         TLDBaseKeys.DNSSEC: r"DNSSEC *: ([a-zA-Z]+)",
         TLDBaseKeys.REGISTRANT_ZIPCODE: r"Registrant Zip Code: *: (.+)",
         TLDBaseKeys.REGISTRANT_ADDRESS: r"Registrant Address *: (.+)",
@@ -340,6 +350,7 @@ class RegexEU(TLDParser):
 
     _eu_expressions = {
         TLDBaseKeys.REGISTRAR: r"Registrar:\n.*Name: (.+)",
+        TLDBaseKeys.REGISTRAR_URL: r"Registrar:\n.*Name:.+\n.*Website: *(.+)",
     }
 
     def __init__(self):
@@ -382,6 +393,7 @@ class RegexUK(TLDParser):
         TLDBaseKeys.UPDATED: r"Last updated:\s*(\d{2}-\w{3}-\d{4})",
         TLDBaseKeys.EXPIRES: r"Expiry date:\s*(\d{2}-\w{3}-\d{4})",
         TLDBaseKeys.REGISTRAR: r"Registrar:\s*(.+)",
+        TLDBaseKeys.REGISTRAR_URL: r"(?<=Registrar)[\s\S]*?URL: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"Registrant:\n *(.+)",
         TLDBaseKeys.STATUS: r"Registration status:\n *(.+)",
     }
@@ -466,11 +478,8 @@ class RegexAT(TLDParser):
         TLDBaseKeys.REGISTRAR: r"registrar: *(.+)",
         TLDBaseKeys.UPDATED: r"changed on: *(.+)",
         TLDBaseKeys.NAME_SERVERS: r"nserver: *(.+)",
-        TLDBaseKeys.REGISTRANT_NAME: r"",
-        TLDBaseKeys.REGISTRANT_ADDRESS: r"",
-        TLDBaseKeys.REGISTRANT_ZIPCODE: r"",
-        TLDBaseKeys.REGISTRANT_CITY: r"",
-        TLDBaseKeys.REGISTRANT_COUNTRY: r"",
+        TLDBaseKeys.REGISTRANT_NAME: r"registrant: *(.+)",
+        TLDBaseKeys.TECH_NAME: r"tech-c: *(.+)",
     }
 
     _contact_fields = {
@@ -522,6 +531,7 @@ class RegexBE(TLDParser):
         TLDBaseKeys.DOMAIN_NAME: r"Domain: *(.+)",
         TLDBaseKeys.CREATED: r"Registered: *(.+)",
         TLDBaseKeys.REGISTRAR: r"Registrar:\n.+Name: *(.+)",
+        TLDBaseKeys.REGISTRAR_URL: r"Registrar:\n.+Name:.+\n.+Website:*(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"Registrant:\n *(.+)",
     }
 
@@ -599,6 +609,9 @@ class RegexID(TLDParser):
         TLDBaseKeys.UPDATED: r"Last Updated On:(.+)",
         TLDBaseKeys.DNSSEC: r"DNSSEC:(.+)",
         TLDBaseKeys.REGISTRAR: r"Sponsoring Registrar Organization:(.+)",
+        TLDBaseKeys.REGISTRAR_ABUSE_PHONE: r"Sponsoring Registrar Phone: *(.+)",
+        TLDBaseKeys.REGISTRAR_ABUSE_EMAIL: r"Sponsoring Registrar Email: *(.+)",
+        TLDBaseKeys.REGISTRAR_URL: r"Sponsoring Registrar URL: *(.+)",
         TLDBaseKeys.STATUS: r"Status:(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"Registrant Name:(.+)",
         TLDBaseKeys.REGISTRANT_ADDRESS: r"Registrant Street1:(.+)",
@@ -635,7 +648,8 @@ class RegexIT(TLDParser):
         TLDBaseKeys.STATUS: r"Status: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"(?<=Registrant)[\s\S]*?Organization:(.*)",
         TLDBaseKeys.REGISTRANT_ADDRESS: r"(?<=Registrant)[\s\S]*?Address:(.*)",
-        TLDBaseKeys.REGISTRAR: r"(?<=Registrar)[\s\S]*?Name:(.*)",
+        TLDBaseKeys.REGISTRAR: r"(?<=Registrar)[\s\S]*?Name: *(.*)",
+        TLDBaseKeys.REGISTRAR_URL: r"(?<=Registrar)[\s\S]*?Web: *(.*)",
     }
 
     def __init__(self):
@@ -664,6 +678,8 @@ class RegexSK(TLDParser):
         TLDBaseKeys.REGISTRANT_NAME: r"Name:\s*(.+)",
         TLDBaseKeys.REGISTRANT_ADDRESS: r"Street:\s*(.+)",
         TLDBaseKeys.REGISTRAR: r"(?<=Registrar)[\s\S]*?Organization:(.*)",
+        TLDBaseKeys.REGISTRAR_ABUSE_EMAIL: r"(?<=Registrar)[\s\S]*?Email: *(.*)",
+        TLDBaseKeys.REGISTRAR_ABUSE_PHONE: r"(?<=Registrar)[\s\S]*?Phone: *(.*)",
         TLDBaseKeys.REGISTRANT_CITY: r"(?<=^Contact)[\s\S]*?City:(.*)",
         TLDBaseKeys.REGISTRANT_ZIPCODE: r"(?<=^Contact)[\s\S]*?Postal Code:(.*)",
         TLDBaseKeys.REGISTRANT_COUNTRY: r"(?<=^Contact)[\s\S]*?Country Code:(.*)",
@@ -680,6 +696,7 @@ class RegexMX(TLDParser):
         TLDBaseKeys.UPDATED: r"Last Updated On: *(.+)",
         TLDBaseKeys.EXPIRES: r"Expiration Date: *(.+)",
         TLDBaseKeys.REGISTRAR: r"Registrar:\s*(.+)",
+        TLDBaseKeys.REGISTRAR_URL: r"URL: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"(?<=Registrant)[\s\S]*?Name:(.*)",
         TLDBaseKeys.REGISTRANT_CITY: r"(?<=Registrant)[\s\S]*?City:(.*)",
         TLDBaseKeys.REGISTRANT_STATE: r"(?<=Registrant)[\s\S]*?State:(.*)",
@@ -696,6 +713,7 @@ class RegexTW(TLDParser):
         TLDBaseKeys.CREATED: r"Record created on (.+) ",
         TLDBaseKeys.EXPIRES: r"Record expires on (.+) ",
         TLDBaseKeys.REGISTRAR: r"Registration Service Provider: *(.+)",
+        TLDBaseKeys.REGISTRAR_URL: r"Registration Service URL: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"(?<=Registrant:)\s+(.*)",
         TLDBaseKeys.REGISTRANT_CITY: r"(?<=Registrant:)\s*(?:.*\n){5}\s+(.*),",
         TLDBaseKeys.REGISTRANT_ADDRESS: r"(?<=Registrant:)\s*(?:.*\n){4}\s+(.*)",
@@ -889,6 +907,8 @@ class RegexLU(TLDParser):
         TLDBaseKeys.NAME_SERVERS: r"nserver: *(.+)",
         TLDBaseKeys.STATUS: r"domaintype: *(.+)",
         TLDBaseKeys.REGISTRAR: r"registrar-name: *(.+)",
+        TLDBaseKeys.REGISTRAR_ABUSE_EMAIL: r"registrar-email: *(.+)",
+        TLDBaseKeys.REGISTRAR_URL: r"registrar-url: *(.+)",
         TLDBaseKeys.REGISTRANT_ORGANIZATION: r"org-name: *(.+)",
         TLDBaseKeys.REGISTRANT_ADDRESS: r"org-address: *(.+)",
         TLDBaseKeys.REGISTRANT_ZIPCODE: r"org-zipcode:*(.+)",
@@ -962,6 +982,8 @@ class RegexHK(TLDParser):
         TLDBaseKeys.STATUS: r"Domain Status: *(.+)",
         TLDBaseKeys.DNSSEC: r"DNSSEC: *(.+)",
         TLDBaseKeys.REGISTRAR: r"Registrar Name: *(.+)",
+        TLDBaseKeys.REGISTRAR_ABUSE_EMAIL: r"Registrar Contact Information: *(.+)",
+        TLDBaseKeys.REGISTRAR_ABUSE_PHONE: r"Registrar Contact Information: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"Registrant Contact Information:\s*Company English Name.*:(.+)",
         TLDBaseKeys.REGISTRANT_ADDRESS: r"(?<=Registrant Contact Information:)[\s\S]*?Address: (.*)",
         TLDBaseKeys.REGISTRANT_COUNTRY: r"[Registrant Contact Information\w\W]+Country: ([\S\ ]+)",
@@ -982,6 +1004,9 @@ class RegexUA(TLDParser):
         TLDBaseKeys.DOMAIN_NAME: r"domain: *(.+)",
         TLDBaseKeys.STATUS: r"status: *(.+)",
         TLDBaseKeys.REGISTRAR: r"(?:Registrar: |(?<=Registrar:)[\s\W\w]*?organization-loc: )(.*)",
+        TLDBaseKeys.REGISTRAR_URL: r"(?<=Registrar)[\s\S]*?url: *(.+)",
+        TLDBaseKeys.REGISTRAR_ABUSE_PHONE: r"(?<=Registrar)[\s\S]*?abuse-phone: *(.+)",
+        TLDBaseKeys.REGISTRAR_ABUSE_EMAIL: r"(?<=Registrar)[\s\S]*?abuse-email: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"(?<=Registrant:)[\s\W\w]*?organization-loc:(.*)",
         TLDBaseKeys.REGISTRANT_COUNTRY: r"(?<=Registrant:)[\s\W\w]*?country-loc:(.*)",
         TLDBaseKeys.REGISTRANT_CITY: r"(?<=Registrant:)[\s\W\w]*?(?:address\-loc:\s+.*\n){2}address-loc:\s+(.*)\n",
@@ -1051,6 +1076,7 @@ class RegexCN(TLDParser):
         TLDBaseKeys.CREATED: r"Registration Time: *(.+)",
         TLDBaseKeys.EXPIRES: r"Expiration Time: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"Registrant: *(.+)",
+        TLDBaseKeys.REGISTRANT_EMAIL: r"Registrant Contact Email: *(.+)",
     }
 
     def __init__(self):
@@ -1079,6 +1105,7 @@ class RegexBY(TLDParser):
         TLDBaseKeys.DOMAIN_NAME: r"Domain Name: *(.+)",
         TLDBaseKeys.REGISTRAR: r"Registrar: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"Person: *(.+)",
+        TLDBaseKeys.REGISTRANT_EMAIL: r"Email: *(.+)",
         TLDBaseKeys.REGISTRANT_ORGANIZATION: r"Org: *(.+)",
         TLDBaseKeys.REGISTRANT_COUNTRY: r"Country: *(.+)",
         TLDBaseKeys.REGISTRANT_ADDRESS: r"Address: *(.+)",
@@ -1137,7 +1164,11 @@ class RegexAE(TLDParser):
         TLDBaseKeys.STATUS: r"Status: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"Registrant Contact Name: *(.+)",
         TLDBaseKeys.REGISTRANT_ORGANIZATION: r"Registrant Contact Organisation: *(.+)",
+        TLDBaseKeys.REGISTRANT_EMAIL: r"Registrant Contact Email: *(.+)",
         TLDBaseKeys.REGISTRAR: r"Registrar Name: *(.+)",
+        TLDBaseKeys.TECH_NAME: r"Tech Contact Name: *(.+)",
+        TLDBaseKeys.TECH_EMAIL: r"Tech Contact Email: *(.+)",
+        TLDBaseKeys.TECH_ORGANIZATION: r"Tech Contact Organisation: *(.+)",
     }
 
     def __init__(self):
@@ -1148,6 +1179,7 @@ class RegexAE(TLDParser):
 class RegexSI(TLDParser):
     _si_expressions = {
         TLDBaseKeys.REGISTRAR: r"registrar: *(.+)",
+        TLDBaseKeys.REGISTRAR_URL: r"registrar-url: *(.+)",
         TLDBaseKeys.NAME_SERVERS: r"nameserver: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"registrant: *(.+)",
         TLDBaseKeys.CREATED: r"created: *(.+)",
@@ -1386,7 +1418,10 @@ class RegexGQ(TLDParser):
 
 
 class RegexNL(TLDParser):
-    _nl_expressions = {TLDBaseKeys.REGISTRAR: r"Registrar:\n(.+)"}
+    _nl_expressions = {
+        TLDBaseKeys.REGISTRAR: r"Registrar:\n(.+)",
+        TLDBaseKeys.REGISTRAR_ABUSE_EMAIL: r"Abuse Contact:\n(.+)"
+    }
 
     def __init__(self):
         super().__init__()
@@ -1457,6 +1492,7 @@ class RegexGG(TLDParser):
 class RegexAW(TLDParser):
     _aw_expressions = {
         TLDBaseKeys.REGISTRAR: r"Registrar:\n*(.+)",
+        TLDBaseKeys.REGISTRAR_ABUSE_EMAIL: r"Abuse Contact:\n*(.+)"
     }
 
     def __init__(self):
@@ -1475,6 +1511,7 @@ class RegexAX(TLDParser):
     _ax_expressions = {
         TLDBaseKeys.DOMAIN_NAME: r"domain\.+: *(.+)",
         TLDBaseKeys.REGISTRAR: r"registrar\.+: *(.+)",
+        TLDBaseKeys.REGISTRAR_URL: r"www\.+: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"name\.+: *(.+)",
         TLDBaseKeys.REGISTRANT_COUNTRY: r"country\.+: *(.+)",
         TLDBaseKeys.CREATED: r"created\.+: *(.+)",
