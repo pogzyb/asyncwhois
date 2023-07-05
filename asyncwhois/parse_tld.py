@@ -282,8 +282,8 @@ class RegexEE(TLDParser):
         TLDBaseKeys.UPDATED: r"changed: *([^\n\r]+)",
         TLDBaseKeys.EXPIRES: r"expire: *([^\n\r]+)",
         TLDBaseKeys.REGISTRAR: r"(?<=Registrar)[\s\S]*?name: *(.+)",
-        TLDBaseKeys.REGISTRAR_URL: r"(?<=Registrar)[\s\S]*?phone: *(.+)",
-        TLDBaseKeys.REGISTRAR_ABUSE_PHONE: r"Registrar: *[\n\r]+\s*name:*.+[\n\r]+\s*url:.+[\n\r]+\s*phone: *(.+)",
+        TLDBaseKeys.REGISTRAR_URL: r"(?<=Registrar)[\s\S]*?url: *(.+)",
+        TLDBaseKeys.REGISTRAR_ABUSE_PHONE: r"(?<=Registrar)[\s\S]*?phone: *(.+)",
         TLDBaseKeys.NAME_SERVERS: r"nserver: *(.*)",
         TLDBaseKeys.REGISTRANT_COUNTRY: r"country: *(.+)",
     }
@@ -476,7 +476,7 @@ class RegexAT(TLDParser):
     _at_expressions = {
         TLDBaseKeys.DOMAIN_NAME: r"domain: *(.+)",
         TLDBaseKeys.REGISTRAR: r"registrar: *(.+)",
-        TLDBaseKeys.UPDATED: r"changed on: *(.+)",
+        TLDBaseKeys.UPDATED: r"changed: *(.+)",
         TLDBaseKeys.NAME_SERVERS: r"nserver: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"registrant: *(.+)",
         TLDBaseKeys.TECH_NAME: r"tech-c: *(.+)",
