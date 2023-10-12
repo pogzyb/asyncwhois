@@ -11,24 +11,24 @@ with open("README.md", "r", encoding="utf-8") as fh:
 def get_version(location: str) -> str:
     with open((base_dir / location).absolute().resolve()) as file:
         for line in file.readlines():
-            if line.startswith('__version__'):
-                return line.split(' = ')[-1].strip().replace("\"", "")
+            if line.startswith("__version__"):
+                return line.split(" = ")[-1].strip().replace('"', "")
         else:
-            raise RuntimeError('Unable to find version string.')
+            raise RuntimeError("Unable to find version string.")
 
 
 setuptools.setup(
     name="asyncwhois",
-    version=get_version('asyncwhois/__init__.py'),
+    version=get_version("asyncwhois/__init__.py"),
     author="Joseph Obarzanek",
     author_email="pogzyb@umich.edu",
-    description="asyncio-friendly Python module for WHOIS and RDAP queries.",
+    description="Python utility for querying and parsing WHOIS information for Domains, IPv4s, IPv6s, and AS numbers.",
     long_description=long_description,
     license="MIT",
     install_requires=[
         "python-socks[asyncio]>=2.0.2",
         "tldextract>=2.2.0",
-        "whodap>=0.1.4"
+        "whodap>=0.1.4",
     ],
     classifiers=[
         "Environment :: Web Environment",
@@ -45,7 +45,7 @@ setuptools.setup(
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Software Development",
         "Topic :: Security",
-        "Framework :: AsyncIO"
+        "Framework :: AsyncIO",
     ],
     url="https://github.com/pogzyb/asyncwhois",
     packages=["asyncwhois"],

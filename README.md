@@ -5,7 +5,7 @@
 [![codecov](https://codecov.io/gh/pogzyb/asyncwhois/branch/main/graph/badge.svg?token=Q4xtgezXGX)](https://codecov.io/gh/pogzyb/asyncwhois)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-`asyncwhois` | Async-friendly Python library for WHOIS and RDAP queries.
+`asyncwhois` | Python utility for querying and parsing WHOIS information for Domains, IPv4s, IPv6s, and AS numbers.
 
 #### Quickstart
 
