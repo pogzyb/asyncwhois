@@ -5,7 +5,6 @@ from .parse import BaseParser, IPBaseKeys
 
 
 class RIRParser(BaseParser):
-
     date_keys = (
         IPBaseKeys.ORG_REG_DATE,
         IPBaseKeys.ORG_UPDATED,
@@ -86,7 +85,6 @@ class ARINParser(RIRParser):  # default
 
 
 class AFRINICParser(RIRParser):
-
     _afrinic = {
         IPBaseKeys.NET_RANGE: r"inetnum: *(.+)",
         IPBaseKeys.NET_NAME: r"netname: *(.+)",
@@ -150,7 +148,6 @@ class AFRINICParser(RIRParser):
 
 
 class APNICParser(RIRParser):
-
     _apnic = {
         IPBaseKeys.NET_RANGE: r"inetnum: *(.+)",
         IPBaseKeys.NET_NAME: r"netname: *(.+)",
@@ -221,7 +218,6 @@ class APNICParser(RIRParser):
 
 
 class LACNICParser(RIRParser):
-
     _lacnic = {
         IPBaseKeys.NET_RANGE: r"inetnum: *(.+)",
         IPBaseKeys.CIDR: r"inetrev: *(.+)",
@@ -291,7 +287,6 @@ class LACNICParser(RIRParser):
 
 
 class RIPEParser(RIRParser):
-
     _ripe = {
         IPBaseKeys.NET_RANGE: r"inetnum: *(.+)",
         IPBaseKeys.NET_NAME: r"netname: *(.+)",
