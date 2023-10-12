@@ -7,7 +7,6 @@ from .errors import NotFoundError
 
 
 class TLDParser(BaseParser):
-
     base_expressions = {
         TLDBaseKeys.DOMAIN_NAME: r"Domain Name: *(.+)",
         TLDBaseKeys.CREATED: r"Creation Date: *(.+)",
@@ -26,6 +25,8 @@ class TLDParser(BaseParser):
         TLDBaseKeys.REGISTRANT_ZIPCODE: r"Registrant Postal Code: *(.+)",
         TLDBaseKeys.REGISTRANT_COUNTRY: r"Registrant Country: *(.+)",
         TLDBaseKeys.REGISTRANT_EMAIL: r"Registrant Email: *(.+)",
+        TLDBaseKeys.REGISTRANT_PHONE: r"Registrant Phone: *(.+)",
+        TLDBaseKeys.REGISTRANT_FAX: r"Registrant Fax: *(.+)",
         TLDBaseKeys.DNSSEC: r"DNSSEC: *([\S]+)",
         TLDBaseKeys.STATUS: r"Status: *(.+)",
         TLDBaseKeys.NAME_SERVERS: r"Name server: *(.+)",
@@ -72,7 +73,6 @@ class TLDParser(BaseParser):
 
 
 class DomainParser:
-
     _no_match_checks = [
         "no match",
         "not found",
@@ -105,81 +105,149 @@ class DomainParser:
         key/value pairs from the whois server output for the given `tld`.
 
         :param tld: the top level domain
-        :return: instance of TLDParser or a TLDParser sub-class
+        :return: instance of TLDParser or a TLDParser subclass
         """
-        tld_parsers = {
-            "ae": RegexAE(),
-            "ar": RegexAR(),
-            "at": RegexAT(),
-            "au": RegexAU(),
-            "aw": RegexAW(),
-            "ax": RegexAX(),
-            "be": RegexBE(),
-            "br": RegexBR(),
-            "by": RegexBY(),
-            "cc": RegexCC(),
-            "ch": RegexCH(),
-            "cl": RegexCL(),
-            "cn": RegexCN(),
-            "cr": RegexCR(),
-            "cz": RegexCZ(),
-            "de": RegexDE(),
-            "dk": RegexDK(),
-            "edu": RegexEDU(),
-            "ee": RegexEE(),
-            "eu": RegexEU(),
-            "fi": RegexFI(),
-            "fr": RegexFR(),
-            "ga": RegexGA(),
-            "ge": RegexGE(),
-            "gg": RegexGG(),
-            "gq": RegexGQ(),
-            "hk": RegexHK(),
-            "hr": RegexHR(),
-            "id": RegexID(),
-            "ie": RegexIE(),
-            "il": RegexIL(),
-            "ir": RegexIR(),
-            "is": RegexIS(),
-            "it": RegexIT(),
-            "jp": RegexJP(),
-            "kg": RegexKG(),
-            "kr": RegexKR(),
-            "kz": RegexKZ(),
-            "li": RegexLI(),
-            "lu": RegexLU(),
-            "lv": RegexLV(),
-            "ma": RegexMA(),
-            "ml": RegexML(),
-            "mx": RegexMX(),
-            "nl": RegexNL(),
-            "no": RegexNO(),
-            "nu": RegexNU(),
-            "nz": RegexNZ(),
-            "om": RegexOM(),
-            "pe": RegexPE(),
-            "pl": RegexPL(),
-            "pt": RegexPT(),
-            "rf": RegexRF(),
-            "ro": RegexRO(),
-            "ru": RegexRU(),
-            "sa": RegexSA(),
-            "se": RegexSE(),
-            "si": RegexSI(),
-            "sk": RegexSK(),
-            "su": RegexSU(),
-            "tk": RegexTK(),
-            "tr": RegexTR(),
-            "tw": RegexTW(),
-            "ua": RegexUA(),
-            "uk": RegexUK(),
-            "uz": RegexUZ(),
-            "ve": RegexVE(),
-        }
+        if tld == "ae":
+            return RegexAE()
+        elif tld == "ar":
+            return RegexAR()
+        elif tld == "at":
+            return RegexAT()
+        elif tld == "au":
+            return RegexAU()
+        elif tld == "aw":
+            return RegexAW()
+        elif tld == "ax":
+            return RegexAX()
+        elif tld == "be":
+            return RegexBE()
+        elif tld == "br":
+            return RegexBR()
+        elif tld == "by":
+            return RegexBY()
+        elif tld == "cc":
+            return RegexCC()
+        elif tld == "ch":
+            return RegexCH()
+        elif tld == "cl":
+            return RegexCL()
+        elif tld == "cn":
+            return RegexCN()
+        elif tld == "cr":
+            return RegexCR()
+        elif tld == "cz":
+            return RegexCZ()
+        elif tld == "de":
+            return RegexDE()
+        elif tld == "dk":
+            return RegexDK()
+        elif tld == "edu":
+            return RegexEDU()
+        elif tld == "ee":
+            return RegexEE()
+        elif tld == "eu":
+            return RegexEU()
+        elif tld == "fi":
+            return RegexFI()
+        elif tld == "fr":
+            return RegexFR()
+        elif tld == "ga":
+            return RegexGA()
+        elif tld == "ge":
+            return RegexGE()
+        elif tld == "gg":
+            return RegexGG()
+        elif tld == "gq":
+            return RegexGQ()
+        elif tld == "hk":
+            return RegexHK()
+        elif tld == "hr":
+            return RegexHR()
+        elif tld == "id":
+            return RegexID()
+        elif tld == "ie":
+            return RegexIE()
+        elif tld == "il":
+            return RegexIL()
+        elif tld == "ir":
+            return RegexIR()
+        elif tld == "is":
+            return RegexIS()
+        elif tld == "it":
+            return RegexIT()
+        elif tld == "jp":
+            return RegexJP()
+        elif tld == "kg":
+            return RegexKG()
+        elif tld == "kr":
+            return RegexKR()
+        elif tld == "kz":
+            return RegexKZ()
+        elif tld == "li":
+            return RegexLI()
+        elif tld == "lu":
+            return RegexLU()
+        elif tld == "lv":
+            return RegexLV()
+        elif tld == "ma":
+            return RegexMA()
+        elif tld == "ml":
+            return RegexML()
+        elif tld == "mx":
+            return RegexMX()
+        elif tld == "nl":
+            return RegexNL()
+        elif tld == "no":
+            return RegexNO()
+        elif tld == "ar":
+            return RegexAR()
+        elif tld == "nu":
+            return RegexNU()
+        elif tld == "nz":
+            return RegexNZ()
+        elif tld == "om":
+            return RegexOM()
+        elif tld == "pe":
+            return RegexPE()
+        elif tld == "pl":
+            return RegexPL()
+        elif tld == "pt":
+            return RegexPT()
+        elif tld == "rf":
+            return RegexRF()
+        elif tld == "ro":
+            return RegexRO()
+        elif tld == "ru":
+            return RegexRU()
+        elif tld == "sa":
+            return RegexSA()
+        elif tld == "se":
+            return RegexSE()
+        elif tld == "si":
+            return RegexSI()
+        elif tld == "sk":
+            return RegexSK()
+        elif tld == "su":
+            return RegexSU()
+        elif tld == "tk":
+            return RegexTK()
+        elif tld == "tr":
+            return RegexTR()
+        elif tld == "tw":
+            return RegexTW()
+        elif tld == "ua":
+            return RegexUA()
+        elif tld == "uk":
+            return RegexUK()
+        elif tld == "uz":
+            return RegexUZ()
+        elif tld == "ve":
+            return RegexVE()
+
         # The TLDParser can handle all "Generic" and some "Country-Code" TLDs.
         # If the parsed output of lookup is not what you expect or even incorrect,
-        # check for and then modify the existing Regex subclass or create a new one.
-        return tld_parsers.get(tld, TLDParser())
+        # check and modify the existing Regex subclass or create a new one.
+        return TLDParser()
 
 
 # ==============================
@@ -195,7 +263,7 @@ class RegexRU(TLDParser):
         TLDBaseKeys.REGISTRANT_ORGANIZATION: r"org: *(.+)",
         TLDBaseKeys.STATUS: r"state: *(.+)",
         TLDBaseKeys.NAME_SERVERS: r"nserver: *(.+)",
-        TLDBaseKeys.ADMIN_EMAIL: r"admin-contact: *(.+)"
+        TLDBaseKeys.ADMIN_EMAIL: r"admin-contact: *(.+)",
     }
 
     def __init__(self):
@@ -251,7 +319,7 @@ class RegexRO(TLDParser):
         TLDBaseKeys.CREATED: r"Registered On: *(.+)",
         TLDBaseKeys.EXPIRES: r"Expires On: *(.+)",
         TLDBaseKeys.NAME_SERVERS: r"Nameserver: *(.+)",
-        TLDBaseKeys.REGISTRAR_URL: r"Referral URL: *(.+)"
+        TLDBaseKeys.REGISTRAR_URL: r"Referral URL: *(.+)",
     }
 
     def __init__(self):
@@ -300,7 +368,7 @@ class RegexFR(TLDParser):
         TLDBaseKeys.UPDATED: r"last-update: (\d{4}-\d{2}-\d{2})",
         TLDBaseKeys.EXPIRES: r"Expiry Date: (\d{4}-\d{2}-\d{2})",
         TLDBaseKeys.NAME_SERVERS: r"nserver: *(.+)",
-        TLDBaseKeys.REGISTRAR: r"registrar: *(.+)"
+        TLDBaseKeys.REGISTRAR: r"registrar: *(.+)",
     }
 
     def __init__(self):
@@ -1420,7 +1488,7 @@ class RegexGQ(TLDParser):
 class RegexNL(TLDParser):
     _nl_expressions = {
         TLDBaseKeys.REGISTRAR: r"Registrar:\n(.+)",
-        TLDBaseKeys.REGISTRAR_ABUSE_EMAIL: r"Abuse Contact:\n(.+)"
+        TLDBaseKeys.REGISTRAR_ABUSE_EMAIL: r"Abuse Contact:\n(.+)",
     }
 
     def __init__(self):
@@ -1492,7 +1560,7 @@ class RegexGG(TLDParser):
 class RegexAW(TLDParser):
     _aw_expressions = {
         TLDBaseKeys.REGISTRAR: r"Registrar:\n*(.+)",
-        TLDBaseKeys.REGISTRAR_ABUSE_EMAIL: r"Abuse Contact:\n*(.+)"
+        TLDBaseKeys.REGISTRAR_ABUSE_EMAIL: r"Abuse Contact:\n*(.+)",
     }
 
     def __init__(self):
