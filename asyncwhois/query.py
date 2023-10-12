@@ -162,7 +162,9 @@ class Query:
             # socket reader and writer
             reader, writer = r_and_w
             # submit domain and receive raw query output
-            query_output = await asyncio.wait_for(self._aio_send_and_recv(reader, writer, data), self.timeout)
+            query_output = await asyncio.wait_for(
+                self._aio_send_and_recv(reader, writer, data), self.timeout
+            )
             if not self.authoritative_only:
                 # concatenate query outputs
                 self.query_chain += query_output

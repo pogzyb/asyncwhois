@@ -122,7 +122,6 @@ class TLDBaseKeys(str, Enum):
 
 
 class IPBaseKeys(str, Enum):
-
     NET_RANGE = "net_range"
     CIDR = "cidr"
     NET_NAME = "net_name"
@@ -173,8 +172,69 @@ class IPBaseKeys(str, Enum):
         return self.value
 
 
-class BaseParser:
+def convert_whodap_keys(parser_output: dict) -> dict:
+    # keys in both, but with mismatched names
+    conversions = [
+        (TLDBaseKeys.EXPIRES, "expires_date", False),
+        (TLDBaseKeys.UPDATED, "updated_date", False),
+        (TLDBaseKeys.CREATED, "created_date", False),
+        (TLDBaseKeys.NAME_SERVERS, "nameservers", False),
+        (TLDBaseKeys.REGISTRAR_ABUSE_EMAIL, "abuse_email", False),
+        (TLDBaseKeys.REGISTRAR_ABUSE_PHONE, "abuse_phone", False),
+        (TLDBaseKeys.TECH_EMAIL, "technical_email", False),
+        (TLDBaseKeys.TECH_ADDRESS, "technical_address", False),
+        (TLDBaseKeys.TECH_ORGANIZATION, "technical_organization", False),
+        (TLDBaseKeys.TECH_NAME, "technical_name", False),
+        (TLDBaseKeys.TECH_PHONE, "technical_phone", False),
+        (TLDBaseKeys.TECH_FAX, "technical_fax", False),
+        (TLDBaseKeys.REGISTRAR, "registrar_name", False),
+    ]
+    for asyncwhois_key, whodap_key, keep in conversions:
+        if keep:
+            parser_output[asyncwhois_key] = parser_output.get(whodap_key)
+        else:
+            parser_output[asyncwhois_key] = parser_output.pop(whodap_key)
+    # asyncwhois keys not in whodap
+    non_whodap_keys = [
+        TLDBaseKeys.ADMIN_ID,
+        TLDBaseKeys.ADMIN_CITY,
+        TLDBaseKeys.ADMIN_STATE,
+        TLDBaseKeys.ADMIN_COUNTRY,
+        TLDBaseKeys.ADMIN_ZIPCODE,
+        TLDBaseKeys.BILLING_ID,
+        TLDBaseKeys.BILLING_CITY,
+        TLDBaseKeys.BILLING_STATE,
+        TLDBaseKeys.BILLING_COUNTRY,
+        TLDBaseKeys.BILLING_ZIPCODE,
+        TLDBaseKeys.TECH_ID,
+        TLDBaseKeys.TECH_CITY,
+        TLDBaseKeys.TECH_STATE,
+        TLDBaseKeys.TECH_COUNTRY,
+        TLDBaseKeys.TECH_ZIPCODE,
+        TLDBaseKeys.REGISTRANT_CITY,
+        TLDBaseKeys.REGISTRANT_STATE,
+        TLDBaseKeys.REGISTRANT_COUNTRY,
+        TLDBaseKeys.REGISTRANT_ZIPCODE,
+        TLDBaseKeys.REGISTRAR,
+        TLDBaseKeys.REGISTRAR_IANA_ID,
+        TLDBaseKeys.REGISTRAR_URL,
+        TLDBaseKeys.DNSSEC,
+    ]
+    for key in non_whodap_keys:
+        parser_output[key] = None
+    # whodap keys not in asyncwhois
+    non_asyncwhois_keys = [
+        "registrar_email",
+        "registrar_phone",
+        "registrar_address",
+        "registrar_fax",
+    ]
+    for key in non_asyncwhois_keys:
+        parser_output.pop(key)
+    return parser_output
 
+
+class BaseParser:
     reg_expressions = {}
 
     date_keys = ()
