@@ -4,8 +4,9 @@ from typing import Union, Dict, Any, Optional
 import tldextract
 import whodap
 
+from .parse import convert_whodap_keys
 from .parse_rir import NumberParser
-from .parse_tld import DomainParser, TLDBaseKeys
+from .parse_tld import DomainParser
 from .query import DomainQuery, NumberQuery
 from .servers import CountryCodeTLD, GenericTLD, SponsoredTLD, IPv4Allocations
 
@@ -123,19 +124,8 @@ class DomainLookup(Lookup):
             httpx_client=httpx_client,
         )
         _self._query = response.to_dict()
-        # date keys are mismatched between projects; change these keys to the asyncwhois set.
         whois_dict = response.to_whois_dict()
-        for a_key, b_key in [
-            (TLDBaseKeys.EXPIRES, "expires_date"),
-            (TLDBaseKeys.UPDATED, "updated_date"),
-            (TLDBaseKeys.CREATED, "created_date")
-        ]:
-            whois_dict[a_key] = whois_dict.pop(b_key)
-        # reconcile abuse keys, but don't remove existing key as to not cause issues
-        # with apps currently depending on them. todo: re-standardize keys in next major release
-        whois_dict[TLDBaseKeys.REGISTRAR_ABUSE_EMAIL] = whois_dict["abuse_email"]
-        whois_dict[TLDBaseKeys.REGISTRAR_ABUSE_PHONE] = whois_dict["abuse_phone"]
-        _self._parser = whois_dict
+        _self._parser = convert_whodap_keys(whois_dict)
         return _self
 
     @classmethod
@@ -158,18 +148,7 @@ class DomainLookup(Lookup):
         )
         _self._query = response.to_dict()
         whois_dict = response.to_whois_dict()
-        # date keys are mismatched between projects; change these keys to the asyncwhois set.
-        for a_key, b_key in [
-            (TLDBaseKeys.EXPIRES, "expires_date"),
-            (TLDBaseKeys.UPDATED, "updated_date"),
-            (TLDBaseKeys.CREATED, "created_date"),
-        ]:
-            whois_dict[a_key] = whois_dict.pop(b_key)
-        # reconcile abuse keys, but don't remove existing key as to not cause issues
-        # with apps currently depending on them. todo: re-standardize keys in next major release
-        whois_dict[TLDBaseKeys.REGISTRAR_ABUSE_EMAIL] = whois_dict["abuse_email"]
-        whois_dict[TLDBaseKeys.REGISTRAR_ABUSE_PHONE] = whois_dict["abuse_phone"]
-        _self._parser = whois_dict
+        _self._parser = convert_whodap_keys(whois_dict)
         return _self
 
 

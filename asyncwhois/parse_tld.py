@@ -199,8 +199,6 @@ class DomainParser:
             return RegexNL()
         elif tld == "no":
             return RegexNO()
-        elif tld == "ar":
-            return RegexAR()
         elif tld == "nu":
             return RegexNU()
         elif tld == "nz":
