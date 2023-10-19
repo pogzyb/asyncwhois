@@ -951,6 +951,7 @@ class RegexIE(TLDParser):
         super().__init__()
         self.update_reg_expressions(self._ie_expressions)
 
+
 class RegexNZ(TLDParser):
     # These don't seem to be valid anymore:
     # _nz_expressions = {
