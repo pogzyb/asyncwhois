@@ -1862,7 +1862,7 @@ class GenericTLD:
     OPEN = None
     ORACLE = "whois.nic.oracle"
     ORANGE = "whois.nic.orange"
-    ORG = "whois.pir.org"
+    ORG = "whois.publicinterestregistry.org"
     ORGANIC = "whois.afilias.net"
     ORIENTEXPRESS = None
     ORIGINS = "whois.nic.origins"

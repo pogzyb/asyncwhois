@@ -43,15 +43,7 @@ class Query:
         match = ""
         found = re.search(regex, blob, flags=re.IGNORECASE)
         if found:
-            match = (
-                found.group(1)
-                .rstrip("\r")
-                .replace(" ", "")
-                .replace("http://", "")
-                .replace("https://", "")
-                .rstrip(":")
-                .rstrip("/")
-            )
+            match = found.group(1).rstrip("\r").replace(" ", "").rstrip(":").rstrip("/")
         return match
 
     @contextmanager
@@ -142,7 +134,11 @@ class Query:
             # parse response for the referred WHOIS server name
             whois_server = self._find_match(regex, query_output)
             whois_server = whois_server.lower()
-            if whois_server and whois_server != server:
+            if (
+                whois_server
+                and whois_server != server
+                and not whois_server.startswith("http")
+            ):
                 # recursive call to find more authoritative server
                 authoritative_output = self._do_query(
                     whois_server, data, self.whois_server_regex
@@ -171,7 +167,11 @@ class Query:
             # parse response for the referred WHOIS server name
             whois_server = self._find_match(regex, query_output)
             whois_server = whois_server.lower()
-            if whois_server and whois_server != server:
+            if (
+                whois_server
+                and whois_server != server
+                and not whois_server.startswith("http")
+            ):
                 # recursive call to find the authoritative server
                 authoritative_output = await self._aio_do_query(
                     whois_server, data, self.whois_server_regex
