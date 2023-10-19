@@ -400,7 +400,7 @@ class RegexKR(TLDParser):
         TLDBaseKeys.DNSSEC: r"DNSSEC *: ([a-zA-Z]+)",
         TLDBaseKeys.REGISTRANT_ZIPCODE: r"Registrant Zip Code: *: (.+)",
         TLDBaseKeys.REGISTRANT_ADDRESS: r"Registrant Address *: (.+)",
-        TLDBaseKeys.DOMAIN_NAME: r"Domain *: (.+)",
+        TLDBaseKeys.DOMAIN_NAME: r"Domain Name *: (.+)",
         TLDBaseKeys.NAME_SERVERS: r"Host Name *: (.+)",
     }
 
@@ -415,6 +415,7 @@ class RegexEU(TLDParser):
     # % discloses any information concerning the registrant.
 
     _eu_expressions = {
+        TLDBaseKeys.DOMAIN_NAME: r"Domain: *(.+)",
         TLDBaseKeys.REGISTRAR: r"Registrar:\n.*Name: (.+)",
         TLDBaseKeys.REGISTRAR_URL: r"Registrar:\n.*Name:.+\n.*Website: *(.+)",
     }
@@ -628,6 +629,7 @@ class RegexSU(TLDParser):  # same as RU
 
 class RegexKG(TLDParser):
     _kg_expressions = {
+        TLDBaseKeys.DOMAIN_NAME: r"Domain *(.+) ",
         TLDBaseKeys.REGISTRAR: r"Domain support: \s*(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"Name: *(.+)",
         TLDBaseKeys.REGISTRANT_ADDRESS: r"Address: *(.+)",
@@ -690,6 +692,7 @@ class RegexID(TLDParser):
 
 class RegexSE(TLDParser):
     _se_expressions = {
+        TLDBaseKeys.DOMAIN_NAME: r"domain: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"holder\.*: *(.+)",
         TLDBaseKeys.CREATED: r"created\.*: *(.+)",
         TLDBaseKeys.UPDATED: r"modified\.*: *(.+)",
@@ -738,6 +741,7 @@ class RegexSA(TLDParser):
 
 class RegexSK(TLDParser):
     _sk_expressions = {
+        TLDBaseKeys.DOMAIN_NAME: r"Domain: *(.+)",
         TLDBaseKeys.CREATED: r"(?<=Domain:)[\s\w\W]*?Created: *(.+)",
         TLDBaseKeys.UPDATED: r"(?<=Domain:)[\s\w\W]*?Updated: *(.+)",
         TLDBaseKeys.EXPIRES: r"Valid Until: *(.+)",
@@ -843,6 +847,7 @@ class RegexIS(TLDParser):
 
 class RegexDK(TLDParser):
     _dk_expressions = {
+        TLDBaseKeys.DOMAIN_NAME: r"Domain: *(.+)",
         TLDBaseKeys.CREATED: r"Registered: *(.+)",
         TLDBaseKeys.EXPIRES: r"Expires: *(.+)",
         TLDBaseKeys.DNSSEC: r"Dnssec: *(.+)",
@@ -946,29 +951,31 @@ class RegexIE(TLDParser):
         super().__init__()
         self.update_reg_expressions(self._ie_expressions)
 
-
 class RegexNZ(TLDParser):
-    _nz_expressions = {
-        TLDBaseKeys.REGISTRAR: r"registrar_name:\s*([^\n\r]+)",
-        TLDBaseKeys.UPDATED: r"domain_datelastmodified:\s*([^\n\r]+)",
-        TLDBaseKeys.CREATED: r"domain_dateregistered:\s*([^\n\r]+)",
-        TLDBaseKeys.EXPIRES: r"domain_datebilleduntil:\s*([^\n\r]+)",
-        TLDBaseKeys.NAME_SERVERS: r"ns_name_\d*:\s*([^\n\r]+)",
-        TLDBaseKeys.STATUS: r"status:\s*([^\n\r]+)",
-        TLDBaseKeys.REGISTRANT_NAME: r"registrant_contact_name:\s*([^\n\r]+)",
-        TLDBaseKeys.REGISTRANT_ADDRESS: r"registrant_contact_address\d*:\s*([^\n\r]+)",
-        TLDBaseKeys.REGISTRANT_CITY: r"registrant_contact_city:\s*([^\n\r]+)",
-        TLDBaseKeys.REGISTRANT_ZIPCODE: r"registrant_contact_postalcode:\s*([^\n\r]+)",
-        TLDBaseKeys.REGISTRANT_COUNTRY: r"registrant_contact_country:\s*([^\n\r]+)",
-    }
+    # These don't seem to be valid anymore:
+    # _nz_expressions = {
+    #     TLDBaseKeys.DOMAIN_NAME: r"",
+    #     TLDBaseKeys.REGISTRAR: r"registrar_name:\s*([^\n\r]+)",
+    #     TLDBaseKeys.UPDATED: r"domain_datelastmodified:\s*([^\n\r]+)",
+    #     TLDBaseKeys.CREATED: r"domain_dateregistered:\s*([^\n\r]+)",
+    #     TLDBaseKeys.EXPIRES: r"domain_datebilleduntil:\s*([^\n\r]+)",
+    #     TLDBaseKeys.NAME_SERVERS: r"ns_name_\d*:\s*([^\n\r]+)",
+    #     TLDBaseKeys.STATUS: r"status:\s*([^\n\r]+)",
+    #     TLDBaseKeys.REGISTRANT_NAME: r"registrant_contact_name:\s*([^\n\r]+)",
+    #     TLDBaseKeys.REGISTRANT_ADDRESS: r"registrant_contact_address\d*:\s*([^\n\r]+)",
+    #     TLDBaseKeys.REGISTRANT_CITY: r"registrant_contact_city:\s*([^\n\r]+)",
+    #     TLDBaseKeys.REGISTRANT_ZIPCODE: r"registrant_contact_postalcode:\s*([^\n\r]+)",
+    #     TLDBaseKeys.REGISTRANT_COUNTRY: r"registrant_contact_country:\s*([^\n\r]+)",
+    # }
 
     def __init__(self):
         super().__init__()
-        self.update_reg_expressions(self._nz_expressions)
+        self.update_reg_expressions({})
 
 
 class RegexLU(TLDParser):
     _lu_expressions = {
+        TLDBaseKeys.DOMAIN_NAME: r"domainname: *(.+)",
         TLDBaseKeys.CREATED: r"registered: *(.+)",
         TLDBaseKeys.NAME_SERVERS: r"nserver: *(.+)",
         TLDBaseKeys.STATUS: r"domaintype: *(.+)",
@@ -1285,6 +1292,7 @@ class RegexNO(TLDParser):
 
 class RegexKZ(TLDParser):
     _kz_expressions = {
+        TLDBaseKeys.DOMAIN_NAME: r"Domain Name.*: (.+)",
         TLDBaseKeys.REGISTRAR: r"Current Registar:\s*(.+)",  # "Registar" typo exists on the whois server
         TLDBaseKeys.CREATED: r"Domain created:\s*(.+)\s\(",
         TLDBaseKeys.UPDATED: r"Last modified\s:\s*(.+)\s\(",
@@ -1460,6 +1468,7 @@ class RegexEDU(TLDParser):
 
 class RegexLV(TLDParser):
     _lv_expressions = {
+        TLDBaseKeys.DOMAIN_NAME: r"Domain: *(.+)",
         TLDBaseKeys.REGISTRAR: r"\[Registrar\]\n(?:.*)\nName:(.*)+",
         TLDBaseKeys.REGISTRANT_NAME: r"\[Holder\]\n(?:.*)\nName:(.*)+",
         TLDBaseKeys.REGISTRANT_ADDRESS: r"\[Holder\]\n(?:.*)\Address:(.*)+",
