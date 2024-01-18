@@ -1518,7 +1518,7 @@ class GenericTLD:
     GALLERY = "whois.nic.gallery"
     GALLO = "whois.nic.gallo"
     GALLUP = "whois.nic.gallup"
-    GAME = "whois.uniregistry.net"
+    GAME = "whois.nic.game"
     GAMES = "whois.nic.games"
     GAP = None
     GARDEN = "whois.nic.garden"
@@ -1729,7 +1729,7 @@ class GenericTLD:
     LOCKER = "whois.nic.locker"
     LOCUS = "whois.nic.locus"
     LOFT = None
-    LOL = "whois.uniregistry.net"
+    LOL = "whois.nic.lol"
     LONDON = "whois.nic.london"
     LOTTE = "whois.nic.lotte"
     LOTTO = "whois.afilias.net"
@@ -1892,7 +1892,7 @@ class GenericTLD:
     PHOTOS = "whois.nic.photos"
     PHYSIO = "whois.nic.physio"
     PIAGET = None
-    PICS = "whois.uniregistry.net"
+    PICS = "whois.nic.pics"
     PICTET = None
     PICTURES = "whois.nic.pictures"
     PID = "whois.nic.pid"
@@ -2342,7 +2342,7 @@ class GenericTLD:
     # generic-restricted
     BIZ = "whois.nic.biz"
     NAME = "whois.nic.name"
-    PRO = "whois.afilias.net"
+    PRO = "whois.nic.pro"
 
 
 class SponsoredTLD:
