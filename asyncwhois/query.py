@@ -2,21 +2,15 @@ import asyncio
 import ipaddress
 import re
 import socket
-import sys
 from typing import Tuple, Generator, Union
-from contextlib import contextmanager
-
-if sys.version_info < (3, 7):
-    from async_generator import asynccontextmanager
-else:
-    from contextlib import asynccontextmanager
+from contextlib import contextmanager, asynccontextmanager
 
 from python_socks.sync import Proxy
 from python_socks.async_.asyncio import Proxy as AsyncProxy
 
 from .servers import IPv4Allocations, CountryCodeTLD, GenericTLD, SponsoredTLD
 
-BLOCKSIZE = 1024
+BLOCKSIZE = 1500
 
 
 class Query:
@@ -108,8 +102,12 @@ class Query:
         return result
 
     def run(self, search_term: str, server: str = None) -> list[str]:
+        """
+        Submits the `search_term` to the WHOIS server and returns a list of query responses.
+        """
         data = search_term + "\r\n"
         if not server:
+            # TODO: think about moving this to subclass
             if ":" in data:  # ipv6
                 server_regex = r"whois: *(.+)"
             else:
