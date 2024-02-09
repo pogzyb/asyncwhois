@@ -1,11 +1,11 @@
 import asyncio
+import ipaddress
 import re
 import socket
 import sys
-from typing import Tuple, Generator
+from typing import Tuple, Generator, Union
 from contextlib import contextmanager
 
-# different installs for async contextmanager based on python version
 if sys.version_info < (3, 7):
     from async_generator import asynccontextmanager
 else:
@@ -13,6 +13,8 @@ else:
 
 from python_socks.sync import Proxy
 from python_socks.async_.asyncio import Proxy as AsyncProxy
+
+from .servers import IPv4Allocations, CountryCodeTLD, GenericTLD, SponsoredTLD
 
 BLOCKSIZE = 1024
 
@@ -23,20 +25,9 @@ class Query:
     refer_regex = r"refer: *(.+)"
     whois_server_regex = r".+ whois server: *(.+)"
 
-    def __init__(
-        self,
-        server: str = None,
-        authoritative_only: bool = True,
-        proxy_url: str = None,
-        timeout: int = 10,
-    ):
-        self.server = server
-        self.authoritative_only = authoritative_only
+    def __init__(self, proxy_url: str = None, timeout: int = 10):
         self.proxy_url = proxy_url
         self.timeout = timeout
-        self.authoritative_server = ""
-        self.query_output = ""
-        self.query_chain = ""
 
     @staticmethod
     def _find_match(regex: str, blob: str) -> str:
@@ -116,21 +107,36 @@ class Query:
                 result += received.decode("utf-8", errors="ignore")
         return result
 
-    def _do_query(self, server: str, data: str, regex: str) -> str:
+    def run(self, search_term: str, server: str = None) -> list[str]:
+        data = search_term + "\r\n"
+        if not server:
+            server_regex = self.refer_regex
+            server = self.iana_server
+        else:
+            server_regex = self.whois_server_regex
+        return self._do_query(server, data, server_regex, [])
+
+    async def aio_run(self, search_term: str, server: str = None) -> list[str]:
+        data = search_term + "\r\n"
+        if not server:
+            server_regex = self.refer_regex
+            server = self.iana_server
+        else:
+            server_regex = self.whois_server_regex
+        return await self._aio_do_query(server, data, server_regex, [])
+
+    def _do_query(
+        self, server: str, data: str, regex: str, chain: list[str]
+    ) -> list[str]:
         """
         Recursively submits WHOIS queries until it reaches the Authoritative Server.
-        Additionally, if `authoritative_only` is False, all text output from server hops
-        is saved into `query_chain`.
         """
-        # save authoritative server
-        self.authoritative_server = server
         # connect to whois://<server>:43
         with self._create_connection((server, self.whois_port), self.proxy_url) as conn:
             # submit domain and receive raw query output
             query_output = self._send_and_recv(conn, data)
-            if not self.authoritative_only:
-                # concatenate query outputs
-                self.query_chain += query_output
+            # save query chain
+            chain.append(query_output)
             # parse response for the referred WHOIS server name
             whois_server = self._find_match(regex, query_output)
             whois_server = whois_server.lower()
@@ -140,17 +146,15 @@ class Query:
                 and not whois_server.startswith("http")
             ):
                 # recursive call to find more authoritative server
-                authoritative_output = self._do_query(
-                    whois_server, data, self.whois_server_regex
+                chain = self._do_query(
+                    whois_server, data, self.whois_server_regex, chain
                 )
-                # check for empty responses; only update query_output if
-                # there was a complete response from the authoritative server
-                if authoritative_output:
-                    query_output = authoritative_output
-        # return the WHOIS query output
-        return query_output
+        # return the WHOIS query chain
+        return chain
 
-    async def _aio_do_query(self, server: str, data: str, regex: str):
+    async def _aio_do_query(
+        self, server: str, data: str, regex: str, chain: list[str]
+    ) -> list[str]:
         # connect to whois://<server>:43
         async with self._aio_create_connection(
             (server, self.whois_port), self.proxy_url
@@ -161,9 +165,7 @@ class Query:
             query_output = await asyncio.wait_for(
                 self._aio_send_and_recv(reader, writer, data), self.timeout
             )
-            if not self.authoritative_only:
-                # concatenate query outputs
-                self.query_chain += query_output
+            chain.append(query_output)
             # parse response for the referred WHOIS server name
             whois_server = self._find_match(regex, query_output)
             whois_server = whois_server.lower()
@@ -173,113 +175,76 @@ class Query:
                 and not whois_server.startswith("http")
             ):
                 # recursive call to find the authoritative server
-                authoritative_output = await self._aio_do_query(
-                    whois_server, data, self.whois_server_regex
+                chain = await self._aio_do_query(
+                    whois_server, data, self.whois_server_regex, chain
                 )
-                # check for empty responses; only update query_output if
-                # there was a complete response from the authoritative server
-                if authoritative_output:
-                    query_output = authoritative_output
-        # return the WHOIS query output
-        return query_output
+        # return the WHOIS query chain
+        return chain
 
 
 class DomainQuery(Query):
     def __init__(
         self,
-        domain: str,
         server: str = None,
-        authoritative_only: bool = True,
         proxy_url: str = None,
         timeout: int = 10,
     ):
-        super().__init__(server, authoritative_only, proxy_url, timeout)
-        self.domain = domain
+        super().__init__(proxy_url, timeout)
+        self.server = server
 
-    @classmethod
-    def new(
-        cls,
-        domain: str,
-        server: str = None,
-        authoritative_only: bool = True,
-        proxy_url: str = None,
-        timeout: int = 10,
-    ):
-        _self = cls(domain, server, authoritative_only, proxy_url, timeout)
-        data = domain + "\r\n"
-        if not _self.server:
-            server_regex = _self.refer_regex
-            server = _self.iana_server
-        else:
-            server_regex = _self.whois_server_regex
-            server = _self.server
-        _self.query_output = _self._do_query(server, data, server_regex)
-        return _self
+    @staticmethod
+    def _get_server_name(tld: str) -> Union[str, None]:
+        tld_converted = tld.upper().replace("-", "_")
+        for servers in [CountryCodeTLD, GenericTLD, SponsoredTLD]:
+            if hasattr(servers, tld_converted):
+                server = getattr(servers, tld_converted)
+                return server
+        return None
 
-    @classmethod
-    async def new_aio(
-        cls,
-        domain: str,
-        server: str = None,
-        authoritative_only: bool = True,
-        proxy_url: str = None,
-        timeout: int = 10,
-    ):
-        _self = cls(domain, server, authoritative_only, proxy_url, timeout)
-        data = domain + "\r\n"
-        if not _self.server:
-            server_regex = _self.refer_regex
-            server = _self.iana_server
-        else:
-            server_regex = _self.whois_server_regex
-            server = _self.server
-        _self.query_output = await _self._aio_do_query(server, data, server_regex)
-        return _self
+    def run(self, search_term: str, server: str = None) -> list[str]:
+        if not server:
+            server = self._get_server_name(search_term)
+        return super().run(str(search_term), server)
+
+    async def aio_run(self, search_term: str, server: str = None) -> list[str]:
+        if not server:
+            server = self._get_server_name(search_term)
+        return await super().aio_run(str(search_term), server)
 
 
 class NumberQuery(Query):
     def __init__(
         self,
-        ip: str,  # ipv4 or ipv6
         server: str = None,
-        authoritative_only: bool = True,
         proxy_url: str = None,
         timeout: int = 10,
     ):
-        super().__init__(server, authoritative_only, proxy_url, timeout)
+        super().__init__(proxy_url, timeout)
+        self.server = server
         self.whois_server_regex = r"ReferralServer: *whois://(.+)"
-        self.ip = ip
 
-    @classmethod
-    def new(
-        cls,
-        ip: str,  # ipv4 or ipv6; validation is handled by caller.
-        server: str = None,
-        authoritative_only: bool = False,
-        proxy_url: str = None,
-        timeout: int = 10,
-    ):
-        _self = cls(ip, server, authoritative_only, proxy_url, timeout)
-        data = ip + "\r\n"
-        if ":" in ip:  # ipv6
-            _self.refer_regex = r"whois: *(.+)"
-        server = server or _self.iana_server
-        _self.query_output = _self._do_query(server, data, _self.refer_regex)
-        return _self
+    @staticmethod
+    def _get_server_name(ip: Union[ipaddress.IPv4Address, ipaddress.IPv6Address]):
+        if isinstance(ip, ipaddress.IPv4Address):
+            _, server = IPv4Allocations().get_servers(ip)
+            return server
+        elif isinstance(ip, ipaddress.IPv6Address):
+            return None
 
-    @classmethod
-    async def new_aio(
-        cls,
-        ip: str,
+    def run(
+        self,
+        search_term: Union[ipaddress.IPv4Address, ipaddress.IPv6Address],
         server: str = None,
-        authoritative_only: bool = False,
-        proxy_url: str = None,
-        timeout: int = 10,
-    ):
-        _self = cls(ip, server, authoritative_only, proxy_url, timeout)
-        data = ip + "\r\n"
-        if ":" in ip:  # ipv6
-            _self.refer_regex = r"whois: *(.+)"
-        server = server or _self.iana_server
-        _self.query_output = await _self._aio_do_query(server, data, _self.refer_regex)
-        return _self
+    ) -> list[str]:
+        if not server:
+            server = self._get_server_name(search_term)
+        return super().run(str(search_term), server)
+
+    async def aio_run(
+        self,
+        search_term: Union[ipaddress.IPv4Address, ipaddress.IPv6Address],
+        server: str = None,
+    ) -> list[str]:
+        if not server:
+            server = self._get_server_name(search_term)
+        return await super().aio_run(str(search_term), server)

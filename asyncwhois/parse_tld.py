@@ -6,72 +6,6 @@ from .parse import BaseParser, TLDBaseKeys
 from .errors import NotFoundError
 
 
-class TLDParser(BaseParser):
-    base_expressions = {
-        TLDBaseKeys.DOMAIN_NAME: r"Domain Name: *(.+)",
-        TLDBaseKeys.CREATED: r"Creation Date: *(.+)",
-        TLDBaseKeys.UPDATED: r"Updated Date: *(.+)",
-        TLDBaseKeys.EXPIRES: r"Expir\w+\sDate: *(.+)",
-        TLDBaseKeys.REGISTRAR: r"Registrar: *(.+)",
-        TLDBaseKeys.REGISTRAR_IANA_ID: r"Registrar IANA ID: *(.+)",
-        TLDBaseKeys.REGISTRAR_URL: r"Registrar URL: *(.+)",
-        TLDBaseKeys.REGISTRAR_ABUSE_EMAIL: r"Registrar Abuse Contact Email: *(.+)",
-        TLDBaseKeys.REGISTRAR_ABUSE_PHONE: r"Registrar Abuse Contact Phone: *(.+)",
-        TLDBaseKeys.REGISTRANT_NAME: r"Registrant Name: *(.+)",
-        TLDBaseKeys.REGISTRANT_ORGANIZATION: r"Registrant Organization: *(.+)",
-        TLDBaseKeys.REGISTRANT_ADDRESS: r"Registrant Street: *(.+)",
-        TLDBaseKeys.REGISTRANT_CITY: r"Registrant City: *(.+)",
-        TLDBaseKeys.REGISTRANT_STATE: r"Registrant State/Province: *(.+)",
-        TLDBaseKeys.REGISTRANT_ZIPCODE: r"Registrant Postal Code: *(.+)",
-        TLDBaseKeys.REGISTRANT_COUNTRY: r"Registrant Country: *(.+)",
-        TLDBaseKeys.REGISTRANT_EMAIL: r"Registrant Email: *(.+)",
-        TLDBaseKeys.REGISTRANT_PHONE: r"Registrant Phone: *(.+)",
-        TLDBaseKeys.REGISTRANT_FAX: r"Registrant Fax: *(.+)",
-        TLDBaseKeys.DNSSEC: r"DNSSEC: *([\S]+)",
-        TLDBaseKeys.STATUS: r"Status: *(.+)",
-        TLDBaseKeys.NAME_SERVERS: r"Name server: *(.+)",
-        TLDBaseKeys.ADMIN_NAME: r"Admin Name: (.+)",
-        TLDBaseKeys.ADMIN_ID: r"Admin ID: (.+)",
-        TLDBaseKeys.ADMIN_ORGANIZATION: r"Admin Organization: (.+)",
-        TLDBaseKeys.ADMIN_CITY: r"Admin City: (.*)",
-        TLDBaseKeys.ADMIN_ADDRESS: r"Admin Street: (.*)",
-        TLDBaseKeys.ADMIN_STATE: r"Admin State/Province: (.*)",
-        TLDBaseKeys.ADMIN_ZIPCODE: r"Admin Postal Code: (.*)",
-        TLDBaseKeys.ADMIN_COUNTRY: r"Admin Country: (.+)",
-        TLDBaseKeys.ADMIN_PHONE: r"Admin Phone: (.+)",
-        TLDBaseKeys.ADMIN_FAX: r"Admin Fax: (.+)",
-        TLDBaseKeys.ADMIN_EMAIL: r"Admin Email: (.+)",
-        TLDBaseKeys.BILLING_NAME: r"Billing Name: (.+)",
-        TLDBaseKeys.BILLING_ID: r"Billing ID: (.+)",
-        TLDBaseKeys.BILLING_ORGANIZATION: r"Billing Organization: (.+)",
-        TLDBaseKeys.BILLING_CITY: r"Billing City: (.*)",
-        TLDBaseKeys.BILLING_ADDRESS: r"Billing Street: (.*)",
-        TLDBaseKeys.BILLING_STATE: r"Billing State/Province: (.*)",
-        TLDBaseKeys.BILLING_ZIPCODE: r"Billing Postal Code: (.*)",
-        TLDBaseKeys.BILLING_COUNTRY: r"Billing Country: (.+)",
-        TLDBaseKeys.BILLING_PHONE: r"Billing Phone: (.+)",
-        TLDBaseKeys.BILLING_FAX: r"Billing Fax: (.+)",
-        TLDBaseKeys.BILLING_EMAIL: r"Billing Email: (.+)",
-        TLDBaseKeys.TECH_NAME: r"Tech Name: (.+)",
-        TLDBaseKeys.TECH_ID: r"Tech ID: (.+)",
-        TLDBaseKeys.TECH_ORGANIZATION: r"Tech Organization: (.+)",
-        TLDBaseKeys.TECH_CITY: r"Tech City: (.*)",
-        TLDBaseKeys.TECH_ADDRESS: r"Tech Street: (.*)",
-        TLDBaseKeys.TECH_STATE: r"Tech State/Province: (.*)",
-        TLDBaseKeys.TECH_ZIPCODE: r"Tech Postal Code: (.*)",
-        TLDBaseKeys.TECH_COUNTRY: r"Tech Country: (.+)",
-        TLDBaseKeys.TECH_PHONE: r"Tech Phone: (.+)",
-        TLDBaseKeys.TECH_FAX: r"Tech Fax: (.+)",
-        TLDBaseKeys.TECH_EMAIL: r"Tech Email: (.+)",
-    }
-
-    multiple_match_keys = (TLDBaseKeys.NAME_SERVERS, TLDBaseKeys.STATUS)
-    date_keys = (TLDBaseKeys.CREATED, TLDBaseKeys.UPDATED, TLDBaseKeys.EXPIRES)
-
-    def __init__(self):
-        self.reg_expressions = self.base_expressions.copy()
-
-
 class DomainParser:
     _no_match_checks = [
         "no match",
@@ -85,21 +19,19 @@ class DomainParser:
         "domain you requested is not known",
     ]
 
-    def __init__(self, tld: str):
-        self.parser_output = {}
-        self._parser = self._init_parser(tld)
+    def __init__(self, ignore_not_found: bool = False):
+        self.ignore_not_found = ignore_not_found
 
-    def parse(self, blob: str) -> None:
-        """
-        Parses `blob` (whois query output) using a parser class.
-        Saves the results into the `parser_output` attribute.
-        """
-        if any([n in blob.lower() for n in self._no_match_checks]):
-            raise NotFoundError(f"Domain not found!")
-        self.parser_output = self._parser.parse(blob)
+    def parse(self, blob: str, tld: str) -> dict[TLDBaseKeys, Any]:
+        if not self.ignore_not_found and any(
+            [n in blob.lower() for n in self._no_match_checks]
+        ):
+            raise NotFoundError("Domain not found!")
+        parser = self._init_parser(tld)
+        return parser.parse(blob)
 
     @staticmethod
-    def _init_parser(tld: str) -> TLDParser:
+    def _init_parser(tld: str) -> "TLDParser":
         """
         Retrieves the parser instance which can most accurately extract
         key/value pairs from the whois server output for the given `tld`.
@@ -246,6 +178,72 @@ class DomainParser:
         # If the parsed output of lookup is not what you expect or even incorrect,
         # check and modify the existing Regex subclass or create a new one.
         return TLDParser()
+
+
+class TLDParser(BaseParser):
+    base_expressions = {
+        TLDBaseKeys.DOMAIN_NAME: r"Domain Name: *(.+)",
+        TLDBaseKeys.CREATED: r"Creation Date: *(.+)",
+        TLDBaseKeys.UPDATED: r"Updated Date: *(.+)",
+        TLDBaseKeys.EXPIRES: r"Expir\w+\sDate: *(.+)",
+        TLDBaseKeys.REGISTRAR: r"Registrar: *(.+)",
+        TLDBaseKeys.REGISTRAR_IANA_ID: r"Registrar IANA ID: *(.+)",
+        TLDBaseKeys.REGISTRAR_URL: r"Registrar URL: *(.+)",
+        TLDBaseKeys.REGISTRAR_ABUSE_EMAIL: r"Registrar Abuse Contact Email: *(.+)",
+        TLDBaseKeys.REGISTRAR_ABUSE_PHONE: r"Registrar Abuse Contact Phone: *(.+)",
+        TLDBaseKeys.REGISTRANT_NAME: r"Registrant Name: *(.+)",
+        TLDBaseKeys.REGISTRANT_ORGANIZATION: r"Registrant Organization: *(.+)",
+        TLDBaseKeys.REGISTRANT_ADDRESS: r"Registrant Street: *(.+)",
+        TLDBaseKeys.REGISTRANT_CITY: r"Registrant City: *(.+)",
+        TLDBaseKeys.REGISTRANT_STATE: r"Registrant State/Province: *(.+)",
+        TLDBaseKeys.REGISTRANT_ZIPCODE: r"Registrant Postal Code: *(.+)",
+        TLDBaseKeys.REGISTRANT_COUNTRY: r"Registrant Country: *(.+)",
+        TLDBaseKeys.REGISTRANT_EMAIL: r"Registrant Email: *(.+)",
+        TLDBaseKeys.REGISTRANT_PHONE: r"Registrant Phone: *(.+)",
+        TLDBaseKeys.REGISTRANT_FAX: r"Registrant Fax: *(.+)",
+        TLDBaseKeys.DNSSEC: r"DNSSEC: *([\S]+)",
+        TLDBaseKeys.STATUS: r"Status: *(.+)",
+        TLDBaseKeys.NAME_SERVERS: r"Name server: *(.+)",
+        TLDBaseKeys.ADMIN_NAME: r"Admin Name: (.+)",
+        TLDBaseKeys.ADMIN_ID: r"Admin ID: (.+)",
+        TLDBaseKeys.ADMIN_ORGANIZATION: r"Admin Organization: (.+)",
+        TLDBaseKeys.ADMIN_CITY: r"Admin City: (.*)",
+        TLDBaseKeys.ADMIN_ADDRESS: r"Admin Street: (.*)",
+        TLDBaseKeys.ADMIN_STATE: r"Admin State/Province: (.*)",
+        TLDBaseKeys.ADMIN_ZIPCODE: r"Admin Postal Code: (.*)",
+        TLDBaseKeys.ADMIN_COUNTRY: r"Admin Country: (.+)",
+        TLDBaseKeys.ADMIN_PHONE: r"Admin Phone: (.+)",
+        TLDBaseKeys.ADMIN_FAX: r"Admin Fax: (.+)",
+        TLDBaseKeys.ADMIN_EMAIL: r"Admin Email: (.+)",
+        TLDBaseKeys.BILLING_NAME: r"Billing Name: (.+)",
+        TLDBaseKeys.BILLING_ID: r"Billing ID: (.+)",
+        TLDBaseKeys.BILLING_ORGANIZATION: r"Billing Organization: (.+)",
+        TLDBaseKeys.BILLING_CITY: r"Billing City: (.*)",
+        TLDBaseKeys.BILLING_ADDRESS: r"Billing Street: (.*)",
+        TLDBaseKeys.BILLING_STATE: r"Billing State/Province: (.*)",
+        TLDBaseKeys.BILLING_ZIPCODE: r"Billing Postal Code: (.*)",
+        TLDBaseKeys.BILLING_COUNTRY: r"Billing Country: (.+)",
+        TLDBaseKeys.BILLING_PHONE: r"Billing Phone: (.+)",
+        TLDBaseKeys.BILLING_FAX: r"Billing Fax: (.+)",
+        TLDBaseKeys.BILLING_EMAIL: r"Billing Email: (.+)",
+        TLDBaseKeys.TECH_NAME: r"Tech Name: (.+)",
+        TLDBaseKeys.TECH_ID: r"Tech ID: (.+)",
+        TLDBaseKeys.TECH_ORGANIZATION: r"Tech Organization: (.+)",
+        TLDBaseKeys.TECH_CITY: r"Tech City: (.*)",
+        TLDBaseKeys.TECH_ADDRESS: r"Tech Street: (.*)",
+        TLDBaseKeys.TECH_STATE: r"Tech State/Province: (.*)",
+        TLDBaseKeys.TECH_ZIPCODE: r"Tech Postal Code: (.*)",
+        TLDBaseKeys.TECH_COUNTRY: r"Tech Country: (.+)",
+        TLDBaseKeys.TECH_PHONE: r"Tech Phone: (.+)",
+        TLDBaseKeys.TECH_FAX: r"Tech Fax: (.+)",
+        TLDBaseKeys.TECH_EMAIL: r"Tech Email: (.+)",
+    }
+
+    multiple_match_keys = (TLDBaseKeys.NAME_SERVERS, TLDBaseKeys.STATUS)
+    date_keys = (TLDBaseKeys.CREATED, TLDBaseKeys.UPDATED, TLDBaseKeys.EXPIRES)
+
+    def __init__(self):
+        self.reg_expressions = self.base_expressions.copy()
 
 
 # ==============================
