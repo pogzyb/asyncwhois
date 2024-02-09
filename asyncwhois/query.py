@@ -110,7 +110,10 @@ class Query:
     def run(self, search_term: str, server: str = None) -> list[str]:
         data = search_term + "\r\n"
         if not server:
-            server_regex = self.refer_regex
+            if ":" in data:  # ipv6
+                server_regex = r"whois: *(.+)"
+            else:
+                server_regex = self.refer_regex
             server = self.iana_server
         else:
             server_regex = self.whois_server_regex
@@ -119,7 +122,10 @@ class Query:
     async def aio_run(self, search_term: str, server: str = None) -> list[str]:
         data = search_term + "\r\n"
         if not server:
-            server_regex = self.refer_regex
+            if ":" in data:  # ipv6
+                server_regex = r"whois: *(.+)"
+            else:
+                server_regex = self.refer_regex
             server = self.iana_server
         else:
             server_regex = self.whois_server_regex

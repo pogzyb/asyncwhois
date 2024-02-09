@@ -149,9 +149,9 @@ class NumberClient(Client):
             ip = convert_to_ip(ip)
         query_chain: list[str] = self.query_obj.run(ip)
         authoritative_answer = query_chain[-1]
-        parsed_dict: dict[IPBaseKeys, Any] = self.parse_obj.parse(
-            authoritative_answer, ip
-        )
+        parsed_dict: dict[IPBaseKeys, Any] = {}
+        if isinstance(ip, ipaddress.IPv4Address):
+            parsed_dict = self.parse_obj.parse(authoritative_answer, ip)
         query_string = (
             authoritative_answer if self.authoritative_only else "\n".join(query_chain)
         )
@@ -175,9 +175,9 @@ class NumberClient(Client):
             ip = convert_to_ip(ip)
         query_chain: list[str] = await self.query_obj.aio_run(ip)
         authoritative_answer = query_chain[-1]
-        parsed_dict: dict[IPBaseKeys, Any] = self.parse_obj.parse(
-            authoritative_answer, ip
-        )
+        parsed_dict: dict[IPBaseKeys, Any] = {}
+        if isinstance(ip, ipaddress.IPv4Address):
+            parsed_dict = self.parse_obj.parse(authoritative_answer, ip)
         query_string = (
             authoritative_answer if self.authoritative_only else "\n".join(query_chain)
         )
