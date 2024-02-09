@@ -25,7 +25,7 @@ def main():
 
     # Fully configurable client example:
     # Proxy with `httpx`
-    whodap_client = whodap.DNSClient(
+    whodap_client = whodap.DNSClient.new_client(
         httpx_client=httpx.Client(proxies="https://proxy:8080")
     )
     client = asyncwhois.DomainClient(whodap_client=whodap_client)
@@ -35,7 +35,9 @@ def main():
     from httpx_socks import SyncProxyTransport
 
     transport = SyncProxyTransport.from_url("socks5://localhost:9050")
-    whodap_client = whodap.DNSClient(httpx_client=httpx.Client(transport=transport))
+    whodap_client = whodap.DNSClient.new_client(
+        httpx_client=httpx.Client(transport=transport)
+    )
     client = asyncwhois.DomainClient(whodap_client=whodap_client)
     query_string, parsed_dict = client.rdap(domain)
     return

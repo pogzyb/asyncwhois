@@ -86,13 +86,15 @@ query_string, parsed_dict = loop.run_until_complete(asyncwhois.aio_rdap(domain))
 
 # Reusable client (caches the RDAP bootstrap server list, so it is faster for doing multiple calls)
 client = asyncwhois.DomainClient()
-for domain in ["google.com", "bing.ai", "bitcoin.org"]:
+for domain in ["google.com", "tesla.coffee", "bitcoin.org"]:
     query_string, parsed_dict = client.rdap(domain)
     # query_string, parsed_dict = await client.aio_rdap(domain)
 
 # Using a proxy or need to configure something HTTP related? Try reconfiguring the client:
-whodap_client = whodap.DNSClient(httpx_client=httpx.Client(proxies="https://proxy:8080"))
-# whodap_client = whodap.DNSClient(httpx_client=httpx.AsyncClient(proxies="https://proxy:8080"))
+whodap_client = whodap.DNSClient.new_client(
+    httpx_client=httpx.Client(proxies="https://proxy:8080")
+)
+# whodap_client = await whodap.DNSClient.new_aio_client(httpx_client=httpx.AsyncClient(proxies="https://proxy:8080"))
 client = asyncwhois.DomainClient(whodap_client=whodap_client)
 
 ```
