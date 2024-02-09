@@ -23,7 +23,7 @@ domain = 'https://www.google.com?q=asyncwhois'
 # basic example
 query_string, parsed_dict = asyncwhois.whois(domain)
 # query_string  # The semi-free text output from the whois server
-# parsed_dict   # A dictionary of key:values extracted from query_output
+# parsed_dict   # A dictionary of key:values extracted from `query_string`
 
 # asyncio example
 loop = asyncio.get_event_loop()
@@ -120,7 +120,7 @@ from httpx_socks import SyncProxyTransport, AsyncProxyTransport  # EXTERNAL DEPE
 
 transport = SyncProxyTransport.from_url(f"socks5://{tor_host}:{tor_port}")
 httpx_client = httpx.Client(transport=transport)
-whodap_client = whodap.IPv6Client(httpx_client=httpx_client)
+whodap_client = whodap.IPv6Client.new_client(httpx_client=httpx_client)
 query_string, parsed_dict = asyncwhois.rdap('2001:4860:4860::8888', whodap_client=whodap_client)
 
 transport = AsyncProxyTransport.from_url(f"socks5://{tor_user}:{tor_pw}@{tor_host}:{tor_port}")
