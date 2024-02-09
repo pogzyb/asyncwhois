@@ -1,7 +1,9 @@
+import ipaddress
 import re
-from typing import Dict, Any
+from typing import Dict, Any, Union
 
 from .parse import BaseParser, IPBaseKeys
+from .servers import IPv4Allocations
 
 
 class RIRParser(BaseParser):
@@ -56,12 +58,17 @@ class RIRParser(BaseParser):
 
 
 class NumberParser:
-    def __init__(self, rir_server: str):
-        self.parser_output: Dict[IPBaseKeys, Any] = {}
-        self._parser = self._init_parser(rir_server)
+    def __init__(self):
+        self.servers = IPv4Allocations()
 
-    def parse(self, blob: str) -> None:
-        self.parser_output = self._parser.parse(blob)
+    def parse(
+        self,
+        blob: str,
+        ip: Union[ipaddress.IPv4Address],
+    ) -> dict[IPBaseKeys, Any]:
+        _, server = self.servers.get_servers(ip)
+        parser = self._init_parser(server)
+        return parser.parse(blob)
 
     @staticmethod
     def _init_parser(rir_server: str) -> RIRParser:
