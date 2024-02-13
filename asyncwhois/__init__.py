@@ -68,7 +68,7 @@ def whois(
     :param tldextract_obj: An optional preconfigured instance of `tldextract.TLDExtract` (used for parsing URLs)
     :returns: a tuple containing the WHOIS query text and a dictionary of key values parsed from the text
     """
-    if isinstance(search_term, (ipaddress.IPv6Address, ipaddress.IPv6Address)):
+    if isinstance(search_term, (ipaddress.IPv4Address, ipaddress.IPv6Address)):
         return NumberClient(
             authoritative_only=authoritative_only,
             proxy_url=proxy_url,
@@ -114,7 +114,7 @@ def rdap(
     :param tldextract_obj: An optional preconfigured instance of `tldextract.TLDExtract` (used for parsing URLs)
     :returns: a tuple containing the WHOIS query text and a dictionary of key values parsed from the text
     """
-    if isinstance(search_term, (ipaddress.IPv6Address, ipaddress.IPv6Address)):
+    if isinstance(search_term, (ipaddress.IPv4Address, ipaddress.IPv6Address)):
         return NumberClient(
             authoritative_only=authoritative_only,
             whodap_client=whodap_client,
@@ -161,7 +161,7 @@ async def aio_whois(
     :param tldextract_obj: An optional preconfigured instance of `tldextract.TLDExtract` (used for parsing URLs)
     :returns: a tuple containing the WHOIS query text and a dictionary of key values parsed from the text
     """
-    if isinstance(search_term, (ipaddress.IPv6Address, ipaddress.IPv6Address)):
+    if isinstance(search_term, (ipaddress.IPv4Address, ipaddress.IPv6Address)):
         return await NumberClient(
             authoritative_only=authoritative_only,
             proxy_url=proxy_url,
@@ -207,7 +207,7 @@ async def aio_rdap(
     :param tldextract_obj: An optional preconfigured instance of `tldextract.TLDExtract` (used for parsing URLs)
     :returns: a tuple containing the WHOIS query text and a dictionary of key values parsed from the text
     """
-    if isinstance(search_term, (ipaddress.IPv6Address, ipaddress.IPv6Address)):
+    if isinstance(search_term, (ipaddress.IPv4Address, ipaddress.IPv6Address)):
         return await NumberClient(
             authoritative_only=authoritative_only,
             whodap_client=whodap_client,
