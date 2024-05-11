@@ -1,7 +1,7 @@
 from typing import Dict, Tuple
 from ipaddress import IPv4Network, IPv4Address
 
-from .errors import GeneralError
+from ..errors import GeneralError
 
 
 # Regional Internet Registry IPv4 Allocations:
