@@ -24,7 +24,7 @@ class DomainParser:
 
     def parse(self, blob: str, tld: str) -> dict[TLDBaseKeys, Any]:
         if not self.ignore_not_found and any(
-            [n in blob.lower() for n in self._no_match_checks]
+            n in blob.lower() for n in self._no_match_checks
         ):
             raise NotFoundError("Domain not found!")
         parser = self._init_parser(tld)
