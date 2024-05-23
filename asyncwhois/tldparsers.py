@@ -9,8 +9,11 @@ from typing import Any
 from .parse import BaseParser, TLDBaseKeys
 
 
+ExpressionDict = dict[str, str]
+
+
 class TLDParser(BaseParser):
-    base_expressions = {
+    base_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"Domain Name: *(.+)",
         TLDBaseKeys.CREATED: r"Creation Date: *(.+)",
         TLDBaseKeys.UPDATED: r"Updated Date: *(.+)",
@@ -68,11 +71,14 @@ class TLDParser(BaseParser):
         TLDBaseKeys.TECH_EMAIL: r"Tech Email: (.+)",
     }
 
+    tld_specific_expressions: ExpressionDict = {}
+
     multiple_match_keys = (TLDBaseKeys.NAME_SERVERS, TLDBaseKeys.STATUS)
     date_keys = (TLDBaseKeys.CREATED, TLDBaseKeys.UPDATED, TLDBaseKeys.EXPIRES)
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.reg_expressions = self.base_expressions.copy()
+        self.update_reg_expressions(self.tld_specific_expressions)
 
 
 # ==============================
@@ -81,7 +87,7 @@ class TLDParser(BaseParser):
 
 
 class RegexRU(TLDParser):
-    _ru_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"domain: *(.+)",
         TLDBaseKeys.CREATED: r"created: *(.+)",
         TLDBaseKeys.EXPIRES: r"paid-till: *(.+)",
@@ -91,13 +97,9 @@ class RegexRU(TLDParser):
         TLDBaseKeys.ADMIN_EMAIL: r"admin-contact: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._ru_expressions)
-
 
 class RegexCL(TLDParser):
-    _cl_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.NAME_SERVERS: r"Name server: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"Registrant name: *(.+)",
         TLDBaseKeys.REGISTRANT_ORGANIZATION: r"Registrant organisation: *(.+)",
@@ -106,13 +108,9 @@ class RegexCL(TLDParser):
         TLDBaseKeys.CREATED: r"Creation date: (\d{4}-\d{2}-\d{2})",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._cl_expressions)
-
 
 class RegexPL(TLDParser):
-    _pl_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"DOMAIN NAME: *(.+)\n",
         TLDBaseKeys.REGISTRAR: r"REGISTRAR:\s*(.+)",
         TLDBaseKeys.CREATED: r"created: *(.+)",
@@ -120,10 +118,6 @@ class RegexPL(TLDParser):
         TLDBaseKeys.UPDATED: r"last modified: *(.+)\n",
         TLDBaseKeys.DNSSEC: r"dnssec: *(.+)",
     }
-
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._pl_expressions)
 
     def parse(self, blob: str) -> dict[str, Any]:
         parsed_output = super().parse(blob)
@@ -140,20 +134,16 @@ class RegexPL(TLDParser):
 class RegexRO(TLDParser):
     # % The ROTLD WHOIS service on port 43 never discloses any information concerning the registrant.
 
-    _ro_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.CREATED: r"Registered On: *(.+)",
         TLDBaseKeys.EXPIRES: r"Expires On: *(.+)",
         TLDBaseKeys.NAME_SERVERS: r"Nameserver: *(.+)",
         TLDBaseKeys.REGISTRAR_URL: r"Referral URL: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._ro_expressions)
-
 
 class RegexPE(TLDParser):
-    _pe_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.REGISTRANT_NAME: r"Registrant name: *(.+)",
         TLDBaseKeys.REGISTRAR: r"Sponsoring Registrar: *(.+)",
         TLDBaseKeys.ADMIN_EMAIL: r"Admin Email: *(.+)",
@@ -162,13 +152,9 @@ class RegexPE(TLDParser):
         TLDBaseKeys.STATUS: r"Domain Status: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._pe_expressions)
-
 
 class RegexEE(TLDParser):
-    _ee_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"Domain: *[\n\r]+\s*name: *([^\n\r]+)",
         TLDBaseKeys.STATUS: r"status: *([^\n\r]+)",
         TLDBaseKeys.CREATED: r"registered: *([^\n\r]+)",
@@ -181,13 +167,9 @@ class RegexEE(TLDParser):
         TLDBaseKeys.REGISTRANT_COUNTRY: r"country: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._ee_expressions)
-
 
 class RegexFR(TLDParser):
-    _fr_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"domain: *(.+)",
         TLDBaseKeys.CREATED: r"created: (\d{4}-\d{2}-\d{2})",
         TLDBaseKeys.UPDATED: r"last-update: (\d{4}-\d{2}-\d{2})",
@@ -196,13 +178,9 @@ class RegexFR(TLDParser):
         TLDBaseKeys.REGISTRAR: r"registrar: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._fr_expressions)
-
 
 class RegexBR(TLDParser):
-    _br_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.CREATED: r"created: ",
         TLDBaseKeys.UPDATED: r"changed: ",
         TLDBaseKeys.STATUS: r"status: *(.+)",
@@ -211,13 +189,9 @@ class RegexBR(TLDParser):
         TLDBaseKeys.EXPIRES: r"expires: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._br_expressions)
-
 
 class RegexKR(TLDParser):
-    _kr_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.CREATED: r"Registered Date *: (\d{4}\.\s\d{2}\.\s\d{2}\.)",
         TLDBaseKeys.UPDATED: r"Last Updated Date *: (\d{4}\.\s\d{2}\.\s\d{2}\.)",
         TLDBaseKeys.EXPIRES: r"Expiration Date *: (\d{4}\.\s\d{2}\.\s\d{2}\.)",
@@ -231,25 +205,17 @@ class RegexKR(TLDParser):
         TLDBaseKeys.NAME_SERVERS: r"Host Name *: (.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._kr_expressions)
-
 
 class RegexEU(TLDParser):
     # .EU whois server disclaimer:
     # % The EURid WHOIS service on port 43 (textual whois) never
     # % discloses any information concerning the registrant.
 
-    _eu_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"Domain: *(.+)",
         TLDBaseKeys.REGISTRAR: r"Registrar:\n.*Name: (.+)",
         TLDBaseKeys.REGISTRAR_URL: r"Registrar:\n.*Name:.+\n.*Website: *(.+)",
     }
-
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._eu_expressions)
 
     def parse(self, blob: str) -> dict[str, Any]:
         parsed_output = super().parse(blob)
@@ -269,19 +235,15 @@ class RegexDE(TLDParser):
     # % available at the DENIC website:
     # % http://www.denic.de/en/domains/whois-service/web-whois.html
 
-    _de_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.UPDATED: r"Changed: *(.+)",
         TLDBaseKeys.NAME_SERVERS: r"Nserver: *(.+)",
         TLDBaseKeys.DOMAIN_NAME: r"Domain: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._de_expressions)
-
 
 class RegexUK(TLDParser):
-    _uk_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"Domain name:\r\n*(.+)",
         TLDBaseKeys.CREATED: r"Registered on:\s*(\d{2}-\w{3}-\d{4})",
         TLDBaseKeys.UPDATED: r"Last updated:\s*(\d{2}-\w{3}-\d{4})",
@@ -291,10 +253,6 @@ class RegexUK(TLDParser):
         TLDBaseKeys.REGISTRANT_NAME: r"Registrant:\n *(.+)",
         TLDBaseKeys.STATUS: r"Registration status:\n *(.+)",
     }
-
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._uk_expressions)
 
     def parse(self, blob: str) -> dict[str, Any]:
         parsed_output = super().parse(blob)
@@ -315,7 +273,7 @@ class RegexUK(TLDParser):
 
 
 class RegexJP(TLDParser):
-    _jp_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"\[Domain Name\] *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"\[Registrant\] *(.+)",
         TLDBaseKeys.REGISTRANT_ORGANIZATION: r"\[Organization\] *(.+)",
@@ -325,10 +283,6 @@ class RegexJP(TLDParser):
         TLDBaseKeys.UPDATED: r"\[最終更新\] *(.+)",
         TLDBaseKeys.NAME_SERVERS: r"\[Name Server\] *(.+)",
     }
-
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._jp_expressions)
 
     def parse(self, blob: str) -> dict[str, Any]:
         parsed_output = super().parse(blob)
@@ -355,19 +309,15 @@ class RegexJP(TLDParser):
 
 
 class RegexAU(TLDParser):
-    _au_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.UPDATED: r"Last Modified: (\d{2}-\w{3}-\d{4})",
         TLDBaseKeys.REGISTRAR: r"Registrar Name:\s *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"Registrant: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._au_expressions)
-
 
 class RegexAT(TLDParser):
-    _at_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"domain: *(.+)",
         TLDBaseKeys.REGISTRAR: r"registrar: *(.+)",
         TLDBaseKeys.UPDATED: r"changed: *(.+)",
@@ -386,10 +336,6 @@ class RegexAT(TLDParser):
         "phone": "phone: *(.+)",
         "fax": "fax-no: *(.+)",
     }
-
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._at_expressions)
 
     def parse(self, blob: str) -> dict[str, Any]:
         parser_output = super().parse(blob)
@@ -421,17 +367,13 @@ class RegexAT(TLDParser):
 
 
 class RegexBE(TLDParser):
-    _be_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"Domain: *(.+)",
         TLDBaseKeys.CREATED: r"Registered: *(.+)",
         TLDBaseKeys.REGISTRAR: r"Registrar:\n.+Name: *(.+)",
         TLDBaseKeys.REGISTRAR_URL: r"Registrar:\n.+Name:.+\n.+Website:*(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"Registrant:\n *(.+)",
     }
-
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._be_expressions)
 
     def parse(self, blob: str) -> dict[str, Any]:
         parsed_output = super().parse(blob)
@@ -441,21 +383,16 @@ class RegexBE(TLDParser):
         return parsed_output
 
 
-class RegexRF(TLDParser):  # same as RU
-    def __init__(self):
-        super().__init__()
-
-        self.update_reg_expressions(RegexRU._ru_expressions)
+class RegexRF(RegexRU):  # same as RU
+    pass
 
 
-class RegexSU(TLDParser):  # same as RU
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(RegexRU._ru_expressions)
+class RegexSU(RegexRU):  # same as RU
+    pass
 
 
 class RegexKG(TLDParser):
-    _kg_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"Domain *(.+) ",
         TLDBaseKeys.REGISTRAR: r"Domain support: \s*(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"Name: *(.+)",
@@ -464,10 +401,6 @@ class RegexKG(TLDParser):
         TLDBaseKeys.EXPIRES: r"Record expires on \s*(.+)",
         TLDBaseKeys.UPDATED: r"Record last updated on\s*(.+)",
     }
-
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._kg_expressions)
 
     def parse(self, blob: str) -> dict[str, Any]:
         parsed_output = super().parse(blob)
@@ -478,7 +411,7 @@ class RegexKG(TLDParser):
 
 
 class RegexCH(TLDParser):
-    _ch_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.REGISTRANT_NAME: r"Holder of domain name:\s*(?:.*\n){1}\s*(.+)",
         TLDBaseKeys.REGISTRANT_ADDRESS: r"Holder of domain name:\s*(?:.*\n){2}\s*(.+)",
         TLDBaseKeys.REGISTRAR: r"Registrar:\n*(.+)",
@@ -486,19 +419,13 @@ class RegexCH(TLDParser):
         TLDBaseKeys.DNSSEC: r"DNSSEC:*([\S]+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._ch_expressions)
 
-
-class RegexLI(TLDParser):  # same as CH
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(RegexCH._ch_expressions)
+class RegexLI(RegexCH):  # same as CH
+    pass
 
 
 class RegexID(TLDParser):
-    _id_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.CREATED: r"Created On:(.+)",
         TLDBaseKeys.EXPIRES: r"Expiration Date:(.+)",
         TLDBaseKeys.UPDATED: r"Last Updated On:(.+)",
@@ -512,13 +439,9 @@ class RegexID(TLDParser):
         TLDBaseKeys.REGISTRANT_ADDRESS: r"Registrant Street1:(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._id_expressions)
-
 
 class RegexSE(TLDParser):
-    _se_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"domain: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"holder\.*: *(.+)",
         TLDBaseKeys.CREATED: r"created\.*: *(.+)",
@@ -530,13 +453,9 @@ class RegexSE(TLDParser):
         TLDBaseKeys.NAME_SERVERS: r"nserver: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._se_expressions)
-
 
 class RegexIT(TLDParser):
-    _it_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"Domain: *(.+)",
         TLDBaseKeys.CREATED: r"(?<! )Created: *(.+)",
         TLDBaseKeys.UPDATED: r"(?<! )Last Update: *(.+)",
@@ -548,26 +467,18 @@ class RegexIT(TLDParser):
         TLDBaseKeys.REGISTRAR_URL: r"(?<=Registrar)[\s\S]*?Web: *(.*)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._it_expressions)
-
 
 class RegexSA(TLDParser):
-    _sa_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.CREATED: r"Created on: *(.+)",
         TLDBaseKeys.UPDATED: r"Last Updated on: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"Registrant:\s*(.+)",
         TLDBaseKeys.REGISTRANT_ADDRESS: r"(?<=Registrant)[\s\S]*?Address:((?:.+\n)*)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._sa_expressions)
-
 
 class RegexSK(TLDParser):
-    _sk_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"Domain: *(.+)",
         TLDBaseKeys.CREATED: r"(?<=Domain:)[\s\w\W]*?Created: *(.+)",
         TLDBaseKeys.UPDATED: r"(?<=Domain:)[\s\w\W]*?Updated: *(.+)",
@@ -582,13 +493,9 @@ class RegexSK(TLDParser):
         TLDBaseKeys.REGISTRANT_COUNTRY: r"(?<=^Contact)[\s\S]*?Country Code:(.*)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._sk_expressions)
-
 
 class RegexMX(TLDParser):
-    _mx_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.CREATED: r"Created On: *(.+)",
         TLDBaseKeys.UPDATED: r"Last Updated On: *(.+)",
         TLDBaseKeys.EXPIRES: r"Expiration Date: *(.+)",
@@ -600,13 +507,9 @@ class RegexMX(TLDParser):
         TLDBaseKeys.REGISTRANT_COUNTRY: r"(?<=Registrant)[\s\S]*?Country:(.*)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._mx_expressions)
-
 
 class RegexTW(TLDParser):
-    _tw_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.CREATED: r"Record created on (.+) ",
         TLDBaseKeys.EXPIRES: r"Record expires on (.+) ",
         TLDBaseKeys.REGISTRAR: r"Registration Service Provider: *(.+)",
@@ -618,36 +521,24 @@ class RegexTW(TLDParser):
         TLDBaseKeys.REGISTRANT_COUNTRY: r"(?<=Registrant:)\s*(?:.*\n){6}\s+(.*)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._tw_expressions)
-
 
 class RegexTR(TLDParser):
-    _tr_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.CREATED: r"Created on.*: *(.+)",
         TLDBaseKeys.EXPIRES: r"Expires on.*: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"(?<=[**] Registrant:)[\s\S]((?:\s.+)*)",
         TLDBaseKeys.REGISTRANT_ADDRESS: r"(?<=[**] Administrative Contact)[\s\S]*?Address\s+: (.*)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._tr_expressions)
-
 
 class RegexIS(TLDParser):
-    _is_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"domain: *(.+)",
         TLDBaseKeys.CREATED: r"created\.*: *(.+)",
         TLDBaseKeys.EXPIRES: r"expires\.*: *(.+)",
         TLDBaseKeys.DNSSEC: r"dnssec\.*: *(.+)",
         TLDBaseKeys.NAME_SERVERS: r"nserver\.*: *(.+)",
     }
-
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._is_expressions)
 
     def parse(self, blob: str) -> dict[str, Any]:
         parsed_output = super().parse(blob)
@@ -673,7 +564,7 @@ class RegexIS(TLDParser):
 
 
 class RegexDK(TLDParser):
-    _dk_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"Domain: *(.+)",
         TLDBaseKeys.CREATED: r"Registered: *(.+)",
         TLDBaseKeys.EXPIRES: r"Expires: *(.+)",
@@ -686,13 +577,9 @@ class RegexDK(TLDParser):
         TLDBaseKeys.REGISTRANT_COUNTRY: r"Registrant\s*(?:.*\n){6}\s*Country: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._dk_expressions)
-
 
 class RegexIL(TLDParser):
-    _li_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.EXPIRES: r"validity: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"person: *(.+)",
         TLDBaseKeys.REGISTRANT_ADDRESS: r"address *(.+)",
@@ -701,13 +588,9 @@ class RegexIL(TLDParser):
         TLDBaseKeys.REGISTRAR: r"registrar name: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._li_expressions)
-
 
 class RegexFI(TLDParser):
-    _fi_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"domain\.*: *([\S]+)",
         TLDBaseKeys.REGISTRANT_NAME: r"Holder\s*name\.*:\s(.+)",
         TLDBaseKeys.REGISTRANT_ADDRESS: r"[Holder\w\W]address\.*: ([\S\ ]+)",
@@ -723,10 +606,6 @@ class RegexFI(TLDParser):
         TLDBaseKeys.REGISTRAR: r"registrar\.*:\s(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._fi_expressions)
-
 
 class RegexNU(TLDParser):
     _nu_expression = {
@@ -740,10 +619,6 @@ class RegexNU(TLDParser):
         TLDBaseKeys.STATUS: r"status\.*: *(.+)",
         TLDBaseKeys.REGISTRAR: r"registrar: *(.+)",
     }
-
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._nu_expression)
 
 
 class RegexPT(TLDParser):
@@ -759,13 +634,9 @@ class RegexPT(TLDParser):
         TLDBaseKeys.STATUS: r"Domain Status: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._pt_expression)
-
 
 class RegexIE(TLDParser):
-    _ie_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.REGISTRANT_NAME: r"Domain Holder: *(.+)",
         TLDBaseKeys.CREATED: r"Registration Date: *(.+)",
         TLDBaseKeys.EXPIRES: r"Renewal Date: *(.+)",
@@ -774,14 +645,10 @@ class RegexIE(TLDParser):
         TLDBaseKeys.REGISTRAR: r"Account Name: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._ie_expressions)
-
 
 class RegexNZ(TLDParser):
     # These don't seem to be valid anymore:
-    # _nz_expressions = {
+    # tld_specific_expressions: ExpressionDict = {
     #     TLDBaseKeys.DOMAIN_NAME: r"",
     #     TLDBaseKeys.REGISTRAR: r"registrar_name:\s*([^\n\r]+)",
     #     TLDBaseKeys.UPDATED: r"domain_datelastmodified:\s*([^\n\r]+)",
@@ -795,14 +662,11 @@ class RegexNZ(TLDParser):
     #     TLDBaseKeys.REGISTRANT_ZIPCODE: r"registrant_contact_postalcode:\s*([^\n\r]+)",
     #     TLDBaseKeys.REGISTRANT_COUNTRY: r"registrant_contact_country:\s*([^\n\r]+)",
     # }
-
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions({})
+    pass
 
 
 class RegexLU(TLDParser):
-    _lu_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"domainname: *(.+)",
         TLDBaseKeys.CREATED: r"registered: *(.+)",
         TLDBaseKeys.NAME_SERVERS: r"nserver: *(.+)",
@@ -817,14 +681,9 @@ class RegexLU(TLDParser):
         TLDBaseKeys.REGISTRANT_COUNTRY: r"org-country: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-
-        self.update_reg_expressions(self._lu_expressions)
-
 
 class RegexCZ(TLDParser):
-    _cz_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"domain: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"name: *(.+)",
         TLDBaseKeys.REGISTRANT_ORGANIZATION: r"org: *(.+)",
@@ -834,10 +693,6 @@ class RegexCZ(TLDParser):
         TLDBaseKeys.EXPIRES: r"expire: *(.+)",
         TLDBaseKeys.NAME_SERVERS: r"nserver: *(.+)",
     }
-
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._cz_expressions)
 
     def parse(self, blob: str) -> dict[str, Any]:
         parsed_output = super().parse(blob)
@@ -863,7 +718,7 @@ class RegexCZ(TLDParser):
 
 
 class RegexHR(TLDParser):
-    _hr_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"Domain Name: *(.+)",
         TLDBaseKeys.UPDATED: r"Updated Date: *(.+)",
         TLDBaseKeys.CREATED: r"Creation Date: *(.+)",
@@ -873,13 +728,9 @@ class RegexHR(TLDParser):
         TLDBaseKeys.REGISTRANT_ADDRESS: r"Registrant Street:\s*(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._hr_expressions)
-
 
 class RegexHK(TLDParser):
-    _hk_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.STATUS: r"Domain Status: *(.+)",
         TLDBaseKeys.DNSSEC: r"DNSSEC: *(.+)",
         TLDBaseKeys.REGISTRAR: r"Registrar Name: *(.+)",
@@ -895,13 +746,9 @@ class RegexHK(TLDParser):
         TLDBaseKeys.NAME_SERVERS: r"Name Servers Information:\s+((?:.+\n)*)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._hk_expressions)
-
 
 class RegexUA(TLDParser):
-    _ua_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"domain: *(.+)",
         TLDBaseKeys.STATUS: r"status: *(.+)",
         TLDBaseKeys.REGISTRAR: r"(?:Registrar: |(?<=Registrar:)[\s\W\w]*?organization-loc: )(.*)",
@@ -923,10 +770,6 @@ class RegexUA(TLDParser):
     KNOWN_DATE_FORMATS = [
         "%Y-%m-%d %H:%M:%S%z",
     ]
-
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._ua_expressions)
 
     @staticmethod
     def _fix_timezone(date_string: str) -> str:
@@ -972,7 +815,7 @@ class RegexUA(TLDParser):
 
 
 class RegexCN(TLDParser):
-    _cn_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.REGISTRAR: r"Sponsoring Registrar: *(.+)",
         TLDBaseKeys.CREATED: r"Registration Time: *(.+)",
         TLDBaseKeys.EXPIRES: r"Expiration Time: *(.+)",
@@ -980,13 +823,9 @@ class RegexCN(TLDParser):
         TLDBaseKeys.REGISTRANT_EMAIL: r"Registrant Contact Email: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._cn_expressions)
-
 
 class RegexAR(TLDParser):
-    _ar_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"domain: *(.+)",
         TLDBaseKeys.REGISTRAR: r"registrar: *(.+)",
         TLDBaseKeys.UPDATED: r"changed: *(.+)",
@@ -996,13 +835,9 @@ class RegexAR(TLDParser):
         TLDBaseKeys.REGISTRANT_NAME: r"name: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._ar_expressions)
-
 
 class RegexBY(TLDParser):
-    _by_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"Domain Name: *(.+)",
         TLDBaseKeys.REGISTRAR: r"Registrar: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"Person: *(.+)",
@@ -1012,13 +847,9 @@ class RegexBY(TLDParser):
         TLDBaseKeys.REGISTRANT_ADDRESS: r"Address: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._by_expressions)
-
 
 class RegexCR(TLDParser):
-    _cr_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"domain: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"name: *(.+)",
         TLDBaseKeys.REGISTRAR: r"registrar: *(.+)",
@@ -1029,17 +860,13 @@ class RegexCR(TLDParser):
         TLDBaseKeys.REGISTRANT_ORGANIZATION: r"org: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._cr_expressions)
-
     def parse(self, blob: str) -> dict[str, Any]:
         # CR server has the same format as CZ
         return RegexCZ().parse(blob)
 
 
 class RegexVE(TLDParser):  # double check
-    _ve_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"domain: *(.+)",
         TLDBaseKeys.CREATED: "registered: *(.+)",
         TLDBaseKeys.EXPIRES: "expire: *(.+)",
@@ -1055,13 +882,9 @@ class RegexVE(TLDParser):  # double check
         TLDBaseKeys.REGISTRANT_ORGANIZATION: r"org: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._ve_expressions)
-
 
 class RegexAE(TLDParser):
-    _ae_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.STATUS: r"Status: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"Registrant Contact Name: *(.+)",
         TLDBaseKeys.REGISTRANT_ORGANIZATION: r"Registrant Contact Organisation: *(.+)",
@@ -1072,13 +895,9 @@ class RegexAE(TLDParser):
         TLDBaseKeys.TECH_ORGANIZATION: r"Tech Contact Organisation: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._ae_expressions)
-
 
 class RegexSI(TLDParser):
-    _si_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.REGISTRAR: r"registrar: *(.+)",
         TLDBaseKeys.REGISTRAR_URL: r"registrar-url: *(.+)",
         TLDBaseKeys.NAME_SERVERS: r"nameserver: *(.+)",
@@ -1088,10 +907,6 @@ class RegexSI(TLDParser):
         TLDBaseKeys.DOMAIN_NAME: "domain: *(.+)",
         TLDBaseKeys.STATUS: "status: *(.+)",
     }
-
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._si_expressions)
 
 
 class RegexNO(TLDParser):
@@ -1105,7 +920,7 @@ class RegexNO(TLDParser):
     % https://www.norid.no/en/domeneoppslag/
     """
 
-    _no_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.CREATED: r"Created:\s*(.+)",
         TLDBaseKeys.UPDATED: r"Last updated:\s*(.+)",
         TLDBaseKeys.NAME_SERVERS: r"Name Server Handle\.*: *(.+)",
@@ -1113,13 +928,9 @@ class RegexNO(TLDParser):
         TLDBaseKeys.DOMAIN_NAME: r"Domain Name\.*: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._no_expressions)
-
 
 class RegexKZ(TLDParser):
-    _kz_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"Domain Name.*: (.+)",
         TLDBaseKeys.REGISTRAR: r"Current Registar:\s*(.+)",  # "Registar" typo exists on the whois server
         TLDBaseKeys.CREATED: r"Domain created:\s*(.+)\s\(",
@@ -1134,13 +945,9 @@ class RegexKZ(TLDParser):
         TLDBaseKeys.REGISTRANT_NAME: r"Organization Name\.*:\s*(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._kz_expressions)
-
 
 class RegexIR(TLDParser):
-    _ir_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.UPDATED: r"last-updated: *(.+)",
         TLDBaseKeys.EXPIRES: r"expire-date: *(.+)",
         TLDBaseKeys.REGISTRANT_ORGANIZATION: r"org: *(.+)",
@@ -1150,13 +957,9 @@ class RegexIR(TLDParser):
         TLDBaseKeys.DOMAIN_NAME: r"domain: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._ir_expressions)
-
 
 class RegexTK(TLDParser):
-    _tk_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.REGISTRANT_ORGANIZATION: r"(?<=Owner contact)[\s\S]*?Organization:(.*)",
         TLDBaseKeys.REGISTRANT_NAME: r"(?<=Owner contact)[\s\S]*?Name:(.*)",
         TLDBaseKeys.REGISTRANT_ADDRESS: r"(?<=Owner contact)[\s\S]*?Address:(.*)",
@@ -1194,10 +997,6 @@ class RegexTK(TLDParser):
         TLDBaseKeys.TECH_FAX: r"(?<=Tech contact)[\s\S]*?Fax:(.*)",
         TLDBaseKeys.TECH_PHONE: r"(?<=Tech contact)[\s\S]*?Phone:(.*)",
     }
-
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._tk_expressions)
 
     def parse(self, blob: str) -> dict[str, Any]:
         parsed_output = super().parse(blob)
@@ -1240,23 +1039,15 @@ class RegexTK(TLDParser):
 
 
 class RegexCC(TLDParser):
-    _cc_expressions = {TLDBaseKeys.STATUS: r"Domain Status: *(.+)"}
-
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._cc_expressions)
+    tld_specific_expressions: ExpressionDict = {TLDBaseKeys.STATUS: r"Domain Status: *(.+)"}
 
 
 class RegexEDU(TLDParser):
-    _edu_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.CREATED: "Domain record activated: *(.+)",
         TLDBaseKeys.UPDATED: "Domain record last updated: *(.+)",
         TLDBaseKeys.EXPIRES: "Domain expires: *(.+)",
     }
-
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._edu_expressions)
 
     def parse(self, blob: str) -> dict[str, Any]:
         parsed_output = super().parse(blob)
@@ -1295,7 +1086,7 @@ class RegexEDU(TLDParser):
 
 
 class RegexLV(TLDParser):
-    _lv_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"Domain: *(.+)",
         TLDBaseKeys.REGISTRAR: r"\[Registrar\]\n(?:.*)\nName:(.*)+",
         TLDBaseKeys.REGISTRANT_NAME: r"\[Holder\]\n(?:.*)\nName:(.*)+",
@@ -1303,17 +1094,9 @@ class RegexLV(TLDParser):
         TLDBaseKeys.NAME_SERVERS: r"Nserver: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._lv_expressions)
-
 
 class RegexGQ(TLDParser):
-    _gq_expressions = {}
-
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._gq_expressions)
+    tld_specific_expressions: ExpressionDict = {}
 
     def parse(self, blob: str) -> dict[str, Any]:
         # GQ server has the same format as TK
@@ -1321,14 +1104,10 @@ class RegexGQ(TLDParser):
 
 
 class RegexNL(TLDParser):
-    _nl_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.REGISTRAR: r"Registrar:\n(.+)",
         TLDBaseKeys.REGISTRAR_ABUSE_EMAIL: r"Abuse Contact:\n(.+)",
     }
-
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._nl_expressions)
 
     def parse(self, blob: str) -> dict[str, Any]:
         parsed_output = super().parse(blob)
@@ -1340,36 +1119,24 @@ class RegexNL(TLDParser):
 
 
 class RegexMA(TLDParser):
-    _ma_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.REGISTRAR: r"Sponsoring Registrar: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._ma_expressions)
-
 
 class RegexGE(TLDParser):
-    _ge_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.REGISTRANT_NAME: r"Registrant: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._ge_expressions)
-
 
 class RegexGG(TLDParser):
-    _gg_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"Domain:\n*(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"Registrant:\n*(.+)",
         TLDBaseKeys.REGISTRAR: r"Registrar:\n*(.+)",
         TLDBaseKeys.CREATED: r"Registered on *(.+) at",
     }
-
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._gg_expressions)
 
     def parse(self, blob: str) -> dict[str, Any]:
         parsed_output = super().parse(blob)
@@ -1393,14 +1160,10 @@ class RegexGG(TLDParser):
 
 
 class RegexAW(TLDParser):
-    _aw_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.REGISTRAR: r"Registrar:\n*(.+)",
         TLDBaseKeys.REGISTRAR_ABUSE_EMAIL: r"Abuse Contact:\n*(.+)",
     }
-
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._aw_expressions)
 
     def parse(self, blob: str) -> dict[str, Any]:
         parsed_output = super().parse(blob)
@@ -1411,7 +1174,7 @@ class RegexAW(TLDParser):
 
 
 class RegexAX(TLDParser):
-    _ax_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"domain\.+: *(.+)",
         TLDBaseKeys.REGISTRAR: r"registrar\.+: *(.+)",
         TLDBaseKeys.REGISTRAR_URL: r"www\.+: *(.+)",
@@ -1424,10 +1187,6 @@ class RegexAX(TLDParser):
         TLDBaseKeys.NAME_SERVERS: r"nserver\.+: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._ax_expressions)
-
     def parse(self, blob: str) -> dict[str, Any]:
         parsed_output = super().parse(blob)
         addresses = self.find_match(r"address\.+: *(.+)", blob, many=True)
@@ -1437,16 +1196,12 @@ class RegexAX(TLDParser):
 
 
 class RegexML(TLDParser):
-    _ml_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.EXPIRES: r"Record will expire on: *(.+)",
         TLDBaseKeys.CREATED: r"Domain registered: *(.+)",
         TLDBaseKeys.DOMAIN_NAME: r"Domain name:\n*(.+)\sis\s",
         TLDBaseKeys.STATUS: r"Domain name:\n.+\sis\s*(.+)",
     }
-
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._ml_expressions)
 
     def parse(self, blob: str) -> dict[str, Any]:
         parsed_output = super().parse(blob)
@@ -1496,7 +1251,7 @@ class RegexML(TLDParser):
 
 
 class RegexOM(TLDParser):
-    _om_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.REGISTRAR: r"Registrar Name: *(.+)",
         TLDBaseKeys.UPDATED: r"Last Modified: *(.+)",
         TLDBaseKeys.REGISTRANT_CITY: r"Registrant Contact City: *(.+)",
@@ -1512,23 +1267,15 @@ class RegexOM(TLDParser):
         TLDBaseKeys.NAME_SERVERS: r"Name Server: *(.+)",
     }
 
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._om_expressions)
-
 
 class RegexUZ(TLDParser):
-    _uz_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.REGISTRANT_NAME: r"Registrant:\s+([A-Za-z0-9\.\s]+\n)",
         TLDBaseKeys.REGISTRANT_EMAIL: r"Contact with Registrant: *(.+)",
         TLDBaseKeys.ADMIN_NAME: r"Administrative Contact:\s+([A-Za-z0-9\.\s]+\n)",
         TLDBaseKeys.BILLING_NAME: r"Billing Contact:\s+([A-Za-z0-9\.\s]+\n)",
         TLDBaseKeys.TECH_NAME: r"Technical Contact:\s+([A-Za-z0-9\.\s]+\n)",
     }
-
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._uz_expressions)
 
     def parse(self, blob: str) -> dict[str, Any]:
         output = super().parse(blob)
@@ -1539,7 +1286,7 @@ class RegexUZ(TLDParser):
 
 
 class RegexGA(TLDParser):
-    _ga_expressions = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"Domain name:\n*(.+) is",
         TLDBaseKeys.STATUS: r"Domain name:\n*.+ is (.+)",
         TLDBaseKeys.CREATED: r"Domain registered: *(.+)",
@@ -1581,10 +1328,6 @@ class RegexGA(TLDParser):
         TLDBaseKeys.TECH_FAX: r"(?<=Tech contact)[\s\S]*?Fax:(.*)",
         TLDBaseKeys.TECH_PHONE: r"(?<=Tech contact)[\s\S]*?Phone:(.*)",
     }
-
-    def __init__(self):
-        super().__init__()
-        self.update_reg_expressions(self._ga_expressions)
 
     def parse(self, blob: str) -> dict[str, Any]:
         output = super().parse(blob)
