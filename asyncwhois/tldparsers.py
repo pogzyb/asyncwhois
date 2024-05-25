@@ -4,7 +4,7 @@
 
 from datetime import datetime
 import re
-from typing import Any
+from typing import Any, Union
 
 from .parse import BaseParser, TLDBaseKeys
 
@@ -798,7 +798,7 @@ class RegexUA(TLDParser):
         return date_string
 
     @staticmethod
-    def _parse_date(date_string: str) -> datetime | str:
+    def _parse_date(date_string: str) -> Union[datetime, str]:
         date = TLDParser._parse_date(date_string)
         if isinstance(date, datetime):
             return date
@@ -848,7 +848,7 @@ class RegexBY(TLDParser):
     }
 
 
-class RegexCR(TLDParser):
+class RegexCR(RegexCZ):
     tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"domain: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"name: *(.+)",
@@ -859,10 +859,6 @@ class RegexCR(TLDParser):
         TLDBaseKeys.NAME_SERVERS: r"nserver: *(.+)",
         TLDBaseKeys.REGISTRANT_ORGANIZATION: r"org: *(.+)",
     }
-
-    def parse(self, blob: str) -> dict[str, Any]:
-        # CR server has the same format as CZ
-        return RegexCZ().parse(blob)
 
 
 class RegexVE(TLDParser):  # double check
@@ -1095,12 +1091,8 @@ class RegexLV(TLDParser):
     }
 
 
-class RegexGQ(TLDParser):
+class RegexGQ(RegexTK):
     tld_specific_expressions: ExpressionDict = {}
-
-    def parse(self, blob: str) -> dict[str, Any]:
-        # GQ server has the same format as TK
-        return RegexTK().parse(blob)
 
 
 class RegexNL(TLDParser):
