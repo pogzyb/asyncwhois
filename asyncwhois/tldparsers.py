@@ -608,7 +608,7 @@ class RegexFI(TLDParser):
 
 
 class RegexNU(TLDParser):
-    _nu_expression = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"domain\.*: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"holder\.*: *(.+)",
         TLDBaseKeys.CREATED: r"created\.*: *(.+)",
@@ -622,7 +622,7 @@ class RegexNU(TLDParser):
 
 
 class RegexPT(TLDParser):
-    _pt_expression = {
+    tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"Domain: *(.+)",
         TLDBaseKeys.CREATED: r"Creation Date: *(.+)",
         TLDBaseKeys.EXPIRES: r"Expiration Date: *(.+)",
@@ -1035,7 +1035,9 @@ class RegexTK(TLDParser):
 
 
 class RegexCC(TLDParser):
-    tld_specific_expressions: ExpressionDict = {TLDBaseKeys.STATUS: r"Domain Status: *(.+)"}
+    tld_specific_expressions: ExpressionDict = {
+        TLDBaseKeys.STATUS: r"Domain Status: *(.+)"
+    }
 
 
 class RegexEDU(TLDParser):
@@ -1092,7 +1094,7 @@ class RegexLV(TLDParser):
 
 
 class RegexGQ(RegexTK):
-    tld_specific_expressions: ExpressionDict = {}
+    ...
 
 
 class RegexNL(TLDParser):
