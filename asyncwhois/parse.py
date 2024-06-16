@@ -215,7 +215,6 @@ def convert_whodap_keys(parser_output: dict) -> dict:
         TLDBaseKeys.REGISTRANT_STATE,
         TLDBaseKeys.REGISTRANT_COUNTRY,
         TLDBaseKeys.REGISTRANT_ZIPCODE,
-        TLDBaseKeys.REGISTRAR,
         TLDBaseKeys.REGISTRAR_IANA_ID,
         TLDBaseKeys.REGISTRAR_URL,
         TLDBaseKeys.DNSSEC,
