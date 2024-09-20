@@ -18,7 +18,7 @@ import asyncwhois
 # pick a domain
 domain = 'bitcoin.org'
 # domain could also be a URL; asyncwhois uses tldextract to parse the URL
-domain = 'https://www.google.com?q=asyncwhois'
+# domain = 'https://www.google.com?q=asyncwhois'
 
 # basic example
 query_string, parsed_dict = asyncwhois.whois(domain)
@@ -99,9 +99,9 @@ client = asyncwhois.DomainClient(whodap_client=whodap_client)
 
 ```
 
-#### Using Proxies
+#### Proxies
 
-SOCKS4 and SOCKS5 proxies are supported for WHOIS and RDAP queries.
+SOCKS proxies are supported for WHOIS and RDAP queries.
 
 ```python
 import whodap
@@ -132,28 +132,28 @@ async with httpx.AsyncClient(transport=transport) as httpx_client:
 
 #### Exported Functions
 
-| Function/Object    | Description                                            |
-|--------------------|--------------------------------------------------------|
-| `DomainClient`     | Reusable client for  WHOIS or RDAP domain queries      |
-| `NumberClient`     | Reusable client for WHOIS or RDAP ipv4/ipv6 queries    |
-| `ASNClient`        | Reusable client for RDAP asn queries                   |
-| `whois`            | WHOIS entrypoint for domain, ipv4, or ipv6 queries     |
-| `rdap`             | RDAP entrypoint for domain, ipv4, ipv6, or asn queries |
-| `aio_whois`        | async counterpart to `whois`                           |
-| `aio_rdap`         | async counterpart to `rdap`                            |
-| `whois_ipv4`       | [DEPRECATED] WHOIS lookup for ipv4 addresses           |
-| `whois_ipv6`       | [DEPRECATED] WHOIS lookup for ipv6 addresses           |
-| `rdap_domain`      | [DEPRECATED] RDAP lookup for domain names              |
-| `rdap_ipv4`        | [DEPRECATED] RDAP lookup for ipv4 addresses            |
-| `rdap_ipv6`        | [DEPRECATED] RDAP lookup for ipv6 addresses            |
-| `rdap_asn`         | [DEPRECATED] RDAP lookup for Autonomous System Numbers |
-| `aio_whois_domain` | [DEPRECATED] async counterpart to `whois_domain`       |
-| `aio_whois_ipv4`   | [DEPRECATED] async counterpart to `whois_ipv4`         |
-| `aio_whois_ipv6`   | [DEPRECATED] async counterpart to `whois_ipv6`         |
-| `aio_rdap_domain`  | [DEPRECATED] async counterpart to `rdap_domain`        |
-| `aio_rdap_ipv4`    | [DEPRECATED] async counterpart to `rdap_ipv4`          |
-| `aio_rdap_ipv6`    | [DEPRECATED]  async counterpart to `rdap_ipv6`         |
-| `aio_rdap_asn`     | [DEPRECATED] async counterpart to `rdap_asn`           |
+| Function/Object    | Description                                             |
+|--------------------|---------------------------------------------------------|
+| `DomainClient`     | Reusable client for  WHOIS or RDAP domain queries       |
+| `NumberClient`     | Reusable client for WHOIS or RDAP ipv4/ipv6 queries     |
+| `ASNClient`        | Reusable client for RDAP asn queries                    |
+| `whois`            | WHOIS entrypoint for domain, ipv4, or ipv6 queries      |
+| `rdap`             | RDAP entrypoint for domain, ipv4, ipv6, or asn queries  |
+| `aio_whois`        | async counterpart to `whois`                            |
+| `aio_rdap`         | async counterpart to `rdap`                             |
+| `whois_ipv4`       | [DEPRECATED] WHOIS lookup for ipv4 addresses            |
+| `whois_ipv6`       | [DEPRECATED] WHOIS lookup for ipv6 addresses            |
+| `rdap_domain`      | [DEPRECATED] RDAP lookup for domain names               |
+| `rdap_ipv4`        | [DEPRECATED] RDAP lookup for ipv4 addresses             |
+| `rdap_ipv6`        | [DEPRECATED] RDAP lookup for ipv6 addresses             |
+| `rdap_asn`         | [DEPRECATED] RDAP lookup for Autonomous System Numbers  |
+| `aio_whois_domain` | [DEPRECATED] async counterpart to `whois_domain`        |
+| `aio_whois_ipv4`   | [DEPRECATED] async counterpart to `whois_ipv4`          |
+| `aio_whois_ipv6`   | [DEPRECATED] async counterpart to `whois_ipv6`          |
+| `aio_rdap_domain`  | [DEPRECATED] async counterpart to `rdap_domain`         |
+| `aio_rdap_ipv4`    | [DEPRECATED] async counterpart to `rdap_ipv4`           |
+| `aio_rdap_ipv6`    | [DEPRECATED] async counterpart to `rdap_ipv6`           |
+| `aio_rdap_asn`     | [DEPRECATED] async counterpart to `rdap_asn`            |
 
 #### Contributions
 
