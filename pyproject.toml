@@ -1,8 +1,40 @@
-[build-system]
-# These are the assumed default build requirements from pip:
-# https://pip.pypa.io/en/stable/reference/pip/#pep-517-and-518-support
-requires = [
-    "setuptools>=46.4.0",
-    "wheel"
+[project]
+name = "asyncwhois"
+authors = [
+  { name="Joe Obarzanek", email="pogzyb@umich.edu" },
 ]
-build-backend = "setuptools.build_meta"
+description = "Python WHOIS and RDAP utility for querying and parsing information about Domains, IPv4s, IPv6s, and AS numbers."
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Software Development",
+    "Topic :: Security",
+    "Framework :: AsyncIO",
+]
+dynamic = ["version"]
+license = {text = "MIT License"}
+dependencies = [
+    "python-socks[asyncio]>=2.0.2",
+    "tldextract>=3.2.0",
+    "whodap>=0.1.10"
+]
+
+[project.urls]
+Homepage = "https://github.com/pogzyb/asyncwhois"
+Issues = "https://github.com/pogzyb/asyncwhois/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["asyncwhois"]
+
+[tool.hatch.version]
+path = "asyncwhois/__init__.py"
