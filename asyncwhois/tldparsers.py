@@ -1,7 +1,6 @@
 """TLD-specific domain parser classes
 """
 
-
 from datetime import datetime
 import re
 from typing import Any, Union
@@ -1093,8 +1092,7 @@ class RegexLV(TLDParser):
     }
 
 
-class RegexGQ(RegexTK):
-    ...
+class RegexGQ(RegexTK): ...
 
 
 class RegexNL(TLDParser):

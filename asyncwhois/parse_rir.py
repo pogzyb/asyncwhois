@@ -87,8 +87,7 @@ class NumberParser:
 
 
 class ARINParser(RIRParser):  # default
-    def __init__(self):
-        ...
+    def __init__(self): ...
 
 
 class AFRINICParser(RIRParser):
