@@ -307,7 +307,7 @@ class BaseParser:
         :return: a datetime.datetime object
         """
 
-        def _datetime_or_none(dt_string: str, dt_format: str) -> datetime | None:
+        def _datetime_or_none(dt_string: str, dt_format: str) -> Union[datetime, None]:
             try:
                 return datetime.strptime(dt_string, dt_format)
             except ValueError:
