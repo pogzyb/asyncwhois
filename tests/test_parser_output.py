@@ -717,6 +717,10 @@ class TestTLDParsers(unittest.TestCase):
         created_date = parser_output.get("created")
         updated_date = parser_output.get("updated")
         expires_date = parser_output.get("expires")
+
+        # registered: 05.06.2002 20:00:00
+        # expire: 06.05.2021
+
         self.assertEqual(created_date.year, 2002)
         self.assertEqual(updated_date.year, 2020)
         self.assertEqual(expires_date.year, 2021)
@@ -790,7 +794,9 @@ class TestTLDParsers(unittest.TestCase):
         self.assertEqual(created_date.day, 17)
         self.assertEqual(expires_date.day, 17)
         # geo
-        self.assertEqual(parser_output.get("registrant_name"), "北京谷翔信息技术有限公司")
+        self.assertEqual(
+            parser_output.get("registrant_name"), "北京谷翔信息技术有限公司"
+        )
         # registrar
         self.assertEqual(parser_output.get("registrar"), "厦门易名科技股份有限公司")
         # registrant
