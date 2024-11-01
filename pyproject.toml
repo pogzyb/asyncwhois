@@ -20,9 +20,10 @@ classifiers = [
 dynamic = ["version"]
 license = {text = "MIT License"}
 dependencies = [
+    "python-dateutil>=2.9.0",
     "python-socks[asyncio]>=2.0.2",
     "tldextract>=3.2.0",
-    "whodap>=0.1.10"
+    "whodap>=0.1.12"
 ]
 
 [project.urls]
