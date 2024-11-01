@@ -3,51 +3,8 @@ from enum import Enum
 from datetime import datetime
 from typing import Dict, List, Any, Union
 
-
-# Date formats from richardpenman/pywhois
-KNOWN_DATE_FORMATS = [
-    "%d-%b-%Y",  # 02-jan-2000
-    "%d-%B-%Y",  # 11-February-2000
-    "%d-%m-%Y",  # 20-10-2000
-    "%Y-%m-%d",  # 2000-01-02
-    "%d.%m.%Y",  # 2.1.2000
-    "%Y.%m.%d",  # 2000.01.02
-    "%Y/%m/%d",  # 2000/01/02
-    "%Y/%m/%d %H:%M:%S",  # 2011/06/01 01:05:01
-    "%Y/%m/%d %H:%M:%S (%z)",  # 2011/06/01 01:05:01 (+0900)
-    "%Y%m%d",  # 20170209
-    "%Y%m%d %H:%M:%S",  # 20110908 14:44:51
-    "%d/%m/%Y",  # 02/01/2013
-    "%Y. %m. %d.",  # 2000. 01. 02.
-    "%Y.%m.%d %H:%M:%S",  # 2014.03.08 10:28:24
-    "%d-%b-%Y %H:%M:%S %Z",  # 24-Jul-2009 13:20:03 UTC
-    "%a %b %d %H:%M:%S %Z %Y",  # Tue Jun 21 23:59:59 GMT 2011
-    "%Y-%m-%dT%H:%M:%S",  # 2007-01-26T19:10:31
-    "%Y-%m-%dT%H:%M:%SZ",  # 2007-01-26T19:10:31Z
-    "%Y-%m-%dT%H:%M:%SZ[%Z]",  # 2007-01-26T19:10:31Z[UTC]
-    "%Y-%m-%dT%H:%M:%S.%fZ",  # 2018-12-01T16:17:30.568Z
-    "%Y-%m-%dT%H:%M:%S.%f%z",  # 2011-09-08T14:44:51.622265+03:00
-    "%Y-%m-%dT%H:%M:%S%z",  # 2013-12-06T08:17:22-0800
-    "%Y-%m-%dT%H:%M:%S%zZ",  # 1970-01-01T02:00:00+02:00Z
-    "%Y-%m-%dt%H:%M:%S.%f",  # 2011-09-08t14:44:51.622265
-    "%Y-%m-%dt%H:%M:%S",  # 2007-01-26T19:10:31
-    "%Y-%m-%dt%H:%M:%SZ",  # 2007-01-26T19:10:31Z
-    "%Y-%m-%dt%H:%M:%S.%fz",  # 2007-01-26t19:10:31.00z
-    "%Y-%m-%dt%H:%M:%S%z",  # 2011-03-30T19:36:27+0200
-    "%Y-%m-%dt%H:%M:%S.%f%z",  # 2011-09-08T14:44:51.622265+03:00
-    "%Y-%m-%d %H:%M:%SZ",  # 2000-08-22 18:55:20Z
-    "%Y-%m-%d %H:%M:%S",  # 2000-08-22 18:55:20
-    "%d %b %Y %H:%M:%S",  # 08 Apr 2013 05:44:00
-    "%d/%m/%Y %H:%M:%S",  # 23/04/2015 12:00:07 EEST
-    "%d/%m/%Y %H:%M:%S %Z",  # 23/04/2015 12:00:07 EEST
-    "%d/%m/%Y %H:%M:%S.%f %Z",  # 23/04/2015 12:00:07.619546 EEST
-    "%Y-%m-%d %H:%M:%S.%f",  # 23/04/2015 12:00:07.619546
-    "%B %d %Y",  # August 14 2017
-    "%d.%m.%Y %H:%M:%S",  # 08.03.2014 10:28:24
-    "%a %b %d %Y",  # Tue Dec 12 2000
-    "before %b-%Y",  # before aug-1996
-    "%Y-%m-%d %H:%M:%S (%Z%z)",  # 2017-09-26 11:38:29 (GMT+00:00)
-]
+from dateutil.parser import parse, ParserError
+from dateutil import tz
 
 
 class TLDBaseKeys(str, Enum):
@@ -239,21 +196,30 @@ class BaseParser:
     date_keys = ()
     multiple_match_keys = ()
 
+    # For handling special cases in TLD parser classes
+    known_date_formats = []
+    # Extra formats that dateutil might not figure out
+    extra_date_formats = [
+        "%Y-%m-%dT%H:%M:%SZ[%Z]",  # 2007-01-26T19:10:31Z[UTC]
+        "%Y-%m-%dT%H:%M:%S.%fZ",  # 2018-12-01T16:17:30.568Z
+        "%Y-%m-%dT%H:%M:%S%zZ",  # 1970-01-01T02:00:00+02:00Z
+        "%Y-%m-%dt%H:%M:%S.%fz",  # 2007-01-26t19:10:31.00z
+        "%Y-%m-%d %H:%M:%SZ",  # 2000-08-22 18:55:20Z
+        "before %b-%Y",  # before aug-1996
+    ]
+    # Additional timezone info for dateutil
+    timezone_info = {
+        "KST": tz.gettz("Asia/Seoul"),  # Korea Standard Time UTC+9
+        "JST": tz.gettz("Asia/Tokyo"),  # Japan Standard Time UTC+9
+        "EEST": tz.gettz("Europe/Athens"),  # Eastern European Summertime UTC+3
+    }
+
     def update_reg_expressions(self, expressions_update: Dict[str, Any]) -> None:
         """
         Updates the `reg_expressions` dictionary
-        :param expressions_update: dictionary of keys/regexes to update
+        :param expressions_update: dict of keys/regexes to update
         """
         self.reg_expressions.update(expressions_update)
-
-    @staticmethod
-    def _parse_date_mdY(date_string: str) -> datetime:
-        date_string = date_string.rstrip()
-        try:
-            # This date format conflicts with "%d/%m/%Y" date format in `KNOWN_DATE_FORMATS`
-            return datetime.strptime(date_string, "%m/%d/%Y")
-        except ValueError:
-            return date_string or None
 
     def parse(self, blob: str) -> Dict[Union[IPBaseKeys, TLDBaseKeys], Any]:
         """
@@ -333,20 +299,35 @@ class BaseParser:
             matches = self._process_many(multiline_match.group(1))
         return matches
 
-    @staticmethod
-    def _parse_date(date_string: str) -> Union[datetime, str]:
+    def _parse_date(self, date_string: str) -> Union[datetime, str]:
         """
         Attempts to convert the given date string to a datetime.datetime object
         otherwise returns the input `date_string`
         :param date_string: a date string
         :return: a datetime.datetime object
         """
-        for date_format in KNOWN_DATE_FORMATS:
+
+        def _datetime_or_none(dt_string: str, dt_format: str) -> datetime | None:
             try:
-                date = datetime.strptime(date_string, date_format)
-                return date
+                return datetime.strptime(dt_string, dt_format)
             except ValueError:
-                continue
+                return None
+
+        # first, try the known formats
+        for date_format in self.known_date_formats:
+            if date := _datetime_or_none(date_string, date_format):
+                return date
+        # next, try dateutil.parse
+        try:
+            clean_date_string = re.sub(r"\(([^)]+)\)", r"\1", date_string).strip()
+            return parse(clean_date_string, tzinfos=self.timezone_info)
+        except ParserError:
+            pass
+        # finally, try extra formats
+        for date_format in self.extra_date_formats:
+            if date := _datetime_or_none(date_string, date_format):
+                return date
+        # no luck parsing
         return date_string
 
     def _process_many(self, match: str) -> List[str]:
