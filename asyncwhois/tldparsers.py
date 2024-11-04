@@ -1277,3 +1277,130 @@ class RegexGA(TLDParser):
             "Domain Nameservers:", blob
         )
         return output
+
+
+class RegexAS(TLDParser):
+    tld_specific_expressions: ExpressionDict = {
+        TLDBaseKeys.DOMAIN_NAME: r"Domain:\s+(.*)",
+        TLDBaseKeys.REGISTRANT_NAME: r"Registrant:\s+(.*)",
+        TLDBaseKeys.REGISTRAR: r"Registrar:\s+(.*)",
+        TLDBaseKeys.CREATED: r"Relevant dates:\s+Registered on (.*)",
+        TLDBaseKeys.STATUS: r"Domain Status:\s+(.*)",
+    }
+
+    def parse(self, blob: str) -> dict[str, Any]:
+        output = super().parse(blob)
+        output[TLDBaseKeys.NAME_SERVERS] = self.find_multiline_match(
+            "Name servers:", blob
+        )
+        return output
+
+
+class RegexBG(TLDParser):
+    tld_specific_expressions: ExpressionDict = {
+        TLDBaseKeys.DOMAIN_NAME: r"DOMAIN NAME:\s(.*)",
+        TLDBaseKeys.STATUS: r"registration status:\s+(.*)",
+        TLDBaseKeys.DNSSEC: r"DNSSEC:\s(.*)",
+    }
+
+    def parse(self, blob: str) -> dict[str, Any]:
+        output = super().parse(blob)
+        output[TLDBaseKeys.NAME_SERVERS] = self.find_multiline_match(
+            "NAME SERVER INFORMATION:", blob
+        )
+        return output
+
+
+class RegexLT(TLDParser):
+    tld_specific_expressions: ExpressionDict = {
+        TLDBaseKeys.DOMAIN_NAME: r"Domain: *(.+)",
+        TLDBaseKeys.STATUS: r"Status: *(.+)",
+        TLDBaseKeys.CREATED: r"Registered: *(.+)",
+        TLDBaseKeys.EXPIRES: r"Expires: *(.+)",
+        TLDBaseKeys.REGISTRAR_URL: r"Registrar website: *(.+)",
+        TLDBaseKeys.REGISTRAR_ABUSE_EMAIL: r"Registrar email: *(.+)",
+        TLDBaseKeys.NAME_SERVERS: r"Nameserver: *(.+)",
+    }
+
+
+class RegexMD(TLDParser):
+    tld_specific_expressions: ExpressionDict = {
+        TLDBaseKeys.DOMAIN_NAME: r"Domain  name *(.+)",
+        TLDBaseKeys.STATUS: r"Domain state *(.+)",
+        TLDBaseKeys.CREATED: r"Registered on *(.+)",
+        TLDBaseKeys.EXPIRES: r"Expires    on *(.+)",
+        TLDBaseKeys.NAME_SERVERS: r"Nameserver *(.+)",
+    }
+
+
+class RegexMK(TLDParser):
+    # todo: lookup and populate other keys
+    tld_specific_expressions: ExpressionDict = {
+        TLDBaseKeys.DOMAIN_NAME: r"domain: *(.+)",
+        TLDBaseKeys.CREATED: r"registered: *(.+)",
+        TLDBaseKeys.EXPIRES: r"expire: *(.+)",
+        TLDBaseKeys.UPDATED: r"changed: *(.+)",
+    }
+    known_date_formats = ["%d.%m.%Y %H:%M:%S", "%d.%m.%Y"]
+
+
+class RegexPK(TLDParser):
+    tld_specific_expressions: ExpressionDict = {
+        TLDBaseKeys.DOMAIN_NAME: r"Domain: *(.+)",
+    }
+
+
+class RegexSN(TLDParser):
+    # todo: lookup and populate other keys
+    tld_specific_expressions: ExpressionDict = {
+        TLDBaseKeys.DOMAIN_NAME: r"Nom de domaine: *(.+)",
+        TLDBaseKeys.CREATED: r"Date de création: *(.+)",
+        TLDBaseKeys.UPDATED: r"Dernière modification: *(.+)",
+        TLDBaseKeys.EXPIRES: r"Date d'expiration: *(.+)",
+        TLDBaseKeys.STATUS: r"Statut: *(.+)",
+    }
+
+
+class RegexTG(TLDParser):
+    tld_specific_expressions: ExpressionDict = {
+        TLDBaseKeys.DOMAIN_NAME: r"Domain:\.+(.+)",
+        TLDBaseKeys.REGISTRAR: r"Registrar:\.+(.+)",
+        TLDBaseKeys.CREATED: r"Activation:\.+(.+)",
+        TLDBaseKeys.EXPIRES: r"Expiration:\.+(.+)",
+        TLDBaseKeys.STATUS: r"Status:\.+(.+)",
+        TLDBaseKeys.REGISTRANT_NAME: r"First Name:\.+(.+)",
+        TLDBaseKeys.REGISTRANT_ADDRESS: r"Address:\.+(.+)",
+        TLDBaseKeys.REGISTRANT_FAX: r"Fax:\.+(.+)",
+        TLDBaseKeys.REGISTRANT_PHONE: r"Tel:\.+(.+)",
+        TLDBaseKeys.REGISTRANT_EMAIL: r"e-mail:\.+(.+)",
+        TLDBaseKeys.NAME_SERVERS: r"Name Server (DB):\.+(.+)",
+    }
+
+
+class RegexTM(TLDParser):
+    tld_specific_expressions: ExpressionDict = {
+        TLDBaseKeys.DOMAIN_NAME: r"Domain : *(.+)",
+        TLDBaseKeys.STATUS: r"Status : *(.+)",
+        TLDBaseKeys.EXPIRES: r"Expiry : *(.+)",
+        TLDBaseKeys.REGISTRANT_NAME: r"Owner Name    : *(.+)",
+        TLDBaseKeys.REGISTRANT_ORGANIZATION: r"Owner OrgName : *(.+)",
+    }
+
+
+class RegexTN(TLDParser):
+    tld_specific_expressions: ExpressionDict = {
+        TLDBaseKeys.DOMAIN_NAME: r"Domain name\.+:(.+)",
+        TLDBaseKeys.REGISTRAR: r"Registrar\.+:(.+)",
+        TLDBaseKeys.CREATED: r"Creation date\.+:(.+)",
+        TLDBaseKeys.STATUS: r"Domain status\.+:(.+)",
+    }
+
+
+class RegexTZ(TLDParser):
+    tld_specific_expressions: ExpressionDict = {
+        TLDBaseKeys.DOMAIN_NAME: r"domain: *(.+)",
+        TLDBaseKeys.REGISTRANT_NAME: r"registrant: *(.+)",
+        TLDBaseKeys.REGISTRAR: r"registrar: *(.+)",
+        TLDBaseKeys.CREATED: r"registered: *(.+)",
+        TLDBaseKeys.EXPIRES: r"expire: *(.+)",
+    }
