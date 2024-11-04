@@ -148,6 +148,7 @@ class Query:
                 whois_server
                 and whois_server != server
                 and not whois_server.startswith("http")
+                and not whois_server.startswith("www.")
             ):
                 # recursive call to find more authoritative server
                 chain = self._do_query(
@@ -173,10 +174,12 @@ class Query:
             # parse response for the referred WHOIS server name
             whois_server = self._find_match(regex, query_output)
             whois_server = whois_server.lower()
+            # check for another legitimate server name
             if (
                 whois_server
                 and whois_server != server
                 and not whois_server.startswith("http")
+                and not whois_server.startswith("www.")
             ):
                 # recursive call to find the authoritative server
                 chain = await self._aio_do_query(
@@ -197,7 +200,8 @@ class DomainQuery(Query):
         self.server = server
 
     @staticmethod
-    def _get_server_name(tld: str) -> Union[str, None]:
+    def _get_server_name(domain_name: str) -> Union[str, None]:
+        tld = domain_name.split(".")[-1]
         tld_converted = tld.upper().replace("-", "_")
         for servers in [CountryCodeTLD, GenericTLD, SponsoredTLD]:
             if hasattr(servers, tld_converted):
