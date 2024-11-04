@@ -392,13 +392,13 @@ class RegexSU(RegexRU):  # same as RU
 
 class RegexKG(TLDParser):
     tld_specific_expressions: ExpressionDict = {
-        TLDBaseKeys.DOMAIN_NAME: r"Domain *(.+) ",
+        TLDBaseKeys.DOMAIN_NAME: r"Domain *(.+) \(",
         TLDBaseKeys.REGISTRAR: r"Domain support: \s*(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"Name: *(.+)",
         TLDBaseKeys.REGISTRANT_ADDRESS: r"Address: *(.+)",
         TLDBaseKeys.CREATED: r"Record created: *(.+)",
-        TLDBaseKeys.EXPIRES: r"Record expires on \s*(.+)",
-        TLDBaseKeys.UPDATED: r"Record last updated on\s*(.+)",
+        TLDBaseKeys.EXPIRES: r"Record expires on: *(.+)",
+        TLDBaseKeys.UPDATED: r"Record last updated on: *(.+)",
     }
 
     def parse(self, blob: str) -> dict[str, Any]:
@@ -1404,3 +1404,15 @@ class RegexTZ(TLDParser):
         TLDBaseKeys.CREATED: r"registered: *(.+)",
         TLDBaseKeys.EXPIRES: r"expire: *(.+)",
     }
+    known_date_formats = ["%d.%m.%Y %H:%M:%S", "%d.%m.%Y"]
+
+
+class RegexLS(TLDParser):
+    tld_specific_expressions: ExpressionDict = {
+        TLDBaseKeys.DOMAIN_NAME: r"domain: *(.+)",
+        TLDBaseKeys.REGISTRANT_NAME: r"registrant: *(.+)",
+        TLDBaseKeys.REGISTRAR: r"registrar: *(.+)",
+        TLDBaseKeys.CREATED: r"registered: *(.+)",
+        TLDBaseKeys.EXPIRES: r"expire: *(.+)",
+    }
+    known_date_formats = ["%d.%m.%Y %H:%M:%S", "%d.%m.%Y"]
