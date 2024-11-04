@@ -604,6 +604,7 @@ class RegexFI(TLDParser):
         TLDBaseKeys.DNSSEC: r"dnssec\.*: *([\S]+)",
         TLDBaseKeys.REGISTRAR: r"registrar\.*:\s(.+)",
     }
+    known_date_formats = ["%d.%m.%Y"]
 
 
 class RegexNU(TLDParser):
@@ -692,6 +693,7 @@ class RegexCZ(TLDParser):
         TLDBaseKeys.EXPIRES: r"expire: *(.+)",
         TLDBaseKeys.NAME_SERVERS: r"nserver: *(.+)",
     }
+    known_date_formats = ["%d.%m.%Y %H:%M:%S", "%d.%m.%Y"]
 
     def parse(self, blob: str) -> dict[str, Any]:
         parsed_output = super().parse(blob)
@@ -766,52 +768,6 @@ class RegexUA(TLDParser):
         TLDBaseKeys.NAME_SERVERS: "nserver: *(.+)",
     }
 
-    KNOWN_DATE_FORMATS = [
-        "%Y-%m-%d %H:%M:%S%z",
-    ]
-
-    @staticmethod
-    def _fix_timezone(date_string: str) -> str:
-        """
-        Fix timezone format for datetime.strptime
-
-        :param date_string: date string
-        :return: fixed date string
-
-        >>> RegexUA._fix_timezone("2023-02-17 14:22:06+02")
-        '2023-02-17 14:22:06+0200'
-        >>>
-        >>> RegexUA._fix_timezone("2023-02-17 14:22:06+2")
-        '2023-02-17 14:22:06+0200'
-        >>>
-        >>> RegexUA._fix_timezone("2023-02-17 14:22:06+0200")
-        '2023-02-17 14:22:06+0200'
-        >>>
-
-        """
-        if "+" in date_string:
-            date_time, timezone = date_string.split("+")
-            if timezone.isdigit() and len(timezone) <= 2:
-                date_string = f"{date_time}+{int(timezone):02d}00"
-
-        return date_string
-
-    @staticmethod
-    def _parse_date(date_string: str) -> Union[datetime, str]:
-        date = TLDParser._parse_date(date_string)
-        if isinstance(date, datetime):
-            return date
-
-        date_string = RegexUA._fix_timezone(date_string)
-        for date_format in RegexUA.KNOWN_DATE_FORMATS:
-            try:
-                date = datetime.strptime(date_string, date_format)
-                return date
-            except ValueError:
-                pass
-
-        return date_string
-
 
 class RegexCN(TLDParser):
     tld_specific_expressions: ExpressionDict = {
@@ -876,6 +832,7 @@ class RegexVE(TLDParser):  # double check
         TLDBaseKeys.REGISTRANT_COUNTRY: r"(?:address:.+\n){4}address: *(.+)",
         TLDBaseKeys.REGISTRANT_ORGANIZATION: r"org: *(.+)",
     }
+    known_date_formats = ["%d.%m.%Y %H:%M:%S", "%d.%m.%Y"]
 
 
 class RegexAE(TLDParser):
@@ -955,6 +912,8 @@ class RegexIR(TLDParser):
 
 class RegexTK(TLDParser):
     tld_specific_expressions: ExpressionDict = {
+        TLDBaseKeys.CREATED: r"Domain registered: *(.+)",
+        TLDBaseKeys.EXPIRES: r"Record will expire on: *(.+)",
         TLDBaseKeys.REGISTRANT_ORGANIZATION: r"(?<=Owner contact)[\s\S]*?Organization:(.*)",
         TLDBaseKeys.REGISTRANT_NAME: r"(?<=Owner contact)[\s\S]*?Name:(.*)",
         TLDBaseKeys.REGISTRANT_ADDRESS: r"(?<=Owner contact)[\s\S]*?Address:(.*)",
@@ -992,6 +951,7 @@ class RegexTK(TLDParser):
         TLDBaseKeys.TECH_FAX: r"(?<=Tech contact)[\s\S]*?Fax:(.*)",
         TLDBaseKeys.TECH_PHONE: r"(?<=Tech contact)[\s\S]*?Phone:(.*)",
     }
+    known_date_formats = ["%m/%d/%Y"]
 
     def parse(self, blob: str) -> dict[str, Any]:
         parsed_output = super().parse(blob)
@@ -999,18 +959,6 @@ class RegexTK(TLDParser):
         parsed_output[TLDBaseKeys.NAME_SERVERS] = self.find_multiline_match(
             "Domain nameservers:", blob
         )
-        # a date parser exists for '%d/%m/%Y', but this interferes with the parser needed
-        # for this one, which is '%m/%d/%Y', so this date format needs to be parsed separately here
-        created_match = re.search(r"Domain registered: *(.+)", blob, re.IGNORECASE)
-        if created_match:
-            parsed_output[TLDBaseKeys.CREATED] = self._parse_date_mdY(
-                created_match.group(1)
-            )
-        expires_match = re.search(r"Record will expire on: *(.+)", blob, re.IGNORECASE)
-        if expires_match:
-            parsed_output[TLDBaseKeys.EXPIRES] = self._parse_date_mdY(
-                expires_match.group(1)
-            )
         # Check if "Status" is inline with Domain Name. For example:
         # Domain Name:
         #   GOOGLE.TK is Active
@@ -1134,7 +1082,7 @@ class RegexGG(TLDParser):
         parsed_output = super().parse(blob)
         # parse created date
         created_match = parsed_output.get(
-            "created"
+            TLDBaseKeys.CREATED
         )  # looks like 30th April 2003; need to remove day suffix
         if created_match and isinstance(created_match, str):
             date_string = re.sub(r"(\d)(st|nd|rd|th)", r"\1", created_match)
@@ -1178,6 +1126,7 @@ class RegexAX(TLDParser):
         TLDBaseKeys.STATUS: r"status\.+: *(.+)",
         TLDBaseKeys.NAME_SERVERS: r"nserver\.+: *(.+)",
     }
+    known_date_formats = ["%d.%m.%Y"]
 
     def parse(self, blob: str) -> dict[str, Any]:
         parsed_output = super().parse(blob)
@@ -1320,19 +1269,11 @@ class RegexGA(TLDParser):
         TLDBaseKeys.TECH_FAX: r"(?<=Tech contact)[\s\S]*?Fax:(.*)",
         TLDBaseKeys.TECH_PHONE: r"(?<=Tech contact)[\s\S]*?Phone:(.*)",
     }
+    known_date_formats = ["%m/%d/%Y"]
 
     def parse(self, blob: str) -> dict[str, Any]:
         output = super().parse(blob)
         output[TLDBaseKeys.NAME_SERVERS] = self.find_multiline_match(
             "Domain Nameservers:", blob
         )
-        # date format is m/d/Y
-        created = output.get(TLDBaseKeys.CREATED)
-        if created:
-            output[TLDBaseKeys.CREATED] = self._parse_date_mdY(created)
-
-        expires = output.get(TLDBaseKeys.EXPIRES)
-        if expires:
-            output[TLDBaseKeys.EXPIRES] = self._parse_date_mdY(expires)
-
         return output

@@ -51,7 +51,7 @@ class TestWhoIsParserMethods(unittest.TestCase):
         ]
 
         for date_string in date_strings:
-            formatted_date = BaseParser._parse_date(date_string)
+            formatted_date = BaseParser()._parse_date(date_string)
             self.assertIsInstance(formatted_date, datetime.datetime)
 
     def test_find_match(self):
