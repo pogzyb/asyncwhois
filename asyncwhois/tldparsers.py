@@ -180,8 +180,8 @@ class RegexFR(TLDParser):
 
 class RegexBR(TLDParser):
     tld_specific_expressions: ExpressionDict = {
-        TLDBaseKeys.CREATED: r"created: ",
-        TLDBaseKeys.UPDATED: r"changed: ",
+        TLDBaseKeys.CREATED: r"created: *([^#\n]*)",
+        TLDBaseKeys.UPDATED: r"changed: *(.+)",
         TLDBaseKeys.STATUS: r"status: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"responsible: *(.+)",
         TLDBaseKeys.REGISTRANT_COUNTRY: r"country: *(.+)",
