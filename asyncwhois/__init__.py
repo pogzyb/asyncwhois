@@ -52,6 +52,7 @@ def whois(
     proxy_url: str = None,
     timeout: int = 10,
     tldextract_obj: TLDExtract = None,
+    max_depth: int = None,
 ) -> tuple[str, dict]:
     """
     Performs a WHOIS query for the given `search_term`. If `search_term` is or can be cast to an
@@ -89,6 +90,7 @@ def whois(
                 proxy_url=proxy_url,
                 timeout=timeout,
                 tldextract_obj=tldextract_obj,
+                max_depth=max_depth,
             ).whois(search_term)
     else:
         return "", {}
@@ -145,6 +147,7 @@ async def aio_whois(
     proxy_url: str = None,
     timeout: int = 10,
     tldextract_obj: TLDExtract = None,
+    max_depth: int = None,
 ) -> tuple[str, dict]:
     """
     Performs a WHOIS query for the given `search_term`. If `search_term` is or can be cast to an
@@ -182,6 +185,7 @@ async def aio_whois(
                 proxy_url=proxy_url,
                 timeout=timeout,
                 tldextract_obj=tldextract_obj,
+                max_depth=max_depth,
             ).aio_whois(search_term)
     else:
         return "", {}
