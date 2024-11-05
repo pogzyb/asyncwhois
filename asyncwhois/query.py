@@ -19,11 +19,16 @@ class Query:
     refer_regex = r"refer: *(.+)"
     whois_server_regex = r".+ whois server: *(.+)"
 
-    def __init__(self, proxy_url: str = None, timeout: int = 10, max_depth: int = None):
+    def __init__(
+        self,
+        proxy_url: str = None,
+        timeout: int = 10,
+        find_authoritative_server: bool = True,
+    ):
         self.proxy_url = proxy_url
         self.timeout = timeout
-        self.max_depth = max_depth
-        
+        self.find_authoritative_server = find_authoritative_server
+
     @staticmethod
     def _find_match(regex: str, blob: str) -> str:
         match = ""
@@ -118,6 +123,16 @@ class Query:
             server_regex = self.whois_server_regex
         return self._do_query(server, data, server_regex, [])
 
+    @staticmethod
+    def _continue_querying(current_server: str, next_server: str) -> bool:
+        next_server = next_server.lower()
+        return (
+            next_server
+            and next_server != current_server
+            and not next_server.startswith("http")
+            and not next_server.startswith("www.")
+        )
+
     async def aio_run(self, search_term: str, server: str = None) -> list[str]:
         data = search_term + "\r\n"
         if not server:
@@ -131,7 +146,7 @@ class Query:
         return await self._aio_do_query(server, data, server_regex, [])
 
     def _do_query(
-        self, server: str, data: str, regex: str, chain: list[str], depth: int = 0
+        self, server: str, data: str, regex: str, chain: list[str]
     ) -> list[str]:
         """
         Recursively submits WHOIS queries until it reaches the Authoritative Server.
@@ -142,22 +157,16 @@ class Query:
             query_output = self._send_and_recv(conn, data)
             # save query chain
             chain.append(query_output)
-            # if max depth is reached, return the chain
-            if self.max_depth and depth >= self.max_depth:
-                return chain            
-            # parse response for the referred WHOIS server name
-            whois_server = self._find_match(regex, query_output)
-            whois_server = whois_server.lower()
-            if (
-                whois_server
-                and whois_server != server
-                and not whois_server.startswith("http")
-                and not whois_server.startswith("www.")
-            ):
-                # recursive call to find more authoritative server
-                chain = self._do_query(
-                    whois_server, data, self.whois_server_regex, chain, depth + 1
-                )
+            # if we should find the authoritative response,
+            # then parse the response for the next server
+            if self.find_authoritative_server:
+                # parse response for the referred WHOIS server name
+                whois_server = self._find_match(regex, query_output)
+                if self._continue_querying(server, whois_server):
+                    # recursive call to find more authoritative server
+                    chain = self._do_query(
+                        whois_server, data, self.whois_server_regex, chain
+                    )
         # return the WHOIS query chain
         return chain
 
@@ -175,23 +184,16 @@ class Query:
                 self._aio_send_and_recv(reader, writer, data), self.timeout
             )
             chain.append(query_output)
-            # if max depth is reached, return the chain
-            if self.max_depth is not None and depth >= self.max_depth:
-                return chain
-            # parse response for the referred WHOIS server name
-            whois_server = self._find_match(regex, query_output)
-            whois_server = whois_server.lower()
-            # check for another legitimate server name
-            if (
-                whois_server
-                and whois_server != server
-                and not whois_server.startswith("http")
-                and not whois_server.startswith("www.")
-            ):
-                # recursive call to find the authoritative server
-                chain = await self._aio_do_query(
-                    whois_server, data, self.whois_server_regex, chain, depth + 1
-                )
+            # if we should find the authoritative response,
+            # then parse the response for the next server
+            if self.find_authoritative_server:
+                # parse response for the referred WHOIS server name
+                whois_server = self._find_match(regex, query_output)
+                if self._continue_querying(server, whois_server):
+                    # recursive call to find more authoritative server
+                    chain = self._do_query(
+                        whois_server, data, self.whois_server_regex, chain
+                    )
         # return the WHOIS query chain
         return chain
 
@@ -202,9 +204,9 @@ class DomainQuery(Query):
         server: str = None,
         proxy_url: str = None,
         timeout: int = 10,
-        max_depth: int = None,
+        find_authoritative_server: bool = True,
     ):
-        super().__init__(proxy_url, timeout, max_depth)
+        super().__init__(proxy_url, timeout, find_authoritative_server)
         self.server = server
 
     @staticmethod

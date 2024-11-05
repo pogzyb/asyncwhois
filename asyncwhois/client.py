@@ -49,12 +49,12 @@ class DomainClient(Client):
     def __init__(
         self,
         authoritative_only: bool = False,
+        find_authoritative_server: bool = True,
         ignore_not_found: bool = False,
         proxy_url: str = None,
         whodap_client: whodap.DNSClient = None,
         timeout: int = 10,
         tldextract_obj: TLDExtract = None,
-        max_depth: int = None,
     ):
         super().__init__(whodap_client)
         self.authoritative_only = authoritative_only
@@ -62,7 +62,11 @@ class DomainClient(Client):
         self.proxy_url = proxy_url
         self.timeout = timeout
         self.tldextract_obj = tldextract_obj
-        self.query_obj = DomainQuery(proxy_url=proxy_url, timeout=timeout, max_depth=max_depth)
+        self.query_obj = DomainQuery(
+            proxy_url=proxy_url,
+            timeout=timeout,
+            find_authoritative_server=find_authoritative_server,
+        )
         self.parse_obj = DomainParser(ignore_not_found=ignore_not_found)
 
     def _get_domain_components(self, domain: str) -> tuple[str, str, str]:
