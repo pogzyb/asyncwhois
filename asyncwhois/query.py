@@ -23,6 +23,7 @@ class Query:
         self.proxy_url = proxy_url
         self.timeout = timeout
         self.max_depth = max_depth
+        
     @staticmethod
     def _find_match(regex: str, blob: str) -> str:
         match = ""
