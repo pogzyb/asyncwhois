@@ -171,7 +171,7 @@ class Query:
         return chain
 
     async def _aio_do_query(
-        self, server: str, data: str, regex: str, chain: list[str], depth: int = 0
+        self, server: str, data: str, regex: str, chain: list[str]
     ) -> list[str]:
         # connect to whois://<server>:43
         async with self._aio_create_connection(
