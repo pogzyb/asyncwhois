@@ -42,12 +42,13 @@ __all__ = [
     "GeneralError",
     "QueryError",
 ]
-__version__ = "1.1.7"
+__version__ = "1.1.8"
 
 
 def whois(
     search_term: Union[str, ipaddress.IPv4Address, ipaddress.IPv6Address],
-    authoritative_only: bool = False,
+    authoritative_only: bool = False,  # todo: deprecate and remove this argument
+    find_authoritative_server: bool = True,
     ignore_not_found: bool = False,
     proxy_url: str = None,
     timeout: int = 10,
@@ -59,8 +60,11 @@ def whois(
     otherwise a DNS search is performed.
 
     :param search_term: Any domain, URL, IPv4, or IPv6
-    :param authoritative_only: If False (default), asyncwhois returns the entire WHOIS query chain,
+    :param authoritative_only: DEPRECATED - If False (default), asyncwhois returns the entire WHOIS query chain,
         otherwise if True, only the authoritative response is returned.
+    :param find_authoritative_server: This parameter only applies to domain queries. If True (default), asyncwhois
+        will attempt to find the authoritative response, otherwise if False, asyncwhois will only query the whois server
+        associated with the given TLD as specified in the IANA root db (`asyncwhois/servers/domains.py`).
     :param ignore_not_found:  If False (default), the `NotFoundError` exception is raised if the query output
         contains "no such domain" language. If True, asyncwhois will not raise `NotFoundError` exceptions.
     :param proxy_url: Optional SOCKS4 or SOCKS5 proxy url (e.g. 'socks5://host:port')
@@ -85,6 +89,7 @@ def whois(
         except (ipaddress.AddressValueError, ValueError):
             return DomainClient(
                 authoritative_only=authoritative_only,
+                find_authoritative_server=find_authoritative_server,
                 ignore_not_found=ignore_not_found,
                 proxy_url=proxy_url,
                 timeout=timeout,
@@ -140,7 +145,8 @@ def rdap(
 
 async def aio_whois(
     search_term: str,
-    authoritative_only: bool = False,
+    authoritative_only: bool = False,  # todo: deprecate and remove this argument
+    find_authoritative_server: bool = True,
     ignore_not_found: bool = False,
     proxy_url: str = None,
     timeout: int = 10,
@@ -152,8 +158,11 @@ async def aio_whois(
     otherwise a DNS search is performed.
 
     :param search_term: Any domain, URL, IPv4, or IPv6
-    :param authoritative_only: If False (default), asyncwhois returns the entire WHOIS query chain,
+    :param authoritative_only: DEPRECATED - If False (default), asyncwhois returns the entire WHOIS query chain,
         otherwise if True, only the authoritative response is returned.
+    :param find_authoritative_server: This parameter only applies to domain queries. If True (default), asyncwhois
+        will attempt to find the authoritative response, otherwise if False, asyncwhois will only query the whois server
+        associated with the given TLD as specified in the IANA root db (`asyncwhois/servers/domains.py`).
     :param ignore_not_found:  If False (default), the `NotFoundError` exception is raised if the query output
         contains "no such domain" language. If True, asyncwhois will not raise `NotFoundError` exceptions.
     :param proxy_url: Optional SOCKS4 or SOCKS5 proxy url (e.g. 'socks5://host:port')
@@ -182,6 +191,7 @@ async def aio_whois(
                 proxy_url=proxy_url,
                 timeout=timeout,
                 tldextract_obj=tldextract_obj,
+                find_authoritative_server=find_authoritative_server,
             ).aio_whois(search_term)
     else:
         return "", {}
