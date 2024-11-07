@@ -170,9 +170,9 @@ class RegexEE(TLDParser):
 class RegexFR(TLDParser):
     tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.DOMAIN_NAME: r"domain: *(.+)",
-        TLDBaseKeys.CREATED: r"created: (\d{4}-\d{2}-\d{2})",
-        TLDBaseKeys.UPDATED: r"last-update: (\d{4}-\d{2}-\d{2})",
-        TLDBaseKeys.EXPIRES: r"Expiry Date: (\d{4}-\d{2}-\d{2})",
+        TLDBaseKeys.CREATED: r"created: *(.+)",
+        TLDBaseKeys.UPDATED: r"last-update: *(.+)",
+        TLDBaseKeys.EXPIRES: r"Expiry Date: *(.+)",
         TLDBaseKeys.NAME_SERVERS: r"nserver: *(.+)",
         TLDBaseKeys.REGISTRAR: r"registrar: *(.+)",
     }
@@ -191,9 +191,9 @@ class RegexBR(TLDParser):
 
 class RegexKR(TLDParser):
     tld_specific_expressions: ExpressionDict = {
-        TLDBaseKeys.CREATED: r"Registered Date *: (\d{4}\.\s\d{2}\.\s\d{2}\.)",
-        TLDBaseKeys.UPDATED: r"Last Updated Date *: (\d{4}\.\s\d{2}\.\s\d{2}\.)",
-        TLDBaseKeys.EXPIRES: r"Expiration Date *: (\d{4}\.\s\d{2}\.\s\d{2}\.)",
+        TLDBaseKeys.CREATED: r"Registered Date *: *(.+)",
+        TLDBaseKeys.UPDATED: r"Last Updated Date *: *(.+)",
+        TLDBaseKeys.EXPIRES: r"Expiration Date *: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"Registrant *: (.+)",
         TLDBaseKeys.ADMIN_EMAIL: r"Administrative Contact(AC) *: *(.+)",
         TLDBaseKeys.ADMIN_NAME: r"AC E-Mail *: *(.+)",
