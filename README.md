@@ -50,6 +50,10 @@ pprint(parsed_dict)
  ...
  """
 
+# set `find_authoritative_server=False` to only query the TLD's whois server as specified in the IANA root db. 
+# this will generally speed up execution times, but responses may not include complete information. 
+query_string, parsed_dict = asyncwhois.whois("google.com", find_authoritative_server=False)
+
 # support for IPv4, IPv6, and ASNs too
 ipv4 = "8.8.8.8"
 query_string, parsed_dict = asyncwhois.whois(ipv4)
