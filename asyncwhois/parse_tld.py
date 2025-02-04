@@ -41,6 +41,9 @@ class DomainParser:
         """
 
         try:
+            tld = tld.upper()
+            if tldparsers.IDNADomains.get(tld):
+                tld = tldparsers.IDNADomains[tld]
             cls_ = getattr(tldparsers, f"Regex{tld.upper()}")
         except AttributeError:
             # The TLDParser can handle all "Generic" and some "Country-Code"

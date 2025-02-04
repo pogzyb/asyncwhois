@@ -87,7 +87,10 @@ class DomainClient(Client):
         parsed_dict = convert_whodap_keys(rdap_output.to_whois_dict())
         return query_string, parsed_dict
 
-    def whois(self, domain: str) -> tuple[str, dict[TLDBaseKeys, Any]]:
+    def whois(self, domain: str, convert_punycode: bool = True) -> tuple[str, dict[TLDBaseKeys, Any]]:
+        if convert_punycode:
+            domain = domain.encode('idna').decode('utf-8')
+
         registered_domain, domain, tld = self._get_domain_components(domain)
         query_chain: list[str] = self.query_obj.run(registered_domain)
         authoritative_answer = query_chain[-1]
@@ -108,7 +111,9 @@ class DomainClient(Client):
         parsed_dict = convert_whodap_keys(rdap_output.to_whois_dict())
         return query_string, parsed_dict
 
-    async def aio_whois(self, domain: str) -> tuple[str, dict[TLDBaseKeys, Any]]:
+    async def aio_whois(self, domain: str, convert_punycode: bool = True) -> tuple[str, dict[TLDBaseKeys, Any]]:
+        if convert_punycode:
+            domain = domain.encode('idna').decode('utf-8')
         registered_domain, domain, tld = self._get_domain_components(domain)
         query_chain: list[str] = await self.query_obj.aio_run(registered_domain)
         authoritative_answer = query_chain[-1]

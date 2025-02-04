@@ -9,6 +9,9 @@ from .parse import BaseParser, TLDBaseKeys
 
 
 ExpressionDict = dict[str, str]
+IDNADomains = {
+    'XN--P1AI': 'RF'
+}
 
 
 class TLDParser(BaseParser):
