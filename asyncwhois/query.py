@@ -2,7 +2,7 @@ import asyncio
 import ipaddress
 import re
 import socket
-from typing import Tuple, Generator, Union
+from typing import Tuple, Generator, Union, Optional
 from contextlib import contextmanager, asynccontextmanager
 
 from python_socks.sync import Proxy
@@ -21,7 +21,7 @@ class Query:
 
     def __init__(
         self,
-        proxy_url: str = None,
+        proxy_url: Optional[str] = None,
         timeout: int = 10,
         find_authoritative_server: bool = True,
     ):
@@ -39,7 +39,7 @@ class Query:
 
     @contextmanager
     def _create_connection(
-        self, address: Tuple[str, int], proxy_url: str = None
+        self, address: Tuple[str, int], proxy_url: Optional[str] = None
     ) -> Generator[socket.socket, None, None]:
         s = None
         try:
@@ -58,7 +58,7 @@ class Query:
 
     @asynccontextmanager
     async def _aio_create_connection(
-        self, address: Tuple[str, int], proxy_url: str = None
+        self, address: Tuple[str, int], proxy_url: Optional[str] = None
     ) -> Generator[Tuple[asyncio.StreamReader, asyncio.StreamWriter], None, None]:
         # init
         reader, writer = None, None
@@ -107,7 +107,7 @@ class Query:
                 result += received.decode("utf-8", errors="ignore")
         return result
 
-    def run(self, search_term: str, server: str = None) -> list[str]:
+    def run(self, search_term: str, server: Optional[str] = None) -> list[str]:
         """
         Submits the `search_term` to the WHOIS server and returns a list of query responses.
         """
@@ -133,7 +133,9 @@ class Query:
             and not next_server.startswith("www.")
         )
 
-    async def aio_run(self, search_term: str, server: str = None) -> list[str]:
+    async def aio_run(
+        self, search_term: str, server: Optional[str] = None
+    ) -> list[str]:
         data = search_term + "\r\n"
         if not server:
             if ":" in data:  # ipv6
@@ -201,8 +203,8 @@ class Query:
 class DomainQuery(Query):
     def __init__(
         self,
-        server: str = None,
-        proxy_url: str = None,
+        server: Optional[str] = None,
+        proxy_url: Optional[str] = None,
         timeout: int = 10,
         find_authoritative_server: bool = True,
     ):
@@ -219,12 +221,14 @@ class DomainQuery(Query):
                 return server
         return None
 
-    def run(self, search_term: str, server: str = None) -> list[str]:
+    def run(self, search_term: str, server: Optional[str] = None) -> list[str]:
         if not server:
             server = self._get_server_name(search_term)
         return super().run(str(search_term), server)
 
-    async def aio_run(self, search_term: str, server: str = None) -> list[str]:
+    async def aio_run(
+        self, search_term: str, server: Optional[str] = None
+    ) -> list[str]:
         if not server:
             server = self._get_server_name(search_term)
         return await super().aio_run(str(search_term), server)
@@ -233,8 +237,8 @@ class DomainQuery(Query):
 class NumberQuery(Query):
     def __init__(
         self,
-        server: str = None,
-        proxy_url: str = None,
+        server: Optional[str] = None,
+        proxy_url: Optional[str] = None,
         timeout: int = 10,
     ):
         super().__init__(proxy_url, timeout)
@@ -252,7 +256,7 @@ class NumberQuery(Query):
     def run(
         self,
         search_term: Union[ipaddress.IPv4Address, ipaddress.IPv6Address],
-        server: str = None,
+        server: Optional[str] = None,
     ) -> list[str]:
         if not server:
             server = self._get_server_name(search_term)
@@ -261,7 +265,7 @@ class NumberQuery(Query):
     async def aio_run(
         self,
         search_term: Union[ipaddress.IPv4Address, ipaddress.IPv6Address],
-        server: str = None,
+        server: Optional[str] = None,
     ) -> list[str]:
         if not server:
             server = self._get_server_name(search_term)

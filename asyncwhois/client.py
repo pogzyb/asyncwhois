@@ -1,5 +1,5 @@
 import ipaddress
-from typing import Union, Any
+from typing import Union, Any, Optional
 
 from tldextract.tldextract import extract, TLDExtract
 import whodap
@@ -51,7 +51,7 @@ class DomainClient(Client):
         authoritative_only: bool = False,
         find_authoritative_server: bool = True,
         ignore_not_found: bool = False,
-        proxy_url: str = None,
+        proxy_url: Optional[str] = None,
         whodap_client: whodap.DNSClient = None,
         timeout: int = 10,
         tldextract_obj: TLDExtract = None,
@@ -125,7 +125,7 @@ class NumberClient(Client):
     def __init__(
         self,
         authoritative_only: bool = False,
-        proxy_url: str = None,
+        proxy_url: Optional[str] = None,
         whodap_client: Union[whodap.IPv4Client, whodap.IPv6Client] = None,
         timeout: int = 10,
     ):

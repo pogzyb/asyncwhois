@@ -1,5 +1,4 @@
-"""TLD-specific domain parser classes
-"""
+"""TLD-specific domain parser classes"""
 
 from datetime import datetime
 import re

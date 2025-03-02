@@ -50,7 +50,7 @@ def whois(
     authoritative_only: bool = False,  # todo: deprecate and remove this argument
     find_authoritative_server: bool = True,
     ignore_not_found: bool = False,
-    proxy_url: str = None,
+    proxy_url: Optional[str] = None,
     timeout: int = 10,
     tldextract_obj: TLDExtract = None,
 ) -> tuple[str, dict]:
@@ -148,7 +148,7 @@ async def aio_whois(
     authoritative_only: bool = False,  # todo: deprecate and remove this argument
     find_authoritative_server: bool = True,
     ignore_not_found: bool = False,
-    proxy_url: str = None,
+    proxy_url: Optional[str] = None,
     timeout: int = 10,
     tldextract_obj: TLDExtract = None,
 ) -> tuple[str, dict]:
@@ -267,7 +267,7 @@ def whois_domain(
     domain: str,
     authoritative_only: bool = False,
     ignore_not_found: bool = False,
-    proxy_url: str = None,
+    proxy_url: Optional[str] = None,
     timeout: int = 10,
     tldextract_obj: TLDExtract = None,
 ) -> DomainLookup:
@@ -304,7 +304,7 @@ async def aio_whois_domain(
     domain: str,
     authoritative_only: bool = False,
     ignore_not_found: bool = False,
-    proxy_url: str = None,
+    proxy_url: Optional[str] = None,
     timeout: int = 10,
     tldextract_obj: TLDExtract = None,
 ) -> DomainLookup:
@@ -398,7 +398,7 @@ async def aio_rdap_domain(
 def whois_ipv4(
     ipv4: Union[IPv4Address, str],
     authoritative_only: bool = False,
-    proxy_url: str = None,
+    proxy_url: Optional[str] = None,
     timeout: int = 10,
 ) -> NumberLookup:
     """
@@ -428,7 +428,7 @@ def whois_ipv4(
 async def aio_whois_ipv4(
     ipv4: Union[IPv4Address, str],
     authoritative_only: bool = False,
-    proxy_url: str = None,
+    proxy_url: Optional[str] = None,
     timeout: int = 10,
 ) -> NumberLookup:
     """
@@ -506,7 +506,7 @@ async def aio_rdap_ipv4(
 def whois_ipv6(
     ipv6: Union[IPv6Address, str],
     authoritative_only: bool = False,
-    proxy_url: str = None,
+    proxy_url: Optional[str] = None,
     timeout: int = 10,
 ) -> NumberLookup:
     """
@@ -536,7 +536,7 @@ def whois_ipv6(
 async def aio_whois_ipv6(
     ipv6: Union[IPv6Address, str],
     authoritative_only: bool = False,
-    proxy_url: str = None,
+    proxy_url: Optional[str] = None,
     timeout: int = 10,
 ) -> NumberLookup:
     """
