@@ -29,7 +29,7 @@ jobs:
       run: tox -vv
     - name: Upload coverage.xml
       if: ${{ matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.12' }}
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: tox-gh-actions-coverage
         path: coverage.xml
