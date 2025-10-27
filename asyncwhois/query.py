@@ -193,7 +193,7 @@ class Query:
                 whois_server = self._find_match(regex, query_output)
                 if self._continue_querying(server, whois_server):
                     # recursive call to find more authoritative server
-                    chain = self._do_query(
+                    chain = await self._aio_do_query(
                         whois_server, data, self.whois_server_regex, chain
                     )
         # return the WHOIS query chain
