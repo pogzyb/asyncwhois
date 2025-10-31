@@ -76,19 +76,20 @@ class DomainClient(Client):
             else self.tldextract_obj(domain)
         )
         suffix = ext.suffix.split(".")[-1]
-        return ext.registered_domain, ext.domain, suffix
+        domain_core = ext.registered_domain.removesuffix(f".{suffix}")
+        return ext.registered_domain, domain_core, suffix
 
     def rdap(self, domain: str) -> tuple[str, dict]:
         if self.whodap_client is None:
             self.init_whodap_client()
-        _, domain, tld = self._get_domain_components(domain)
-        rdap_output = self.whodap_client.lookup(domain, tld)
+        _, domain_core, tld = self._get_domain_components(domain)
+        rdap_output = self.whodap_client.lookup(domain_core, tld)
         query_string = rdap_output.to_json()
         parsed_dict = convert_whodap_keys(rdap_output.to_whois_dict())
         return query_string, parsed_dict
 
     def whois(self, domain: str) -> tuple[str, dict[TLDBaseKeys, Any]]:
-        registered_domain, domain, tld = self._get_domain_components(domain)
+        registered_domain, _, tld = self._get_domain_components(domain)
         query_chain: list[str] = self.query_obj.run(registered_domain)
         authoritative_answer = query_chain[-1]
         parsed_dict: dict[TLDBaseKeys, Any] = self.parse_obj.parse(
@@ -102,14 +103,14 @@ class DomainClient(Client):
     async def aio_rdap(self, domain: str) -> tuple[str, dict]:
         if self.whodap_client is None:
             await self.init_async_whodap_client()
-        _, domain, tld = self._get_domain_components(domain)
-        rdap_output = await self.whodap_client.aio_lookup(domain, tld)
+        _, domain_core, tld = self._get_domain_components(domain)
+        rdap_output = await self.whodap_client.aio_lookup(domain_core, tld)
         query_string = rdap_output.to_json()
         parsed_dict = convert_whodap_keys(rdap_output.to_whois_dict())
         return query_string, parsed_dict
 
     async def aio_whois(self, domain: str) -> tuple[str, dict[TLDBaseKeys, Any]]:
-        registered_domain, domain, tld = self._get_domain_components(domain)
+        registered_domain, _, tld = self._get_domain_components(domain)
         query_chain: list[str] = await self.query_obj.aio_run(registered_domain)
         authoritative_answer = query_chain[-1]
         parsed_dict: dict[TLDBaseKeys, Any] = self.parse_obj.parse(
