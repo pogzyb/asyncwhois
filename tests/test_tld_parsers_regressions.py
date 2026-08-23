@@ -1,5 +1,5 @@
 from asyncwhois.parse import TLDBaseKeys
-from asyncwhois.tldparsers import RegexBE, RegexDK, RegexHK
+from asyncwhois.tldparsers import RegexBE, RegexDK, RegexHK, RegexRS
 
 
 HK_SAMPLE = """
@@ -63,6 +63,24 @@ Hostname:             ns3.google.com
 Hostname:             ns4.google.com
 """
 
+RS_SAMPLE = """
+% The data in the Whois database are provided by RNIDS
+Domain name: docs.rs
+Domain status: Active https://www.rnids.rs/en/domain-name-status-codes#Active
+Registration date: 24.03.2014 19:25:04
+Modification date: 24.02.2026 16:53:10
+Expiration date: 24.03.2030 19:25:04
+Confirmed: 24.03.2014 19:25:04
+Registrar: Webglobe d.o.o.
+
+DNS: ns-1937.awsdns-50.co.uk -
+DNS: ns-314.awsdns-39.com -
+DNS: ns-779.awsdns-33.net -
+DNS: ns-1397.awsdns-46.org -
+
+DNSSEC signed: no
+"""
+
 
 def test_regex_hk_parses_nameservers_and_registrant_country_correctly():
     parsed = RegexHK().parse(HK_SAMPLE)
@@ -98,4 +116,19 @@ def test_regex_dk_parses_hostname_nameservers():
         'ns2.google.com',
         'ns3.google.com',
         'ns4.google.com',
+    ]
+
+
+def test_regex_rs_uses_registration_date_as_created():
+    parsed = RegexRS().parse(RS_SAMPLE)
+
+    assert parsed[TLDBaseKeys.DOMAIN_NAME] == 'docs.rs'
+    assert str(parsed[TLDBaseKeys.CREATED]).startswith('2014-03-24 19:25:04')
+    assert parsed[TLDBaseKeys.REGISTRAR] == 'Webglobe d.o.o.'
+    assert parsed[TLDBaseKeys.DNSSEC] == 'no'
+    assert parsed[TLDBaseKeys.NAME_SERVERS] == [
+        'ns-1937.awsdns-50.co.uk',
+        'ns-314.awsdns-39.com',
+        'ns-779.awsdns-33.net',
+        'ns-1397.awsdns-46.org',
     ]

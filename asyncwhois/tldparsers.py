@@ -140,6 +140,19 @@ class RegexRO(TLDParser):
     }
 
 
+class RegexRS(TLDParser):
+    tld_specific_expressions: ExpressionDict = {
+        TLDBaseKeys.DOMAIN_NAME: r"Domain name: *(.+)",
+        TLDBaseKeys.CREATED: r"Registration date: *(.+)",
+        TLDBaseKeys.UPDATED: r"Modification date: *(.+)",
+        TLDBaseKeys.EXPIRES: r"Expiration date: *(.+)",
+        TLDBaseKeys.REGISTRAR: r"Registrar: *(.+)",
+        TLDBaseKeys.STATUS: r"Domain status: *(.+)",
+        TLDBaseKeys.DNSSEC: r"DNSSEC signed: *(.+)",
+        TLDBaseKeys.NAME_SERVERS: r"DNS: *([^\s]+)",
+    }
+
+
 class RegexPE(TLDParser):
     tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.REGISTRANT_NAME: r"Registrant name: *(.+)",
