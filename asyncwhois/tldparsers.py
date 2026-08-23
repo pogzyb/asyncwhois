@@ -140,6 +140,19 @@ class RegexRO(TLDParser):
     }
 
 
+class RegexRS(TLDParser):
+    tld_specific_expressions: ExpressionDict = {
+        TLDBaseKeys.DOMAIN_NAME: r"Domain name: *(.+)",
+        TLDBaseKeys.CREATED: r"Registration date: *(.+)",
+        TLDBaseKeys.UPDATED: r"Modification date: *(.+)",
+        TLDBaseKeys.EXPIRES: r"Expiration date: *(.+)",
+        TLDBaseKeys.REGISTRAR: r"Registrar: *(.+)",
+        TLDBaseKeys.STATUS: r"Domain status: *(.+)",
+        TLDBaseKeys.DNSSEC: r"DNSSEC signed: *(.+)",
+        TLDBaseKeys.NAME_SERVERS: r"DNS: *([^\s]+)",
+    }
+
+
 class RegexPE(TLDParser):
     tld_specific_expressions: ExpressionDict = {
         TLDBaseKeys.REGISTRANT_NAME: r"Registrant name: *(.+)",
@@ -375,9 +388,13 @@ class RegexBE(TLDParser):
 
     def parse(self, blob: str) -> dict[str, Any]:
         parsed_output = super().parse(blob)
-        parsed_output[TLDBaseKeys.NAME_SERVERS] = self.find_multiline_match(
-            "Name servers:", blob
+        nameservers_match = self.find_match(
+            r"Nameservers:\s*((?:\s*.+(?:\n|$))+?)(?:\n\s*Keys:|\n\s*Flags:|\n\s*Please visit|$)",
+            blob,
+            flags=re.DOTALL | re.IGNORECASE,
         )
+        if nameservers_match:
+            parsed_output[TLDBaseKeys.NAME_SERVERS] = self._process_many(nameservers_match)
         return parsed_output
 
 
@@ -575,6 +592,13 @@ class RegexDK(TLDParser):
         TLDBaseKeys.REGISTRANT_COUNTRY: r"Registrant\s*(?:.*\n){6}\s*Country: *(.+)",
     }
 
+    def parse(self, blob: str) -> dict[str, Any]:
+        parsed_output = super().parse(blob)
+        parsed_output[TLDBaseKeys.NAME_SERVERS] = self.find_match(
+            r"Hostname: *(.+)", blob, many=True
+        )
+        return parsed_output
+
 
 class RegexIL(TLDParser):
     tld_specific_expressions: ExpressionDict = {
@@ -734,17 +758,43 @@ class RegexHK(TLDParser):
         TLDBaseKeys.STATUS: r"Domain Status: *(.+)",
         TLDBaseKeys.DNSSEC: r"DNSSEC: *(.+)",
         TLDBaseKeys.REGISTRAR: r"Registrar Name: *(.+)",
-        TLDBaseKeys.REGISTRAR_ABUSE_EMAIL: r"Registrar Contact Information: *(.+)",
-        TLDBaseKeys.REGISTRAR_ABUSE_PHONE: r"Registrar Contact Information: *(.+)",
         TLDBaseKeys.REGISTRANT_NAME: r"Registrant Contact Information:\s*Company English Name.*:(.+)",
-        TLDBaseKeys.REGISTRANT_ADDRESS: r"(?<=Registrant Contact Information:)[\s\S]*?Address: (.*)",
-        TLDBaseKeys.REGISTRANT_COUNTRY: r"[Registrant Contact Information\w\W]+Country: ([\S\ ]+)",
-        # 'registrant_email': r'[Registrant Contact Information\w\W]+Email: ([\S\ ]+)',
         TLDBaseKeys.UPDATED: r"Updated Date: *(.+)",
         TLDBaseKeys.CREATED: r"[Registrant Contact Information\w\W]+Domain Name Commencement Date: (.+)",
         TLDBaseKeys.EXPIRES: r"[Registrant Contact Information\w\W]+Expiry Date: (.+)",
-        TLDBaseKeys.NAME_SERVERS: r"Name Servers Information:\s+((?:.+\n)*)",
     }
+
+    def parse(self, blob: str) -> dict[str, Any]:
+        parsed_output = super().parse(blob)
+
+        registrar_contact = self.find_match(
+            r"Registrar Contact Information:\s*Email:\s*([^\s]+)", blob
+        )
+        parsed_output[TLDBaseKeys.REGISTRAR_ABUSE_EMAIL] = registrar_contact
+        parsed_output[TLDBaseKeys.REGISTRAR_ABUSE_PHONE] = None
+
+        registrant_block = self.find_match(
+            r"Registrant Contact Information:\s*(.+?)\n\n(?:Administrative|Technical) Contact Information:",
+            blob,
+            flags=re.DOTALL | re.IGNORECASE,
+        )
+        if registrant_block:
+            parsed_output[TLDBaseKeys.REGISTRANT_ADDRESS] = self.find_match(
+                r"Address:\s*(.+)", registrant_block
+            )
+            parsed_output[TLDBaseKeys.REGISTRANT_COUNTRY] = self.find_match(
+                r"Country:\s*(.+)", registrant_block
+            )
+
+        nameservers_match = self.find_match(
+            r"Name Servers Information:\s*((?:\s*.+(?:\n|$))+?)(?:\n\s*Status Information:|$)",
+            blob,
+            flags=re.DOTALL | re.IGNORECASE,
+        )
+        parsed_output[TLDBaseKeys.NAME_SERVERS] = (
+            self._process_many(nameservers_match) if nameservers_match else []
+        )
+        return parsed_output
 
 
 class RegexUA(TLDParser):

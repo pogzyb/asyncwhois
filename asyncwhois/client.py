@@ -1,7 +1,7 @@
 import ipaddress
 from typing import Union, Any, Optional
 
-from tldextract.tldextract import extract, TLDExtract
+from tldextract.tldextract import TLDExtract
 import whodap
 
 from .parse import convert_whodap_keys, IPBaseKeys, TLDBaseKeys
@@ -70,11 +70,8 @@ class DomainClient(Client):
         self.parse_obj = DomainParser(ignore_not_found=ignore_not_found)
 
     def _get_domain_components(self, domain: str) -> tuple[str, str, str]:
-        ext = (
-            extract(domain)
-            if self.tldextract_obj is None
-            else self.tldextract_obj(domain)
-        )
+        extractor = self.tldextract_obj or TLDExtract(suffix_list_urls=())
+        ext = extractor(domain)
         suffix = ext.suffix.split(".")[-1]
         domain_core = ext.registered_domain.removesuffix(f".{suffix}")
         return ext.registered_domain, domain_core, suffix
