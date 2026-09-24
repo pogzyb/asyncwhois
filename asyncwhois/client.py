@@ -3,6 +3,7 @@ from typing import Union, Any, Optional
 
 from tldextract.tldextract import TLDExtract
 import whodap
+import httpx2
 
 from .parse import convert_whodap_keys, IPBaseKeys, TLDBaseKeys
 from .parse_rir import NumberParser
@@ -22,27 +23,57 @@ class Client:
     def __init__(self, whodap_client):
         self.whodap_client = whodap_client
 
-    def init_whodap_client(self, ipv4: bool = True):
-        if isinstance(self, DomainClient):
-            self.whodap_client = whodap.DNSClient.new_client()
-        elif isinstance(self, NumberClient):
-            if ipv4:
-                self.whodap_client = whodap.IPv4Client.new_client()
-            else:
-                self.whodap_client = whodap.IPv6Client.new_client()
-        elif isinstance(self, ASNClient):
-            self.whodap_client = whodap.ASNClient.new_client()
+    def init_whodap_client(self, ipv4: bool = True, proxy_url: str | None = None):
+        http_client = (
+            httpx2.Client(
+                follow_redirects=True, timeout=10, proxy=httpx2.Proxy(proxy_url)
+            )
+            if proxy_url
+            else None
+        )
 
-    async def init_async_whodap_client(self, ipv4: bool = True):
         if isinstance(self, DomainClient):
-            self.whodap_client = await whodap.DNSClient.new_aio_client()
+            self.whodap_client = whodap.DNSClient.new_client(httpx_client=http_client)
         elif isinstance(self, NumberClient):
             if ipv4:
-                self.whodap_client = await whodap.IPv4Client.new_aio_client()
+                self.whodap_client = whodap.IPv4Client.new_client(
+                    httpx_client=http_client
+                )
             else:
-                self.whodap_client = await whodap.IPv6Client.new_aio_client()
+                self.whodap_client = whodap.IPv6Client.new_client(
+                    httpx_client=http_client
+                )
         elif isinstance(self, ASNClient):
-            self.whodap_client = await whodap.ASNClient.new_aio_client()
+            self.whodap_client = whodap.ASNClient.new_client(httpx_client=http_client)
+
+    async def init_async_whodap_client(
+        self, ipv4: bool = True, proxy_url: str | None = None
+    ):
+        http_client = (
+            httpx2.AsyncClient(
+                follow_redirects=True, timeout=10, proxy=httpx2.Proxy(proxy_url)
+            )
+            if proxy_url
+            else None
+        )
+
+        if isinstance(self, DomainClient):
+            self.whodap_client = await whodap.DNSClient.new_aio_client(
+                httpx_client=http_client
+            )
+        elif isinstance(self, NumberClient):
+            if ipv4:
+                self.whodap_client = await whodap.IPv4Client.new_aio_client(
+                    httpx_client=http_client
+                )
+            else:
+                self.whodap_client = await whodap.IPv6Client.new_aio_client(
+                    httpx_client=http_client
+                )
+        elif isinstance(self, ASNClient):
+            self.whodap_client = await whodap.ASNClient.new_aio_client(
+                httpx_client=http_client
+            )
 
 
 class DomainClient(Client):
