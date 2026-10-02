@@ -22,27 +22,37 @@ class Client:
     def __init__(self, whodap_client):
         self.whodap_client = whodap_client
 
-    def init_whodap_client(self, ipv4: bool = True):
+    def init_whodap_client(self, ipv4: bool = True, proxy_url: str | None = None):
         if isinstance(self, DomainClient):
-            self.whodap_client = whodap.DNSClient.new_client()
+            self.whodap_client = whodap.DNSClient.new_client(proxy_url=proxy_url)
         elif isinstance(self, NumberClient):
             if ipv4:
-                self.whodap_client = whodap.IPv4Client.new_client()
+                self.whodap_client = whodap.IPv4Client.new_client(proxy_url=proxy_url)
             else:
-                self.whodap_client = whodap.IPv6Client.new_client()
+                self.whodap_client = whodap.IPv6Client.new_client(proxy_url=proxy_url)
         elif isinstance(self, ASNClient):
-            self.whodap_client = whodap.ASNClient.new_client()
+            self.whodap_client = whodap.ASNClient.new_client(proxy_url=proxy_url)
 
-    async def init_async_whodap_client(self, ipv4: bool = True):
+    async def init_async_whodap_client(
+        self, ipv4: bool = True, proxy_url: str | None = None
+    ):
         if isinstance(self, DomainClient):
-            self.whodap_client = await whodap.DNSClient.new_aio_client()
+            self.whodap_client = await whodap.DNSClient.new_aio_client(
+                proxy_url=proxy_url
+            )
         elif isinstance(self, NumberClient):
             if ipv4:
-                self.whodap_client = await whodap.IPv4Client.new_aio_client()
+                self.whodap_client = await whodap.IPv4Client.new_aio_client(
+                    proxy_url=proxy_url
+                )
             else:
-                self.whodap_client = await whodap.IPv6Client.new_aio_client()
+                self.whodap_client = await whodap.IPv6Client.new_aio_client(
+                    proxy_url=proxy_url
+                )
         elif isinstance(self, ASNClient):
-            self.whodap_client = await whodap.ASNClient.new_aio_client()
+            self.whodap_client = await whodap.ASNClient.new_aio_client(
+                proxy_url=proxy_url
+            )
 
 
 class DomainClient(Client):
@@ -78,7 +88,7 @@ class DomainClient(Client):
 
     def rdap(self, domain: str) -> tuple[str, dict]:
         if self.whodap_client is None:
-            self.init_whodap_client()
+            self.init_whodap_client(proxy_url=self.proxy_url)
         _, domain_core, tld = self._get_domain_components(domain)
         rdap_output = self.whodap_client.lookup(domain_core, tld)
         query_string = rdap_output.to_json()
@@ -99,7 +109,7 @@ class DomainClient(Client):
 
     async def aio_rdap(self, domain: str) -> tuple[str, dict]:
         if self.whodap_client is None:
-            await self.init_async_whodap_client()
+            await self.init_async_whodap_client(proxy_url=self.proxy_url)
         _, domain_core, tld = self._get_domain_components(domain)
         rdap_output = await self.whodap_client.aio_lookup(domain_core, tld)
         query_string = rdap_output.to_json()
@@ -141,7 +151,7 @@ class NumberClient(Client):
         if not isinstance(ip, (ipaddress.IPv4Address, ipaddress.IPv6Address)):
             ip = convert_to_ip(ip)
         if self.whodap_client is None:
-            self.init_whodap_client(ipv4=(ip.version == 4))
+            self.init_whodap_client(ipv4=(ip.version == 4), proxy_url=self.proxy_url)
         query_string = self.whodap_client.lookup(ip).to_json()
         return query_string, {}  # no parsed output available
 
@@ -166,7 +176,9 @@ class NumberClient(Client):
         if not isinstance(ip, (ipaddress.IPv4Address, ipaddress.IPv6Address)):
             ip = convert_to_ip(ip)
         if self.whodap_client is None:
-            await self.init_async_whodap_client(ipv4=(ip.version == 4))
+            await self.init_async_whodap_client(
+                ipv4=(ip.version == 4), proxy_url=self.proxy_url
+            )
         query_resp = await self.whodap_client.aio_lookup(ip)
         query_string = query_resp.to_json()
         return query_string, {}  # no parsed output available
@@ -192,20 +204,22 @@ class ASNClient(Client):
         self,
         whodap_client: whodap.ASNClient = None,
         timeout: int = 10,
+        proxy_url: str | None = None,
     ):
         super().__init__(whodap_client)
         self.timeout = timeout
+        self.proxy_url = proxy_url
 
     def rdap(self, asn: int) -> tuple[str, dict]:
         if self.whodap_client is None:
-            self.init_whodap_client()
+            self.init_whodap_client(proxy_url=self.proxy_url)
         query_resp = self.whodap_client.lookup(asn)
         query_string = query_resp.to_json()
         return query_string, {}
 
     async def aio_rdap(self, asn: int) -> tuple[str, dict]:
         if self.whodap_client is None:
-            await self.init_async_whodap_client()
+            await self.init_async_whodap_client(proxy_url=self.proxy_url)
         query_resp = await self.whodap_client.aio_lookup(asn)
         query_string = query_resp.to_json()
         return query_string, {}
