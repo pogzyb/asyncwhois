@@ -348,7 +348,7 @@ def rdap_domain(
 
     :param domain: Any domain name or URL
         (e.g. 'wikipedia.org' or 'https://en.wikipedia.org/wiki/WHOIS')
-    :param httpx_client: Optional preconfigured instance of `httpx.AsyncClient`
+    :param httpx_client: Optional preconfigured instance of `httpx2.AsyncClient`
     :param tldextract_obj: Optional preconfigured instance of `tldextract.tldextract.TLDExtract`
     :return: instance of DomainLookup
     """
@@ -376,7 +376,7 @@ async def aio_rdap_domain(
     Performs an async RDAP query for the given domain name.
 
     :param domain: Any domain or URL (e.g. 'wikipedia.org' or 'https://en.wikipedia.org/wiki/WHOIS')
-    :param httpx_client: Optional preconfigured instance of `httpx.AsyncClient`
+    :param httpx_client: Optional preconfigured instance of `httpx2.AsyncClient`
     :param tldextract_obj: Optional preconfigured instance of `tldextract.tldextract.TLDExtract`
     :return: instance of DomainLookup
     """
@@ -462,7 +462,7 @@ def rdap_ipv4(
     Performs an RDAP query for the given IPv4 address.
 
     :param ipv4: IP address as a string or `ipaddress.IPv4Address` object
-    :param httpx_client: Optional preconfigured `httpx.Client`
+    :param httpx_client: Optional preconfigured `httpx2.Client`
     :return: instance of NumberLookup
     """
     warn(
@@ -486,7 +486,7 @@ async def aio_rdap_ipv4(
     Performs an async RDAP query for the given IPv6 address.
 
     :param ipv4: IP address as a string or `ipaddress.IPv4Address` object
-    :param httpx_client: Optional preconfigured `httpx.AsyncClient`
+    :param httpx_client: Optional preconfigured `httpx2.AsyncClient`
     :return: instance of NumberLookup
     """
     warn(
@@ -570,7 +570,7 @@ def rdap_ipv6(
     Performs an RDAP query for the given IPv6 address.
 
     :param ipv6: IP address as a string or `ipaddress.IPv6Address` object
-    :param httpx_client: Optional preconfigured `httpx.Client`
+    :param httpx_client: Optional preconfigured `httpx2.Client`
     :return: instance of NumberLookup
     """
     warn(
@@ -594,7 +594,7 @@ async def aio_rdap_ipv6(
     Performs an async RDAP query for the given IPv6 address.
 
     :param ipv6: IP address as a string or `ipaddress.IPv6Address` object
-    :param httpx_client: Optional preconfigured `httpx.AsyncClient`
+    :param httpx_client: Optional preconfigured `httpx2.AsyncClient`
     :return: instance of NumberLookup
     """
     warn(
@@ -616,7 +616,7 @@ def rdap_asn(asn: int, httpx_client: Optional[Any] = None) -> ASNLookup:
     Performs an RDAP query for the given Autonomous System Number.
 
     :param asn: The ASN number as an integer
-    :param httpx_client: Optional preconfigured `httpx.Client`
+    :param httpx_client: Optional preconfigured `httpx2.Client`
     :return: instance of ASNLookup
     """
     warn(
@@ -638,7 +638,7 @@ async def aio_rdap_asn(asn: int, httpx_client: Optional[Any] = None) -> ASNLooku
     Performs an async RDAP query for the given Autonomous System Number.
 
     :param asn: The ASN number as an integer
-    :param httpx_client: Optional preconfigured `httpx.AsyncClient`
+    :param httpx_client: Optional preconfigured `httpx2.AsyncClient`
     :return: instance of ASNLookup
     """
     warn(

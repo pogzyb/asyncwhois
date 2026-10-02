@@ -96,9 +96,9 @@ for domain in ["google.com", "tesla.coffee", "bitcoin.org"]:
 
 # Using a proxy or need to configure something HTTP related? Try reconfiguring the client:
 whodap_client = whodap.DNSClient.new_client(
-    httpx_client=httpx.Client(proxies="https://proxy:8080")
+    httpx_client=httpx2.Client(proxy="https://proxy:8080")
 )
-# whodap_client = await whodap.DNSClient.new_aio_client(httpx_client=httpx.AsyncClient(proxies="https://proxy:8080"))
+# whodap_client = await whodap.DNSClient.new_aio_client(httpx_client=httpx2.AsyncClient(proxy="https://proxy:8080"))
 client = asyncwhois.DomainClient(whodap_client=whodap_client)
 
 ```
@@ -108,30 +108,33 @@ client = asyncwhois.DomainClient(whodap_client=whodap_client)
 SOCKS proxies are supported for WHOIS and RDAP queries.
 
 ```python
-import whodap
+import asyncwhois
 
-tor_host = "localhost"
-tor_port = 9050
+proxy = "socks5://localhost:9050"
 
-# WHOIS
-query_string, parsed_dict = asyncwhois.whois(
-    "8.8.8.8", proxy_url=f"socks5://{tor_host}:{tor_port}"
-)
+# you can use a reusable client that uses the desired configuration
+def lookup_domain():
+    domain = "bitcoin.org"
+    domain_client = asyncwhois.DomainClient(
+        proxy_url=proxy
+    )
 
-# RDAP
-import httpx
-from httpx_socks import SyncProxyTransport, AsyncProxyTransport  # EXTERNAL DEPENDENCY for SOCKS Proxies 
+    _, whois_result = domain_client.whois(domain=domain)
+    print(whois_result)
 
-transport = SyncProxyTransport.from_url(f"socks5://{tor_host}:{tor_port}")
-httpx_client = httpx.Client(transport=transport)
-whodap_client = whodap.IPv6Client.new_client(httpx_client=httpx_client)
-query_string, parsed_dict = asyncwhois.rdap('2001:4860:4860::8888', whodap_client=whodap_client)
+    _, rdap_result = domain_client.rdap(domain=domain)
+    print(rdap_result)
 
-transport = AsyncProxyTransport.from_url(f"socks5://{tor_user}:{tor_pw}@{tor_host}:{tor_port}")
-async with httpx.AsyncClient(transport=transport) as httpx_client:
-    whodap_client = await whodap.DNSClient.new_aio_client(httpx_client=httpx_client)
-    query_string, parsed_dict = await asyncwhois.aio_rdap('bitcoin.org', whodap_client=whodap_client)
 
+# or just call the standalone lookup methods each time
+async def lookup_ip():
+    ip = "8.8.8.8"
+
+    _, whois_result = await asyncwhois.aio_whois(ip=ip, proxy_url=proxy_url)
+    print(whois_result)
+
+    _, rdap_result = await asyncwhois.aio_rdap(ip=ip, proxy_url=proxy_url)
+    print(rdap_result)
 ```
 
 #### Exported Functions
