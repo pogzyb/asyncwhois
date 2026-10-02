@@ -24,7 +24,7 @@ dependencies = [
     "python-dateutil>=2.9.0",
     "python-socks[asyncio]>=2.0.2",
     "tldextract>=3.2.0",
-    "whodap>=0.1.12"
+    "whodap>=0.2.1"
 ]
 
 [project.urls]
