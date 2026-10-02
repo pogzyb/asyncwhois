@@ -42,7 +42,7 @@ __all__ = [
     "GeneralError",
     "QueryError",
 ]
-__version__ = "1.1.14"
+__version__ = "1.1.15"
 
 
 def whois(
