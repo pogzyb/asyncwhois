@@ -2,7 +2,7 @@ from pprint import pprint
 
 import asyncwhois
 import whodap
-import httpx
+import httpx2
 
 
 def main():
@@ -26,7 +26,7 @@ def main():
     # Fully configurable client example:
     # Proxy with `httpx`
     whodap_client = whodap.DNSClient.new_client(
-        httpx_client=httpx.Client(proxies="https://proxy:8080")
+        httpx_client=httpx2.Client(proxy="https://proxy:8080")
     )
     client = asyncwhois.DomainClient(whodap_client=whodap_client)
     query_output, parser_output = client.rdap(domain)
@@ -36,7 +36,7 @@ def main():
 
     transport = SyncProxyTransport.from_url("socks5://localhost:9050")
     whodap_client = whodap.DNSClient.new_client(
-        httpx_client=httpx.Client(transport=transport)
+        httpx_client=httpx2.Client(transport=transport)
     )
     client = asyncwhois.DomainClient(whodap_client=whodap_client)
     query_string, parsed_dict = client.rdap(domain)
